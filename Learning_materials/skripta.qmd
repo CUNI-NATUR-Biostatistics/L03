@@ -1,5 +1,5 @@
 ---
-title: "TODO: Název přednášky"
+title: "L03: Lineární model s jedním kvantitativním prediktorem"
 subtitle: "Podkladové čtenářské materiály k přednášce"
 lang: cs
 format:
@@ -20,7 +20,7 @@ format:
     number-sections: true
     output-file: "skripta_raw.pdf"
     include-in-header: "skripta_theme.typ"
-date: 2026/02/26
+date: 2026/07/15
 date-format: long
 date-modified: last-modified
 ---
@@ -114,29 +114,116 @@ if (knitr::is_html_output()) {
 
 ## Úvod
 
-TODO: Stručný úvod do tématu přednášky. Vysvětlete biologický kontext a motivaci.
+V této lekci poprvé postavíme celou analýzu kolem `r render_glossary_term("linearni-model", display = "lineárního modelu")`. Cíl není „umět kliknout na funkci“, ale převést biologickou otázku na modelový zápis a smysluplně interpretovat odhadnutý `r render_glossary_term("efekt", display = "efekt")`.
 
-## TODO: Hlavní část
+Pracovní otázka pro L03: Jak se mění `r render_glossary_term("odezva", display = "odezva")` (objem kmene) s rostoucím `r render_glossary_term("prediktor", display = "prediktorem")` (obvod kmene)?
 
-TODO: Obsah hlavní části skripta. Používejte podnadpisy (###) pro strukturování textu.
+## Výsledky učení pro L03
 
-### TODO: Podkapitola
+Po prostudování této lekce budete schopni:
 
-TODO: Text podkapitoly s biologickými příklady a R kódem.
+- fitovat model `lm(y ~ x)` a interpretovat směr i velikost `r render_glossary_term("efekt", display = "efektu")`
+- vysvětlit, co je `r render_glossary_term("residuum", display = "residuum")`, a proč je důležité pro kontrolu modelu
+- provést základní `r render_glossary_term("diagnostika-modelu", display = "diagnostiku modelu")` graficky
+
+## Datový příběh a modelová otázka
+
+Pro první modelovou lekci používáme dataset `trees` (reálná měření stromů v R). Budeme vysvětlovat vztah mezi obvodem kmene (`Girth`) a objemem kmene (`Volume`).
+
+Než přejdeme k obecnému modelu, podívejme se na konkrétní dvojici pozorování z dat:
+
+| Pozorování | Obvod kmene (`Girth`) | Objem kmene (`Volume`) |
+|---|---:|---:|
+| 1 | `r datasets::trees$Girth[1]` | `r datasets::trees$Volume[1]` |
+| 2 | `r datasets::trees$Girth[2]` | `r datasets::trees$Volume[2]` |
+
+Konkrétní výpočet změny na jednotku prediktoru (krok 1: dosazení hodnot):
+
+$$
+b \approx
+\frac{`r datasets::trees$Volume[2]` - `r datasets::trees$Volume[1]`}{`r datasets::trees$Girth[2]` - `r datasets::trees$Girth[1]`}
+$$
+
+Stejný výpočet po zjednodušení (krok 2: mezikrok):
+
+$$
+b \approx
+\frac{`r datasets::trees$Volume[2] - datasets::trees$Volume[1]`}{`r datasets::trees$Girth[2] - datasets::trees$Girth[1]`}
+=
+`r base::round((datasets::trees$Volume[2] - datasets::trees$Volume[1]) / (datasets::trees$Girth[2] - datasets::trees$Girth[1]), 2)`
+$$
+
+Obecný zápis pro lineární model (krok 3: symbolický tvar):
+
+$$
+  ext{Volume}_i = a + b \cdot \text{Girth}_i + e_i
+$$
+
+Směrnici pak obecně zapisujeme také jako:
+
+$$
+b = \frac{\Delta y}{\Delta x}
+$$
+
+Interpretace:
+
+- `a` (`r render_glossary_term("intercept", display = "intercept")`) je odhad objemu při nulovém obvodu (technický referenční bod)
+- `b` (`r render_glossary_term("sklon", display = "sklon")`) říká, o kolik se v průměru změní objem při zvýšení obvodu o 1 jednotku
+- $e_i$ je nevysvětlená část `r render_glossary_term("variabilita", display = "variability")` (`r render_glossary_term("residuum", display = "reziduum")`)
+
+### Co v datech vidíme před modelem?
+
+Než model pojmenujeme, začínáme grafem. Bodový graf nám ukáže, zda je vztah přibližně lineární a jestli dává smysl začít jednoduchou přímkou.
+
+### Kontrolní otázka k častému omylu
+
+To, že v bodovém grafu „vidíme trend“, ještě není úplný závěr. Stále musíme ověřit, jak velká část variability je modelem vysvětlena (například přes `r render_glossary_term("r2", display = "R2")`) a jak vypadají rezidua.
+
+### Ukázkový kód pro studenty: první fit modelu
 
 ```{r}
-#| label: demo
+#| label: l03-fit-jednoducheho-modelu
 #| echo: true
-# TODO: ukázka kódu v R
+data(trees)
+
+mod_objem <-
+  lm(
+    formula = Volume ~ Girth,
+    data = trees
+  )
+
+plot(
+  x = trees$Girth,
+  y = trees$Volume,
+  xlab = "Obvod kmene (Girth)",
+  ylab = "Objem kmene (Volume)",
+  main = "L03: Obvod vs. objem kmene"
+)
+
+abline(mod_objem, col = "blue", lwd = 2)
+
+summary(mod_objem)
+
+plot(
+  x = fitted(mod_objem),
+  y = resid(mod_objem),
+  xlab = "Predikované hodnoty",
+  ylab = "Rezidua",
+  main = "Kontrola reziduí"
+)
+
+abline(h = 0, lty = 2)
 ```
 
 ## Shrnutí
 
-TODO: Klíčové body k zapamatování.
+- L03 zavádí `r render_glossary_term("linearni-model", display = "lineární model")` jako hlavní rámec: biologická otázka -> model -> interpretace.
+- Koeficient `r render_glossary_term("sklon", display = "sklonu")` popisuje velikost změny `r render_glossary_term("odezva", display = "odezvy")` při změně `r render_glossary_term("prediktor", display = "prediktoru")`.
+- `r render_glossary_term("residuum", display = "Rezidua")` nejsou „odpad“, ale klíčová informace o tom, co model nevysvětluje.
 
-- TODO: bod 1
-- TODO: bod 2
-- TODO: bod 3
+## Co navazuje v L04
+
+V další lekci ponecháme stejný modelový rámec a přidáme inferenční vrstvu: `r render_glossary_term("interval-spolehlivosti", display = "intervaly spolehlivosti")` a `r render_glossary_term("p-hodnota", display = "p-hodnotu")` jako popis `r render_glossary_term("nejistota", display = "nejistoty")` odhadu.
 
 ## Slovníček pojmů {.unnumbered}
 

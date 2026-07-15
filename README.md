@@ -1,4 +1,4 @@
-# _L-template – Šablona repozitáře přednášky
+# L03 – Týdenní repozitář přednášky
 
 Šablona (GitHub Template Repository) pro týdenní repozitáře kurzu
 **Biostatistika (MB120P163)**. Při vytváření nového týdenního repozitáře
@@ -15,7 +15,7 @@ Repozitář je výchozí kostra pro tři propojené výstupy:
 ## Struktura repozitáře
 
 ```text
-_L-template/
+L03/
 ├── theme/                          # Zdroje vizuálního tématu – editujte zde
 │   ├── colors.json                 # Paleta barev a sémantická přiřazení
 │   ├── fonts.json                  # Písma pro HTML, RevealJS, Typst a R grafy
@@ -68,8 +68,7 @@ neupravujte ručně.
 
 1. Vytvořte nový repozitář z této šablony a pojmenujte ho podle týdne,
    například `L01`.
-2. Přejmenujte `_L-template.Rproj` na odpovídající název, například
-   `L01.Rproj`.
+2. Soubor projektu je v tomto repozitáři pojmenovaný jako `L03.Rproj`.
 3. Otevřete projekt v RStudiu nebo VS Code a obnovte závislosti příkazem
    `renv::restore()`.
   Lokální pracovní soubory RStudia, Quarto cache a dočasné debug soubory se
