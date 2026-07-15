@@ -66,7 +66,7 @@ slides_url <-
   )
 ```
 
-## L03: Lineární model s jedním kvantitativním prediktorem
+## Lineární model s jedním kvantitativním prediktorem
 
 <br>
 
@@ -115,17 +115,21 @@ Když nehlasujeme: napište si vlastní volbu a jednou větou ji obhajte sousedo
 ## První pohled na vztah v datech
 
 ```{r}
-#| label: l03-graf-data
+#| label: graf-data
 #| echo: false
 data(trees)
 
-plot(
-  x = trees$Girth,
-  y = trees$Volume,
-  xlab = "Obvod kmene (Girth)",
-  ylab = "Objem kmene (Volume)",
-  main = "Data: obvod a objem kmene"
-)
+ggplot2::ggplot(
+  data = trees,
+  mapping = ggplot2::aes(x = Girth, y = Volume)
+) +
+  ggplot2::geom_point(size = 2, alpha = 0.85, color = "#8A8A8A") +
+  ggplot2::labs(
+    x = "Obvod kmene (Girth)",
+    y = "Objem kmene (Volume)",
+    title = "Data: obvod a objem kmene"
+  ) +
+  ggplot2::theme_minimal()
 ```
 
 ## Pojmenování modelu
@@ -145,7 +149,7 @@ Co nás zajímá nejvíc:
 ## Ukázkový kód pro studenty
 
 ```{r}
-#| label: l03-demo-model
+#| label: demo-model
 #| echo: true
 data(trees)
 
@@ -155,14 +159,17 @@ mod_objem <-
     data = trees
   )
 
-plot(
-  x = trees$Girth,
-  y = trees$Volume,
-  xlab = "Obvod kmene (Girth)",
-  ylab = "Objem kmene (Volume)"
-)
-
-abline(mod_objem, col = "blue", lwd = 2)
+ggplot2::ggplot(
+  data = trees,
+  mapping = ggplot2::aes(x = Girth, y = Volume)
+) +
+  ggplot2::geom_point(size = 2, alpha = 0.85, color = "#8A8A8A") +
+  ggplot2::geom_smooth(method = "lm", se = FALSE, color = "#5D2890", linewidth = 1) +
+  ggplot2::labs(
+    x = "Obvod kmene (Girth)",
+    y = "Objem kmene (Volume)"
+  ) +
+  ggplot2::theme_minimal()
 
 summary(mod_objem)
 ```
@@ -217,7 +224,7 @@ To je nebezpečné zjednodušení. Po vizuálním trendu vždy potřebujeme ješ
 
 ## Shrnutí
 
-- L03 zavádí lineární model jako hlavní pracovní rámec.
+- Lineární model zavádí hlavní pracovní rámec.
 - Začínáme biologickou otázkou a grafem, ne názvem metody.
 - Koeficient modelu interpretujeme jako biologicky smysluplnou změnu odezvy.
 - Rezidua používáme jako kontrolu toho, co model nevysvětluje.
