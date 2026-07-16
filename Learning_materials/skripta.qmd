@@ -35,13 +35,11 @@ here::i_am("Learning_materials/skripta.qmd")
 if (!require("tidyverse")) install.packages("tidyverse")
 if (!require("ggbeeswarm")) install.packages("ggbeeswarm")
 if (!require("ggplot2")) install.packages("ggplot2")
-if (!require("palmerpenguins")) install.packages("palmerpenguins")
 if (!require("glossary")) install.packages("glossary")
 
 library(tidyverse)
 library(ggbeeswarm)
 library(ggplot2)
-library(palmerpenguins)
 library(glossary)
 
 source(here::here("R", "set_r_theme.R"))
@@ -124,19 +122,19 @@ if (knitr::is_html_output()) {
 
 ## Úvod
 
-Představte si, že máte jen obvod kmene a objem kmene několika stromů. Dá se z obvodu odhadnout objem?
+Představte si, že měříte korunní lístky kosatců. Dá se z jejich šířky odhadnout jejich délka?
 
 ::: {.callout-important}
 ## Hlavní otázka této lekce
 
-**Mají stromy s větším obvodem také větší objem, a pokud ano, jak velká je tato změna?**
+**Mají širší korunní lístky kosatců také větší délku, a pokud ano, jak velká je tato změna?**
 :::
 
-Na tuhle otázku dnes navážeme. V minulé části jsme se naučili dívat na body v grafu a číst z nich jednoduchý trend. Teď tento trend rozšíříme do `r render_glossary_term("linearni-model", display = "lineárního modelu")`, aby z bodů vznikl model, který umí vztah mezi obvodem a objemem shrnout jedním zápisem a jednou interpretací.
+Na tuhle otázku dnes navážeme. V minulé části jsme se naučili dívat na body v grafu a číst z nich jednoduchý trend. Teď tento trend rozšíříme do `r render_glossary_term("linearni-model", display = "lineárního modelu")`, aby z bodů vznikl model, který umí vztah mezi šířkou a délkou korunního lístku shrnout jedním zápisem a jednou interpretací.
 
 Cíl není „umět kliknout na funkci“, ale převést biologickou otázku na modelový zápis a smysluplně interpretovat odhadnutý `r render_glossary_term("efekt", display = "efekt")`.
 
-Pracovní otázka: Jak se mění `r render_glossary_term("odezva", display = "odezva")` (objem kmene) s rostoucím `r render_glossary_term("prediktor", display = "prediktorem")` (obvod kmene)?
+Pracovní otázka: Jak se mění `r render_glossary_term("odezva", display = "odezva")` (délka korunního lístku) s rostoucím `r render_glossary_term("prediktor", display = "prediktorem")` (šířka korunního lístku)?
 
 ## Výsledky učení
 
@@ -148,49 +146,50 @@ Po prostudování této lekce budete schopni:
 
 ## Datový příběh a modelová otázka
 
-Pro první modelovou lekci používáme dataset `trees` (reálná měření stromů v R). Budeme vysvětlovat vztah mezi obvodem kmene (`Girth`) a objemem kmene (`Volume`).
+Pro první modelovou lekci používáme dataset `iris`, který obsahuje reálná měření 150 květů kosatců. Budeme vysvětlovat vztah mezi šířkou (`Petal.Width`) a délkou (`Petal.Length`) korunního lístku. Data sesbíral botanik Edgar Anderson a později je publikoval Ronald Fisher. Podrobnosti a odkazy na původní publikace uvádí [dokumentace datasetu v R](https://stat.ethz.ch/R-manual/R-devel/RHOME/library/datasets/html/iris.html).
 
-Dataset `trees` je pro tuto lekci vhodný, protože:
+Dataset `iris` je pro tuto lekci vhodný, protože:
 
-- měří biologicky srozumitelné veličiny (obvod a objem kmene)
-- obsahuje přirozenou `r render_glossary_term("variabilita", display = "variabilitu")` mezi stromy
+- měří biologicky srozumitelné veličiny ve stejných jednotkách
+- obsahuje přirozenou `r render_glossary_term("variabilita", display = "variabilitu")` mezi květy
+- hodnoty šířky začínají blízko nuly, takže `r render_glossary_term("intercept", display = "intercept")` můžeme ukázat bez stlačení dat do malé části grafu
 - umožňuje plynulý přechod od bodového grafu k `r render_glossary_term("linearni-model", display = "lineárnímu modelu")`
 
-Než začneme počítat, je dobré mít mentální představu, co v datech vlastně měříme.
-
-::: {.callout-important}
-## Ilustrační fotografie datasetu
-
-![Kmen stromu jako biologický kontext proměnných Girth a Volume.](images/trees_dataset_photo.jpg)
-
-Zdroj: Pixabay (Pexels), ilustrační fotografie kmene stromu.
-:::
+Dataset rozlišuje tři druhy kosatců. V prvním modelu použijeme záměrně jen jeden numerický `r render_glossary_term("prediktor", display = "prediktor")` a druh zatím do modelu nepřidáme. Na konci se k tomuto rozhodnutí vrátíme při diagnostice.
 
 
 ```{r}
-#| label: data-stromy-prehled
+#| label: data-kosatce-prehled
 #| echo: true
 #| code-fold: false
 #| output: true
 #| message: false
 #| warning: false
 #| error: false
-data(trees)
+data(iris)
 
-summary(trees)
+data_kosatce <-
+  data.frame(
+    sirka_listku = iris$Petal.Width,
+    delka_listku = iris$Petal.Length,
+    druh = iris$Species
+  )
+
+summary(data_kosatce)
 ```
 
 
-Co konkrétně znamenají sloupce v `trees`:
+Co konkrétně znamenají sloupce v `iris`:
 
-- `Girth`: obvod kmene ve výšce měření (`r render_glossary_term("prediktor", display = "prediktor")`)
-- `Volume`: odhadovaný objem kmene (`r render_glossary_term("odezva", display = "odezva")`)
+- `Petal.Width`: šířka korunního lístku v centimetrech (prediktor)
+- `Petal.Length`: délka korunního lístku v centimetrech (`r render_glossary_term("odezva", display = "odezva")`)
+- `Species`: druh kosatce, který zatím ponecháme mimo model
 
-Na úrovni biologické otázky nás zajímá jednoduché tvrzení: mají stromy s větším obvodem také větší objem, a pokud ano, jak velká je tato změna.
+Na úrovni biologické otázky nás zajímá jednoduché tvrzení: mají širší korunní lístky také větší délku, a pokud ano, jak velká je tato změna.
 
-### Nejdřív jen stromy jako data
+### Nejdřív jen květy jako data
 
-Než budeme mluvit o modelu, podívejme se jen na jednotlivé stromy v datech a podíváme se na strukturu dat.
+Než budeme mluvit o modelu, podívejme se na jednotlivé květy a na strukturu dat.
 
 Z předchozích lekcí už víme dvě základní věci:
 
@@ -200,45 +199,45 @@ Z předchozích lekcí už víme dvě základní věci:
 Krátký samostatný přehled obou proměnných:
 
 ::: {.panel-tabset}
-## Obvod kmene
+## Šířka korunního lístku
 
 ```{r}
-#| label: shrnuti-girth
+#| label: shrnuti-sirka-listku
 #| echo: true
 #| code-fold: false
-summary(trees$Girth)
+summary(data_kosatce$sirka_listku)
 ```
 
 ```{r}
-#| label: graf-girth
+#| label: graf-sirka-listku
 #| echo: false
 #| message: false
 #| warning: false
-ggplot2::ggplot(data.frame(Girth = trees$Girth), ggplot2::aes(x = "Obvod kmene", y = Girth)) +
+ggplot2::ggplot(data_kosatce, ggplot2::aes(x = "Šířka", y = sirka_listku)) +
   ggplot2::geom_violin(trim = FALSE, fill = "#86579E", alpha = 0.25, color = "#5D2890") +
   ggplot2::geom_boxplot(width = 0.12, outlier.shape = NA, fill = "white", color = "#5D2890") +
-  ggplot2::labs(x = NULL, y = "Obvod kmene (Girth)") +
+  ggplot2::labs(x = NULL, y = "Šířka korunního lístku (cm)") +
   theme_biostat()
 ```
 
-## Objem kmene
+## Délka korunního lístku
 
 ```{r}
-#| label: shrnuti-volume
+#| label: shrnuti-delka-listku
 #| echo: true
 #| code-fold: false
-summary(trees$Volume)
+summary(data_kosatce$delka_listku)
 ```
 
 ```{r}
-#| label: graf-volume
+#| label: graf-delka-listku
 #| echo: false
 #| message: false
 #| warning: false
-ggplot2::ggplot(data.frame(Volume = trees$Volume), ggplot2::aes(x = "Objem kmene", y = Volume)) +
+ggplot2::ggplot(data_kosatce, ggplot2::aes(x = "Délka", y = delka_listku)) +
   ggplot2::geom_violin(trim = FALSE, fill = "#86579E", alpha = 0.25, color = "#5D2890") +
   ggplot2::geom_boxplot(width = 0.12, outlier.shape = NA, fill = "white", color = "#5D2890") +
-  ggplot2::labs(x = NULL, y = "Objem kmene (Volume)") +
+  ggplot2::labs(x = NULL, y = "Délka korunního lístku (cm)") +
   theme_biostat()
 ```
 :::
@@ -248,65 +247,61 @@ Než vybereme graf, zkusme si malý mentální úkol: když máme dvě numerick�
 ::: {.callout-note collapse="true"}
 ## Odpověď
 
-Dobrá volba je bodový graf, protože chceme vidět jednotlivé stromy a jejich vzájemný vztah.
+Dobrá volba je bodový graf, protože chceme vidět jednotlivé květy a vztah mezi dvěma měřeními.
 :::
 
 Co z grafu sledujte zejména:
 
-- zda se s rostoucím obvodem obvykle zvyšuje i objem
-- jestli jsou v datech stromy, které se chovají výrazně jinak než ostatní
+- zda se s rostoucí šířkou obvykle zvětšuje i délka
+- jestli jsou v datech květy, které se chovají výrazně jinak než ostatní
 - jak velký je `r render_glossary_term("rozptyl", display = "rozptyl")` hodnot kolem hlavního trendu
 
 ```{r}
 #| label: krok-1-jen-body
 #| echo: true
-data(trees)
-
 ggplot2::ggplot(
-  data = trees,
-  mapping = ggplot2::aes(x = Girth, y = Volume)
+  data = data_kosatce,
+  mapping = ggplot2::aes(x = sirka_listku, y = delka_listku)
 ) +
   ggplot2::geom_point(size = 2, alpha = 0.8, color = "#8A8A8A") +
   ggplot2::labs(
-    x = "Obvod kmene (Girth)",
-    y = "Objem kmene (Volume)",
+    x = "Šířka korunního lístku (cm)",
+    y = "Délka korunního lístku (cm)",
     title = "Pouze body"
   ) +
   theme_biostat()
 ```
 
-### Přes stejná data stromů můžeme vést mnoho přímek
+### Přes stejná data květů můžeme vést mnoho přímek
 
 V celé lekci budeme držet tuto interpretační větu:
 
-"*Když porovnáme dva stromy, strom s větším obvodem má v průměru větší očekávaný objem o určité množství, které popisuje sklon přímky.*"
+"*Když porovnáme dva květy, květ se širším korunním lístkem má v průměru delší očekávaný korunní lístek o určité množství, které popisuje sklon přímky.*"
 
-Pro stejná data existuje více kandidátních přímek a každá vede k trochu jiné interpretaci. Každá pžímka má přitom jiné `r render_glossary_term("parametry-modelu", display = "parametry")` (viz níže). 
+Pro stejná data existuje více kandidátních přímek a každá vede k trochu jiné interpretaci. Každá přímka má přitom jiné `r render_glossary_term("parametry-modelu", display = "parametry")` (viz níže).
 
 ```{r}
 #| label: mnoho-primek-jednim-grafem
 #| echo: true
-data(trees)
-
 kandidati_cary <-
   data.frame(
     nazev = c("A", "B", "C"),
-    a = c(-47, -37, -37),
-    b = c(5, 5.0, 6),
+    a = c(0.5, 1.1, 1.1),
+    b = c(2.2, 2.2, 2.7),
     barva = c("#8A8A8A", "#5D2890", "#F3A712")
   )
 
 popisky_car <-
   data.frame(
     nazev = kandidati_cary$nazev,
-    x = rep(max(trees$Girth) - 0.3, 3),
-    y = kandidati_cary$a + kandidati_cary$b * (max(trees$Girth) - 0.3),
+    x = rep(max(data_kosatce$sirka_listku) - 0.1, 3),
+    y = kandidati_cary$a + kandidati_cary$b * (max(data_kosatce$sirka_listku) - 0.1),
     barva = kandidati_cary$barva
 )
 
 ggplot2::ggplot(
-  data = trees,
-  mapping = ggplot2::aes(x = Girth, y = Volume)
+  data = data_kosatce,
+  mapping = ggplot2::aes(x = sirka_listku, y = delka_listku)
 ) +
   ggplot2::geom_point(size = 2, alpha = 0.8, color = "#8A8A8A") +
   ggplot2::geom_abline(
@@ -325,38 +320,38 @@ ggplot2::ggplot(
   ) +
   ggplot2::scale_color_manual(values = setNames(kandidati_cary$barva, kandidati_cary$nazev)) +
   ggplot2::labs(
-    x = "Obvod kmene (Girth)",
-    y = "Objem kmene (Volume)",
+    x = "Šířka korunního lístku (cm)",
+    y = "Délka korunního lístku (cm)",
     title = "Mnoho možných přímek přes stejné body"
   ) +
   ggplot2::coord_cartesian(
-    xlim = c(0, max(trees$Girth) + 0.5),
-    ylim = c(0, max(trees$Volume) + 5)
+    xlim = c(0, max(data_kosatce$sirka_listku) + 0.2),
+    ylim = c(0, max(data_kosatce$delka_listku) + 0.5)
   ) +
   theme_biostat()
 ```
 
-Kontrolní otázka: Jak byste poznali, která z těchto přímek nejlépe vystihuje vztah obvod -> objem?
+Kontrolní otázka: Jak byste poznali, která z těchto přímek nejlépe vystihuje vztah šířka -> délka?
 
 ::: {.callout-note collapse="true"}
 ## Odpověď
 
-Potřebujeme číselné kritérium, které měří, jak daleko jsou naměřené objemy stromů od modelové přímky při daném obvodu.
+Potřebujeme číselné kritérium, které měří, jak daleko jsou naměřené délky korunních lístků od modelové přímky při dané šířce.
 :::
 
-### Jak můžeme popsat vztat proměných?
+### Jak můžeme popsat vztah proměnných?
 
 Každou přímku popíšeme dvěma `r render_glossary_term("parametry-modelu", display = "parametry")`:
 
 - `a` (`r render_glossary_term("intercept", display = "intercept")`)
 - `b` (`r render_glossary_term("sklon", display = "sklon")`)
 
-V našem případě je `r render_glossary_term("prediktor", display = "prediktorem")` **obvod kmene** stromu a podle něj vysvětlujeme rozdíly v **objemu kmene**.
+V našem případě je `r render_glossary_term("prediktor", display = "prediktorem")` **šířka korunního lístku** a podle ní vysvětlujeme rozdíly v **délce korunního lístku**.
 
 Intuitivně:
 
-- `a` posouvá přímku nahoru nebo dolů (mění základní úroveň odhadovaného objemu)
-- `b` mění `r render_glossary_term("sklon", display = "strmost")` přímky, tedy jak rychle roste odhadovaný objem s rostoucím obvodem
+- `a` posouvá přímku nahoru nebo dolů (mění základní úroveň odhadované délky)
+- `b` mění `r render_glossary_term("sklon", display = "strmost")` přímky, tedy jak rychle roste odhadovaná délka s rostoucí šířkou
 
 Nejčastější studentská chyba je zaměnit tyto role. Proto je v následujících grafech oddělujeme: nejprve měníme intercept při stejném sklonu, potom sklon při pevném interceptu.
 
@@ -366,31 +361,29 @@ Nejčastější studentská chyba je zaměnit tyto role. Proto je v následujíc
 ```{r}
 #| label: intercept-jednoduse
 #| echo: true
-data(trees)
-
 ggplot2::ggplot() +
   ggplot2::geom_point(
-    data = trees,
-    mapping = ggplot2::aes(x = Girth, y = Volume), 
+    data = data_kosatce,
+    mapping = ggplot2::aes(x = sirka_listku, y = delka_listku),
     size = 1.8, alpha = 0.6, color = "#8A8A8A") +
   ggplot2::geom_abline(
     ggplot2::aes(
-      intercept = c(-47, -37, -27), 
-      slope = 5.0, 
-      color = c("a = -47", "a = -37", "a = -27")),
+      intercept = c(0.5, 1.1, 1.7),
+      slope = 2.2,
+      color = c("a = 0.5", "a = 1.1", "a = 1.7")),
     linewidth = 1,
     show.legend = TRUE
   ) +
-  ggplot2::scale_color_manual(values = c("a = -47" = "#8A8A8A", "a = -37" = "#5D2890", "a = -27" = "#F3A712")) +
+  ggplot2::scale_color_manual(values = c("a = 0.5" = "#8A8A8A", "a = 1.1" = "#5D2890", "a = 1.7" = "#F3A712")) +
   ggplot2::labs(
     title = "Intercept (a): hodnota na ose y při x = 0",
-    x = "Girth",
-    y = "Volume",
+    x = "Šířka korunního lístku (cm)",
+    y = "Délka korunního lístku (cm)",
     color = "Varianta"
   ) +
     ggplot2::coord_cartesian(
-    xlim = c(0, max(trees$Girth) + 0.5),
-    ylim = c(0, max(trees$Volume) + 5)
+    xlim = c(0, max(data_kosatce$sirka_listku) + 0.2),
+    ylim = c(0, max(data_kosatce$delka_listku) + 0.5)
   ) +
   theme_biostat()
 ```
@@ -401,31 +394,29 @@ ggplot2::ggplot() +
 ```{r}
 #| label: sklon-jednoduse
 #| echo: true
-data(trees)
-
 ggplot2::ggplot() +
   ggplot2::geom_point(
-    data = trees,
-    mapping = ggplot2::aes(x = Girth, y = Volume), 
+    data = data_kosatce,
+    mapping = ggplot2::aes(x = sirka_listku, y = delka_listku),
     size = 1.8, alpha = 0.6, color = "#8A8A8A") +
   ggplot2::geom_abline(
     ggplot2::aes(
-      intercept = -37, 
-      slope = c(4.5, 5.0, 5.5), 
-      color = c("b = 4.5", "b = 5.0", "b = 5.5")),
+      intercept = 1.1,
+      slope = c(1.8, 2.2, 2.6),
+      color = c("b = 1.8", "b = 2.2", "b = 2.6")),
     linewidth = 1,
     show.legend = TRUE
   ) +
-  ggplot2::scale_color_manual(values = c("b = 4.5" = "#8A8A8A", "b = 5.0" = "#5D2890", "b = 5.5" = "#F3A712")) +
+  ggplot2::scale_color_manual(values = c("b = 1.8" = "#8A8A8A", "b = 2.2" = "#5D2890", "b = 2.6" = "#F3A712")) +
   ggplot2::labs(
     title = "Sklon (b): jak rychle roste y při růstu x",
-    x = "Girth",
-    y = "Volume",
+    x = "Šířka korunního lístku (cm)",
+    y = "Délka korunního lístku (cm)",
     color = "Varianta"
   ) +
     ggplot2::coord_cartesian(
-    xlim = c(0, max(trees$Girth) + 0.5),
-    ylim = c(0, max(trees$Volume) + 5)
+    xlim = c(0, max(data_kosatce$sirka_listku) + 0.2),
+    ylim = c(0, max(data_kosatce$delka_listku) + 0.5)
   ) +
   theme_biostat()
 ```
@@ -442,16 +433,16 @@ ggplot2::ggplot() +
 #| error: false
 kombinace_ab <-
   data.frame(
-    a = c(-42, -42, -37, -37, -32, -32),
-    b = c(2.5, 7.5, 2.5, 7.5, 2.5, 7.5),
+    a = c(0.5, 0.5, 1.1, 1.1, 1.7, 1.7),
+    b = c(1.8, 2.6, 1.8, 2.6, 1.8, 2.6),
     panel = c(
-      "a = -42, b = 2.5", "a = -42, b = 7.5",
-      "a = -37, b = 2.5", "a = -37, b = 7.5",
-      "a = -32, b = 2.5", "a = -32, b = 7.5"
+      "a = 0.5, b = 1.8", "a = 0.5, b = 2.6",
+      "a = 1.1, b = 1.8", "a = 1.1, b = 2.6",
+      "a = 1.7, b = 1.8", "a = 1.7, b = 2.6"
     )
   )
 
-ggplot2::ggplot(data = trees, ggplot2::aes(x = Girth, y = Volume)) +
+ggplot2::ggplot(data = data_kosatce, ggplot2::aes(x = sirka_listku, y = delka_listku)) +
   ggplot2::geom_point(size = 1.5, alpha = 0.7, color = "#8A8A8A") +
   ggplot2::geom_abline(
     data = kombinace_ab,
@@ -462,63 +453,63 @@ ggplot2::ggplot(data = trees, ggplot2::aes(x = Girth, y = Volume)) +
   ggplot2::facet_wrap(~panel, ncol = 3) +
   ggplot2::labs(
     title = "Šest kombinací a a b",
-    x = "Girth",
-    y = "Volume"
+    x = "Šířka korunního lístku (cm)",
+    y = "Délka korunního lístku (cm)"
   ) +
     ggplot2::coord_cartesian(
-    xlim = c(0, max(trees$Girth) + 0.5),
-    ylim = c(0, max(trees$Volume) + 5)
+    xlim = c(0, max(data_kosatce$sirka_listku) + 0.2),
+    ylim = c(0, max(data_kosatce$delka_listku) + 0.5)
   ) +
   theme_biostat()
 ```
 
-### Vybereme 4 stromy napříč prostorem dat
+### Vybereme 4 květy napříč prostorem dat
 
-Než přejdeme na všechna data, ukážeme princip na čtyřech stromech rozprostřených napříč grafem, aby bylo vidět, jak přesně vznikají `r render_glossary_term("residuum", display = "rezidua")`.
+Než přejdeme na všechna data, ukážeme princip na čtyřech květech rozprostřených napříč grafem, aby bylo vidět, jak přesně vznikají `r render_glossary_term("residuum", display = "rezidua")`.
 
 ```{r}
 #| label: vyber-4-bodu
 #| echo: true
 index4 <-
-  c(1, 11, 21, 31)
+  c(1, 58, 71, 101)
 
 data4 <-
-  trees[index4, c("Girth", "Volume")]
+  data_kosatce[index4, c("sirka_listku", "delka_listku")]
 
 data4
 ```
 
-### Predikce z a a b pro jeden strom
+### Predikce z a a b pro jeden květ
 
-Nejdřív pro jeden strom ručně (dosazení konkrétních hodnot):
+Nejdřív pro jeden květ ručně (dosazení konkrétních hodnot):
 
 Tento mezikrok je důležitý, protože propojuje grafickou představu s konkrétním výpočtem. Chceme, aby bylo jasné, odkud se číslo predikce bere, ještě před použitím `predict()`.
 
-Logický postup pro jeden konkrétní strom:
+Logický postup pro jeden konkrétní květ:
 
-1. Vezmeme obvod vybraného stromu.
-2. Dosadíme ho do vztahu objem = a + b * obvod.
-3. Dostaneme očekávaný objem tohoto stromu podle modelu.
+1. Vezmeme šířku vybraného korunního lístku.
+2. Dosadíme ji do vztahu délka = a + b * šířka.
+3. Dostaneme očekávanou délku tohoto korunního lístku podle modelu.
 
-V zápisu pro první strom:
+V zápisu pro první květ:
 
-objem kmene (strom 1) = a + b * obvod kmene (strom 1)
+délka korunního lístku (květ 1) = a + b * šířka korunního lístku (květ 1)
 
 ```{r}
 #| label: parametry-pro-rucni-predikci
 #| echo: false
-a0 <- -37
-b0 <- 5.0
+a0 <- 1.1
+b0 <- 2.2
 ```
 
 $$
-\hat{y}_1 = `r a0` + `r b0` \cdot `r data4$Girth[1]`
+\hat{y}_1 = `r a0` + `r b0` \cdot `r data4$sirka_listku[1]`
 $$
 
 Po zjednodušení:
 
 $$
-\hat{y}_1 = `r a0` + `r round(b0 * data4$Girth[1], 2)` = `r round(a0 + b0 * data4$Girth[1], 2)`
+\hat{y}_1 = `r a0` + `r round(b0 * data4$sirka_listku[1], 2)` = `r round(a0 + b0 * data4$sirka_listku[1], 2)`
 $$
 
 Až potom obecný zápis:
@@ -530,10 +521,10 @@ $$
 ```{r}
 #| label: predikce-jeden-bod
 #| echo: true
-a0 <- -37
-b0 <- 5.0
+a0 <- 1.1
+b0 <- 2.2
 
-x1 <- data4$Girth[1]
+x1 <- data4$sirka_listku[1]
 
 y_hat_1 <-
   a0 + b0 * x1
@@ -541,9 +532,9 @@ y_hat_1 <-
 y_hat_1
 ```
 
-### Predikce pro všechny 4 stromy
+### Predikce pro všechny 4 květy
 
-Jakmile máme princip pro jeden strom, aplikujeme stejný výpočet na všechny čtyři stromy. Tím získáme:
+Jakmile máme princip pro jeden květ, aplikujeme stejný výpočet na všechny čtyři květy. Tím získáme:
 
 - predikované hodnoty `y_hat`
 - rozdíly mezi pozorovanou a predikovanou hodnotou (`rezidua`)
@@ -552,16 +543,16 @@ Jakmile máme princip pro jeden strom, aplikujeme stejný výpočet na všechny 
 #| label: predikce-vsechny-4-body
 #| echo: true
 y_hat <-
-  a0 + b0 * data4$Girth
+  a0 + b0 * data4$sirka_listku
 
 rez <-
-  data4$Volume - y_hat
+  data4$delka_listku - y_hat
 
 tab_pred <-
   data.frame(
     bod = 1:4,
-    x = data4$Girth,
-    y = data4$Volume,
+    x = data4$sirka_listku,
+    y = data4$delka_listku,
     y_hat = round(y_hat, 2),
     reziduum = round(rez, 2)
   )
@@ -571,14 +562,14 @@ tab_pred
 
 Čtení tabulky krok za krokem:
 
-- sloupec x: obvod konkrétního stromu
-- sloupec y: skutečně měřený objem stromu
-- sloupec y_hat: modelový (očekávaný) objem stromu
-- sloupec reziduum: rozdíl mezi skutečným a modelovým objemem
+- sloupec x: šířka korunního lístku konkrétního květu
+- sloupec y: skutečně naměřená délka korunního lístku
+- sloupec y_hat: modelová (očekávaná) délka korunního lístku
+- sloupec reziduum: rozdíl mezi skutečnou a modelovou délkou
 
 ### Rezidua jako vzdálenosti v grafu
 
-Reziduum je svislá vzdálenost stromu od modelové přímky. Pokud je kladné, model objem podhodnocuje; pokud záporné, objem nadhodnocuje.
+Reziduum je svislá vzdálenost bodu od modelové přímky. Pokud je kladné, model délku podhodnocuje; pokud záporné, délku nadhodnocuje.
 
 V grafu níže je to vidět přímo jako červené úsečky mezi bodem a přímkou.
 
@@ -588,22 +579,22 @@ V grafu níže je to vidět přímo jako červené úsečky mezi bodem a přímk
 
 ggplot2::ggplot(
   data = data.frame(
-    Girth = data4$Girth,
-    Volume = data4$Volume,
+    sirka_listku = data4$sirka_listku,
+    delka_listku = data4$delka_listku,
     y_hat = y_hat
   ),
-  mapping = ggplot2::aes(x = Girth, y = Volume)
+  mapping = ggplot2::aes(x = sirka_listku, y = delka_listku)
 ) +
   ggplot2::geom_point(size = 2, alpha = 0.9, color = "#8A8A8A") +
   ggplot2::geom_abline(intercept = a0, slope = b0, color = "#5D2890", linewidth = 1) +
   ggplot2::geom_segment(
-    ggplot2::aes(xend = Girth, yend = y_hat),
+    ggplot2::aes(xend = sirka_listku, yend = y_hat),
     color = "#F3A712",
     linewidth = 1
   ) +
   ggplot2::labs(
-    x = "Obvod kmene (Girth)",
-    y = "Objem kmene (Volume)",
+    x = "Šířka korunního lístku (cm)",
+    y = "Délka korunního lístku (cm)",
     title = "Rezidua jako svislé vzdálenosti"
   ) +
   theme_biostat()
@@ -611,7 +602,7 @@ ggplot2::ggplot(
 
 ### Jak kvantifikujeme "kvalitu" přímky: SSE
 
-Součet čtverců reziduí (SSE) říká, jak moc jsou stromy daleko od modelové přímky. Čím menší SSE, tím lépe přímka vystihuje data.
+Součet čtverců reziduí (SSE) říká, jak moc jsou body daleko od modelové přímky. Čím menší SSE, tím lépe přímka vystihuje data.
 
 Proč čtverce? Protože:
 
@@ -645,8 +636,8 @@ Pro porovnání kandidátních přímek použijeme čistý výpočet bez cyklu:
 kandidati <-
   data.frame(
     model = c("A", "B", "C"),
-    a = c(-42, -37, -32),
-    b = c(2.5, 5.0, 7.5)
+    a = c(0.5, 1.1, 1.7),
+    b = c(1.8, 2.2, 2.6)
   )
 
 kandidati$SSE <-
@@ -654,8 +645,8 @@ kandidati$SSE <-
     rowSums(
       (
         outer(kandidati$a, rep(1, nrow(data4))) +
-        outer(kandidati$b, data4$Girth) -
-        matrix(data4$Volume, nrow = nrow(kandidati), ncol = nrow(data4), byrow = TRUE)
+        outer(kandidati$b, data4$sirka_listku) -
+        matrix(data4$delka_listku, nrow = nrow(kandidati), ncol = nrow(data4), byrow = TRUE)
       )^2
     ),
     2
@@ -666,16 +657,16 @@ kandidati
 
 | Model | a | b | SSE |
 |---|---:|---:|---:|
-| A | -42 | 2.5 | `r kandidati$SSE[kandidati$model == "A"]` |
-| B | -37 | 5.0 | `r kandidati$SSE[kandidati$model == "B"]` |
-| C | -32 | 7.5 | `r kandidati$SSE[kandidati$model == "C"]` |
+| A | 0.5 | 1.8 | `r kandidati$SSE[kandidati$model == "A"]` |
+| B | 1.1 | 2.2 | `r kandidati$SSE[kandidati$model == "B"]` |
+| C | 1.7 | 2.6 | `r kandidati$SSE[kandidati$model == "C"]` |
 
-Otázka: Který model nejlépe odpovídá výzkumné otázce o vztahu obvodu a objemu?
+Otázka: Který model nejlépe odpovídá výzkumné otázce o vztahu šířky a délky korunního lístku?
 
 ::: {.callout-note collapse="true"}
 ## Odpověď
 
-Nejlepší je model s nejmenším SSE, protože má nejmenší celkovou vzdálenost stromů od přímky.
+Nejlepší je model s nejmenším SSE, protože má nejmenší celkovou vzdálenost bodů od přímky.
 :::
 
 ### Obecný zápis modelu až po práci s rezidui
@@ -683,7 +674,7 @@ Nejlepší je model s nejmenším SSE, protože má nejmenší celkovou vzdálen
 Teď, když jsme si prošli predikci i rezidua číselně, můžeme zapsat obecný tvar:
 
 $$
-Volume_i = a + b \cdot Girth_i + e_i
+delka_i = a + b \cdot sirka_i + e_i
 $$
 
 A také obecný zápis směrnice:
@@ -692,11 +683,11 @@ Směrnici můžeme v konkrétním příkladu zapsat takto:
 
 $$
 b \approx
-\frac{`r data4$Volume[2]` - `r data4$Volume[1]`}{`r data4$Girth[2]` - `r data4$Girth[1]`}
+\frac{`r data4$delka_listku[2]` - `r data4$delka_listku[1]`}{`r data4$sirka_listku[2]` - `r data4$sirka_listku[1]`}
 =
-\frac{`r data4$Volume[2] - data4$Volume[1]`}{`r data4$Girth[2] - data4$Girth[1]`}
+\frac{`r data4$delka_listku[2] - data4$delka_listku[1]`}{`r data4$sirka_listku[2] - data4$sirka_listku[1]`}
 =
-`r round((data4$Volume[2] - data4$Volume[1]) / (data4$Girth[2] - data4$Girth[1]), 2)`
+`r round((data4$delka_listku[2] - data4$delka_listku[1]) / (data4$sirka_listku[2] - data4$sirka_listku[1]), 2)`
 $$
 
 Až potom obecně:
@@ -707,8 +698,8 @@ $$
 
 Interpretace ve slovníku ekologického příběhu:
 
-- `a` (`r render_glossary_term("intercept", display = "intercept")`) je odhad objemu při nulovém obvodu (technický referenční bod)
-- `b` (`r render_glossary_term("sklon", display = "sklon")`) říká, o kolik se v průměru změní objem kmene při zvýšení obvodu o 1 jednotku
+- `a` (`r render_glossary_term("intercept", display = "intercept")`) je odhad délky korunního lístku při nulové šířce; nula leží těsně za rozsahem pozorovaných dat
+- `b` (`r render_glossary_term("sklon", display = "sklon")`) říká, o kolik se v průměru změní délka korunního lístku při zvýšení jeho šířky o 1 cm
 - $e_i$ je nevysvětlená část `r render_glossary_term("variabilita", display = "variability")` (`r render_glossary_term("residuum", display = "reziduum")`)
 
 ### První fit modelu v R
@@ -718,27 +709,25 @@ Tady model jen fitujeme. Grafy uděláme až v dalším kroku.
 V této části oddělíme dvě operace, které se často pletou:
 
 - `lm()` = odhad parametrů modelu z dat
-- `predict()` = výpočet predikovaných hodnot pro zadané stromy (jejich obvody)
+- `predict()` = výpočet predikovaných hodnot pro zadané květy (jejich šířky korunních lístků)
 
 ```{r}
 #| label: fit-jednoducheho-modelu
 #| echo: true
 #| code-fold: false
-data(trees)
-
-mod_objem <-
+mod_listky <-
   lm(
-    formula = Volume ~ Girth,
-    data = trees
+    formula = delka_listku ~ sirka_listku,
+    data = data_kosatce
   )
 
-summary(mod_objem)
+summary(mod_listky)
 ```
 
-`summary(mod_objem)` propojuje to, co už znáte z ručních příkladů:
+`summary(mod_listky)` propojuje to, co už znáte z ručních příkladů:
 
 - intercept odpovídá parametru `a`
-- odhad u `Girth` odpovídá sklonu `b`
+- odhad u `sirka_listku` odpovídá sklonu `b`
 
 ### Predikce a graf modelu
 
@@ -749,8 +738,8 @@ Nejdřív explicitní predikce pomocí `predict()`:
 #| echo: true
 pred <-
   predict(
-    object = mod_objem,
-    newdata = trees
+    object = mod_listky,
+    newdata = data_kosatce
   )
 
 head(pred)
@@ -760,7 +749,7 @@ Pak graf bodů a predikované přímky:
 
 Tímto krokem uzavíráme logický kruh výzkumné otázky:
 
-- ruční výpočet na 4 konkrétních stromech
+- ruční výpočet na 4 konkrétních květech
 - stejný princip aplikovaný na celý dataset přes `predict()`
 - vizuální kontrola, že přímka opravdu odpovídá číslům z modelu
 
@@ -769,15 +758,21 @@ Tímto krokem uzavíráme logický kruh výzkumné otázky:
 #| echo: true
 data_plot <-
   data.frame(
-    Girth = trees$Girth,
-    Volume = trees$Volume,
+    sirka_listku = data_kosatce$sirka_listku,
+    delka_listku = data_kosatce$delka_listku,
     pred = pred
   )
 
-ggplot2::ggplot(data_plot, ggplot2::aes(x = Girth, y = Volume)) +
+data_plot <-
+  data_plot[order(data_plot$sirka_listku), ]
+
+ggplot2::ggplot(data_plot, ggplot2::aes(x = sirka_listku, y = delka_listku)) +
   ggplot2::geom_point(size = 2, alpha = 0.75, color = "#8A8A8A") +
   ggplot2::geom_line(ggplot2::aes(y = pred), color = "#5D2890", linewidth = 1) +
-  ggplot2::labs(x = "Obvod kmene (Girth)", y = "Objem kmene (Volume)") +
+  ggplot2::labs(
+    x = "Šířka korunního lístku (cm)",
+    y = "Délka korunního lístku (cm)"
+  ) +
   theme_biostat()
 ```
 
@@ -789,7 +784,7 @@ Volitelná zkratka:
 ```{r}
 #| label: rychla-zkratka-geom-smooth
 #| echo: true
-ggplot2::ggplot(trees, ggplot2::aes(x = Girth, y = Volume)) +
+ggplot2::ggplot(data_kosatce, ggplot2::aes(x = sirka_listku, y = delka_listku)) +
   ggplot2::geom_point(alpha = 0.75, color = "#8A8A8A") +
   ggplot2::geom_smooth(method = "lm", se = FALSE)
 ```
@@ -810,27 +805,27 @@ Pokud se liší, je v postupu chyba (nejčastěji jiná data nebo jiný model ob
 #| label: rezidua-predict-a-resid
 #| echo: true
 rez_predict <-
-  trees$Volume - pred
+  data_kosatce$delka_listku - pred
 
 rez_fce <-
-  resid(mod_objem)
+  resid(mod_listky)
 
 head(data.frame(rez_predict = rez_predict, rez_fce = rez_fce))
 ```
 
 ## Jak číst výstup modelu biologicky
 
-Po spuštění `summary(mod_objem)` nás zajímají hlavně tři věci:
+Po spuštění `summary(mod_listky)` nás zajímají hlavně tři věci:
 
 1. Směr odhadnutého `r render_glossary_term("efekt", display = "efektu")` (`+` nebo `-`).
-2. Velikost efektu (o kolik se změní odhadovaný objem kmene, když se obvod kmene zvýší o 1 jednotku).
+2. Velikost efektu (o kolik se změní odhadovaná délka korunního lístku, když se jeho šířka zvýší o 1 cm).
 3. Jak dobře model shrnuje data (například přes `r render_glossary_term("r2", display = "R2")`).
 
 Biologický payoff této lekce: model nám nedává jen „test prošel/neprošel“, ale čitelnou velikost vztahu, kterou můžeme převést na větu o změně v reálném systému.
 
 Příklad interpretační věty (šablona):
 
-"Při zvýšení obvodu kmene o 1 jednotku očekáváme v průměru změnu objemu o `b` jednotek, při ostatním nezměněném."
+"Při zvýšení šířky korunního lístku o 1 cm očekáváme v průměru zvýšení jeho délky o `b` cm."
 
 ### Kotva pro interpretaci výstupu
 
@@ -842,7 +837,7 @@ Příklad interpretační věty (šablona):
 #| warning: false
 #| error: false
 tab_koef <-
-  summary(mod_objem)$coefficients
+  summary(mod_listky)$coefficients
 
 tab_koef_df <-
   data.frame(
@@ -860,7 +855,7 @@ knitr::kable(
 )
 ```
 
-Interpretační prompt: Který řádek tabulky použijete pro větu o tom, o kolik se změní objem kmene při zvýšení obvodu o jednu jednotku?
+Interpretační prompt: Který řádek tabulky použijete pro větu o tom, o kolik se změní délka korunního lístku při zvýšení jeho šířky o 1 cm?
 
 ### Co z modelu ještě neplyne
 
@@ -882,8 +877,8 @@ Cíl není "udělat všechny testy", ale naučit se první vizuální screening:
 #| warning: false
 #| error: false
 plot(
-  x = fitted(mod_objem),
-  y = resid(mod_objem),
+  x = fitted(mod_listky),
+  y = resid(mod_listky),
   xlab = "Predikované hodnoty",
   ylab = "Rezidua",
   main = "Diagnostická kotva: predikované hodnoty vs. rezidua"
@@ -895,7 +890,7 @@ abline(h = 0, lty = 2, col = "#8A8A8A")
 Co je dobrý signál:
 
 - bodový mrak reziduí je kolem nuly bez zjevného systematického tvaru
-- `r render_glossary_term("rozptyl", display = "rozptyl")` reziduí je přibližně podobný napříč hodnotami obvodu
+- `r render_glossary_term("rozptyl", display = "rozptyl")` reziduí je přibližně podobný napříč hodnotami šířky
 
 Co je varovný signál:
 
@@ -911,11 +906,46 @@ Pokud v reziduích vidíte systematický oblouk, co uděláte jako první krok?
 - zvážíte transformaci nebo jiný funkční tvar vztahu
 - explicitně popíšete, že současný model má omezení
 
+### Co odhalí druh kosatce
+
+V prvním grafu jsme body podle druhu nerozlišovali. Teď stejná rezidua obarvíme podle druhu kosatce. Druh stále nepřidáváme do modelu; pouze kontrolujeme, zda v nevysvětlené části dat nezůstala systematická struktura.
+
+```{r}
+#| label: diagnostika-podle-druhu
+#| echo: false
+#| output: true
+#| message: false
+#| warning: false
+#| error: false
+data_diagnostika <-
+  tibble::tibble(
+    predikce = fitted(mod_listky),
+    reziduum = resid(mod_listky),
+    druh = data_kosatce$druh
+  )
+
+ggplot2::ggplot(
+  data = data_diagnostika,
+  mapping = ggplot2::aes(x = predikce, y = reziduum, color = druh)
+) +
+  ggplot2::geom_hline(yintercept = 0, linetype = 2, color = "#8A8A8A") +
+  ggplot2::geom_point(size = 2, alpha = 0.8) +
+  ggplot2::labs(
+    x = "Predikovaná délka (cm)",
+    y = "Reziduum (cm)",
+    color = "Druh",
+    title = "Zůstává v reziduích struktura podle druhu?"
+  ) +
+  theme_biostat()
+```
+
+Pokud se barvy v grafu oddělují nebo mají různý rozptyl, jednoduchý model není celým biologickým příběhem. Pro L03 stačí toto omezení pojmenovat. Model s druhem jako dalším `r render_glossary_term("prediktor", display = "prediktorem")` patří do pozdější lekce.
+
 ## Kdy jednoduchý model nestačí
 
 Jednoduchý `r render_glossary_term("linearni-model", display = "lineární model")` je výborný start, ale ne univerzální řešení.
 
-Typický kontrastní případ: vztah mezi obvodem a objemem je zjevně `r render_glossary_term("nelinearita", display = "nelineární")` (například saturace nebo práh), takže jedna přímka systematicky podhodnocuje jednu část stromů a nadhodnocuje jinou.
+V našich datech může jednoduchý model nestačit proto, že květy patří ke třem druhům kosatců. V jiných datech může být vztah zjevně `r render_glossary_term("nelinearita", display = "nelineární")` (například saturace nebo práh), takže jedna přímka systematicky podhodnocuje jednu část pozorování a nadhodnocuje jinou.
 
 V takové situaci je lepší:
 
@@ -927,7 +957,7 @@ Tím si udržíte hlavní princip kurzu: model volíme podle dat a biologické o
 ## Shrnutí
 
 - `r render_glossary_term("linearni-model", display = "Lineární model")` zavádí hlavní rámec: biologická otázka -> model -> interpretace.
-- Koeficient `r render_glossary_term("sklon", display = "sklonu")` popisuje, o kolik se v průměru změní objem kmene při zvýšení obvodu kmene o 1 jednotku.
+- Koeficient `r render_glossary_term("sklon", display = "sklonu")` popisuje, o kolik se v průměru změní délka korunního lístku při zvýšení jeho šířky o 1 cm.
 - `r render_glossary_term("residuum", display = "Rezidua")` nejsou „odpad“, ale klíčová informace o tom, co model nevysvětluje.
 
 ## Co navazuje v L04

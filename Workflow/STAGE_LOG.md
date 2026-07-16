@@ -14,3 +14,4 @@ Use this file as the running history for lesson-production decisions and stage t
 |---|---|---|---|---|---|
 | 2026-07-15 | Stage 0 | done | Uzamčen scope L03 podle learning outcomes a osnovy | `Workflow/records/2026-07-15-stage-0-scope.md` | TBD |
 | 2026-07-15 | Stage 1 | done | Vybrán dataset `datasets::trees` pro první modelový blok | `Workflow/records/2026-07-15-stage-1-dataset.md` | TBD |
+| 2026-07-16 | Stage 1 | done | Dataset `trees` nahrazen daty `iris`, aby byl intercept čitelný při zobrazení x = 0 | `Workflow/records/2026-07-15-stage-1-dataset.md` | TBD |
