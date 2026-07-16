@@ -124,15 +124,19 @@ if (knitr::is_html_output()) {
 
 ## Úvod
 
-V této lekci poprvé postavíme celou analýzu kolem `r render_glossary_term("linearni-model", display = "lineárního modelu")`. Cíl není „umět kliknout na funkci“, ale převést biologickou otázku na modelový zápis a smysluplně interpretovat odhadnutý `r render_glossary_term("efekt", display = "efekt")`.
-
-Pracovní otázka: Jak se mění `r render_glossary_term("odezva", display = "odezva")` (objem kmene) s rostoucím `r render_glossary_term("prediktor", display = "prediktorem")` (obvod kmene)?
+Představte si, že máte jen obvod kmene a objem kmene několika stromů. Dá se z obvodu odhadnout objem?
 
 ::: {.callout-important}
-## Hlavní výzkumná otázka této lekce
+## Hlavní otázka této lekce
 
 **Mají stromy s větším obvodem také větší objem, a pokud ano, jak velká je tato změna?**
 :::
+
+Na tuhle otázku dnes navážeme. V minulé části jsme se naučili dívat na body v grafu a číst z nich jednoduchý trend. Teď tento trend rozšíříme do `r render_glossary_term("linearni-model", display = "lineárního modelu")`, aby z bodů vznikl model, který umí vztah mezi obvodem a objemem shrnout jedním zápisem a jednou interpretací.
+
+Cíl není „umět kliknout na funkci“, ale převést biologickou otázku na modelový zápis a smysluplně interpretovat odhadnutý `r render_glossary_term("efekt", display = "efekt")`.
+
+Pracovní otázka: Jak se mění `r render_glossary_term("odezva", display = "odezva")` (objem kmene) s rostoucím `r render_glossary_term("prediktor", display = "prediktorem")` (obvod kmene)?
 
 ## Výsledky učení
 
@@ -162,6 +166,21 @@ Než začneme počítat, je dobré mít mentální představu, co v datech vlast
 Zdroj: Pixabay (Pexels), ilustrační fotografie kmene stromu.
 :::
 
+
+```{r}
+#| label: data-stromy-prehled
+#| echo: true
+#| code-fold: false
+#| output: true
+#| message: false
+#| warning: false
+#| error: false
+data(trees)
+
+summary(trees)
+```
+
+
 Co konkrétně znamenají sloupce v `trees`:
 
 - `Girth`: obvod kmene ve výšce měření (`r render_glossary_term("prediktor", display = "prediktor")`)
@@ -169,37 +188,70 @@ Co konkrétně znamenají sloupce v `trees`:
 
 Na úrovni biologické otázky nás zajímá jednoduché tvrzení: mají stromy s větším obvodem také větší objem, a pokud ano, jak velká je tato změna.
 
-V celé lekci budeme držet tuto interpretační větu:
+### Nejdřív jen stromy jako data
 
-"Když porovnáme dva stromy, strom s větším obvodem má v průměru větší očekávaný objem o určité množství, které popisuje sklon přímky."
+Než budeme mluvit o modelu, podívejme se jen na jednotlivé stromy v datech a podíváme se na strukturu dat.
+
+Z předchozích lekcí už víme dvě základní věci:
+
+- obě proměnné jsou numerické, tedy měřené na číselné škále
+- každou proměnnou můžeme nejdřív shrnout samostatně, než se podíváme na jejich vztah
+
+Krátký samostatný přehled obou proměnných:
+
+::: {.panel-tabset}
+## Obvod kmene
 
 ```{r}
-#| label: data-stromy-prehled
-#| echo: false
-#| output: true
-#| message: false
-#| warning: false
-#| error: false
-#| fig-cap: "Dataset trees: body představují měření jednotlivých stromů (objem vs. obvod)."
-data(trees)
-
-ggplot2::ggplot(
-  data = trees,
-  mapping = ggplot2::aes(x = Girth, y = Volume)
-) +
-  ggplot2::geom_point(size = 2.2, alpha = 0.85, color = "#8A8A8A") +
-  ggplot2::labs(
-    x = "Obvod kmene (Girth)",
-    y = "Objem kmene (Volume)",
-    subtitle = "Každý bod = jeden strom"
-  )
+#| label: shrnuti-girth
+#| echo: true
+#| code-fold: false
+summary(trees$Girth)
 ```
 
-### Nejdřív jen stromy v datech
+```{r}
+#| label: graf-girth
+#| echo: false
+#| message: false
+#| warning: false
+ggplot2::ggplot(data.frame(Girth = trees$Girth), ggplot2::aes(x = "Obvod kmene", y = Girth)) +
+  ggplot2::geom_violin(trim = FALSE, fill = "#86579E", alpha = 0.25, color = "#5D2890") +
+  ggplot2::geom_boxplot(width = 0.12, outlier.shape = NA, fill = "white", color = "#5D2890") +
+  ggplot2::labs(x = NULL, y = "Obvod kmene (Girth)") +
+  theme_biostat()
+```
 
-Než budeme mluvit o modelu, podívejme se jen na jednotlivé stromy v datech bez jakékoli přímky.
+## Objem kmene
 
-Tento krok je důležitý: ještě nic nefitujeme, jen se díváme na strukturu dat. Sledujte zejména:
+```{r}
+#| label: shrnuti-volume
+#| echo: true
+#| code-fold: false
+summary(trees$Volume)
+```
+
+```{r}
+#| label: graf-volume
+#| echo: false
+#| message: false
+#| warning: false
+ggplot2::ggplot(data.frame(Volume = trees$Volume), ggplot2::aes(x = "Objem kmene", y = Volume)) +
+  ggplot2::geom_violin(trim = FALSE, fill = "#86579E", alpha = 0.25, color = "#5D2890") +
+  ggplot2::geom_boxplot(width = 0.12, outlier.shape = NA, fill = "white", color = "#5D2890") +
+  ggplot2::labs(x = NULL, y = "Objem kmene (Volume)") +
+  theme_biostat()
+```
+:::
+
+Než vybereme graf, zkusme si malý mentální úkol: když máme dvě numerické proměnné, jaký typ grafu dává největší smysl?
+
+::: {.callout-note collapse="true"}
+## Odpověď
+
+Dobrá volba je bodový graf, protože chceme vidět jednotlivé stromy a jejich vzájemný vztah.
+:::
+
+Co z grafu sledujte zejména:
 
 - zda se s rostoucím obvodem obvykle zvyšuje i objem
 - jestli jsou v datech stromy, které se chovají výrazně jinak než ostatní
@@ -225,9 +277,11 @@ ggplot2::ggplot(
 
 ### Přes stejná data stromů můžeme vést mnoho přímek
 
-Nad stejnými daty stromů lze nakreslit více různých přímek.
+V celé lekci budeme držet tuto interpretační větu:
 
-Klíčová myšlenka: model není obrázek, který "nějak vyjde", ale vědomá volba `r render_glossary_term("parametry-modelu", display = "parametrů")`. Pro stejná data existuje více kandidátních přímek a každá vede k trochu jiné interpretaci.
+"*Když porovnáme dva stromy, strom s větším obvodem má v průměru větší očekávaný objem o určité množství, které popisuje sklon přímky.*"
+
+Pro stejná data existuje více kandidátních přímek a každá vede k trochu jiné interpretaci. Každá pžímka má přitom jiné `r render_glossary_term("parametry-modelu", display = "parametry")` (viz níže). 
 
 ```{r}
 #| label: mnoho-primek-jednim-grafem
@@ -261,10 +315,11 @@ ggplot2::ggplot(
     linewidth = 1,
     show.legend = FALSE
   ) +
-  ggplot2::geom_text(
+  ggplot2::geom_label(
     data = popisky_car,
     ggplot2::aes(x = x, y = y, label = nazev, color = nazev),
     hjust = 0,
+    fill = "white",
     fontface = "bold",
     show.legend = FALSE
   ) +
@@ -274,6 +329,10 @@ ggplot2::ggplot(
     y = "Objem kmene (Volume)",
     title = "Mnoho možných přímek přes stejné body"
   ) +
+  ggplot2::coord_cartesian(
+    xlim = c(0, max(trees$Girth) + 0.5),
+    ylim = c(0, max(trees$Volume) + 5)
+  ) +
   theme_biostat()
 ```
 
@@ -282,17 +341,17 @@ Kontrolní otázka: Jak byste poznali, která z těchto přímek nejlépe vystih
 ::: {.callout-note collapse="true"}
 ## Odpověď
 
-Potřebujeme číselné kritérium, které měří, jak daleko jsou naměřené objemy stromů od modelové přímky při daném obvodu. Tímto kritériem je součet čtverců `r render_glossary_term("residuum", display = "reziduí")` (SSE).
+Potřebujeme číselné kritérium, které měří, jak daleko jsou naměřené objemy stromů od modelové přímky při daném obvodu.
 :::
 
-### Co znamená `r render_glossary_term("intercept", display = "intercept")` (a) a `r render_glossary_term("sklon", display = "sklon")` (b)
+### Jak můžeme popsat vztat proměných?
 
-Každou přímku popíšeme dvěma parametry:
+Každou přímku popíšeme dvěma `r render_glossary_term("parametry-modelu", display = "parametry")`:
 
 - `a` (`r render_glossary_term("intercept", display = "intercept")`)
 - `b` (`r render_glossary_term("sklon", display = "sklon")`)
 
-V tomto zápisu je `r render_glossary_term("prediktor", display = "prediktorem")` obvod kmene stromu a podle něj vysvětlujeme rozdíly v objemu kmene.
+V našem případě je `r render_glossary_term("prediktor", display = "prediktorem")` **obvod kmene** stromu a podle něj vysvětlujeme rozdíly v **objemu kmene**.
 
 Intuitivně:
 
@@ -301,59 +360,78 @@ Intuitivně:
 
 Nejčastější studentská chyba je zaměnit tyto role. Proto je v následujících grafech oddělujeme: nejprve měníme intercept při stejném sklonu, potom sklon při pevném interceptu.
 
+::: {.panel-tabset}
+## Intercept (a): posun přímky nahoru/dolů
+
 ```{r}
-#| label: intercept-sklon-jednoduse
+#| label: intercept-jednoduse
 #| echo: true
 data(trees)
 
-ukazka_intercept <-
-  data.frame(
-    x = c(8, 8, 8),
-    y = c(-42, -37, -32),
-    a = c(-42, -37, -32)
-  )
-
-ggplot2::ggplot(
-  data = ukazka_intercept,
-  mapping = ggplot2::aes(x = x, y = y)
-) +
-  ggplot2::geom_point(size = 3, color = "#8A8A8A") +
-  ggplot2::geom_segment(
-    ggplot2::aes(x = x, xend = x, y = 0, yend = y),
-    color = "#F3A712",
-    linewidth = 1
-  ) +
-  ggplot2::geom_text(ggplot2::aes(label = paste0("a = ", a)), nudge_x = 0.25, size = 4) +
-  ggplot2::labs(
-    title = "Intercept (a): hodnota na ose y při x = 0",
-    x = "x",
-    y = "y"
-  ) +
-  theme_biostat()
-
-ukazka_sklon <-
-  data.frame(
-    b = c(2.5, 5.0, 7.5),
-    popis = c("b = 2.5", "b = 5.0", "b = 7.5")
-  )
-
-ggplot2::ggplot(data = trees, ggplot2::aes(x = Girth, y = Volume)) +
-  ggplot2::geom_point(size = 1.8, alpha = 0.6, color = "#8A8A8A") +
+ggplot2::ggplot() +
+  ggplot2::geom_point(
+    data = trees,
+    mapping = ggplot2::aes(x = Girth, y = Volume), 
+    size = 1.8, alpha = 0.6, color = "#8A8A8A") +
   ggplot2::geom_abline(
-    data = ukazka_sklon,
-    ggplot2::aes(intercept = -37, slope = b, color = popis),
+    ggplot2::aes(
+      intercept = c(-47, -37, -27), 
+      slope = 5.0, 
+      color = c("a = -47", "a = -37", "a = -27")),
     linewidth = 1,
     show.legend = TRUE
   ) +
-  ggplot2::scale_color_manual(values = c("b = 2.5" = "#8A8A8A", "b = 5.0" = "#5D2890", "b = 7.5" = "#F3A712")) +
+  ggplot2::scale_color_manual(values = c("a = -47" = "#8A8A8A", "a = -37" = "#5D2890", "a = -27" = "#F3A712")) +
+  ggplot2::labs(
+    title = "Intercept (a): hodnota na ose y při x = 0",
+    x = "Girth",
+    y = "Volume",
+    color = "Varianta"
+  ) +
+    ggplot2::coord_cartesian(
+    xlim = c(0, max(trees$Girth) + 0.5),
+    ylim = c(0, max(trees$Volume) + 5)
+  ) +
+  theme_biostat()
+```
+
+
+## Sklon (b): změna strmosti přímky
+
+```{r}
+#| label: sklon-jednoduse
+#| echo: true
+data(trees)
+
+ggplot2::ggplot() +
+  ggplot2::geom_point(
+    data = trees,
+    mapping = ggplot2::aes(x = Girth, y = Volume), 
+    size = 1.8, alpha = 0.6, color = "#8A8A8A") +
+  ggplot2::geom_abline(
+    ggplot2::aes(
+      intercept = -37, 
+      slope = c(4.5, 5.0, 5.5), 
+      color = c("b = 4.5", "b = 5.0", "b = 5.5")),
+    linewidth = 1,
+    show.legend = TRUE
+  ) +
+  ggplot2::scale_color_manual(values = c("b = 4.5" = "#8A8A8A", "b = 5.0" = "#5D2890", "b = 5.5" = "#F3A712")) +
   ggplot2::labs(
     title = "Sklon (b): jak rychle roste y při růstu x",
     x = "Girth",
     y = "Volume",
     color = "Varianta"
   ) +
+    ggplot2::coord_cartesian(
+    xlim = c(0, max(trees$Girth) + 0.5),
+    ylim = c(0, max(trees$Volume) + 5)
+  ) +
   theme_biostat()
 ```
+
+:::
+
 
 ```{r}
 #| label: showcase-6-kombinaci-a-b
@@ -386,6 +464,10 @@ ggplot2::ggplot(data = trees, ggplot2::aes(x = Girth, y = Volume)) +
     title = "Šest kombinací a a b",
     x = "Girth",
     y = "Volume"
+  ) +
+    ggplot2::coord_cartesian(
+    xlim = c(0, max(trees$Girth) + 0.5),
+    ylim = c(0, max(trees$Volume) + 5)
   ) +
   theme_biostat()
 ```
