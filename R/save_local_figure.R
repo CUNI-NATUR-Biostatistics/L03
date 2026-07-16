@@ -37,3 +37,23 @@ save_local_figure <- function(
 
   return(invisible(res_file))
 }
+
+
+#----------------------------------------------------------#
+# Save animation -----
+#----------------------------------------------------------#
+
+save_local_gif <- function(
+  frame_files,
+  filename,
+  fps = 1
+) {
+  path_output <-
+    here::here(path_materials, filename)
+
+  magick::image_read(frame_files) |>
+    magick::image_animate(fps = fps) |>
+    magick::image_write(path = path_output)
+
+  return(invisible(path_output))
+}

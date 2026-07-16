@@ -113,16 +113,16 @@ kandidati <-
     b = c(1.8, 2.2, 2.6)
   )
 
-kandidati$SSE <-
+kandidati$SSE4 <-
   purrr::map_dbl(
     .x = seq_len(nrow(kandidati)),
     .f = ~ {
       sum(
         (
-          data_kosatce$delka_listku -
+          data4$delka_listku -
             (
               kandidati$a[.x] +
-                kandidati$b[.x] * data_kosatce$sirka_listku
+                kandidati$b[.x] * data4$sirka_listku
             )
         )^2
       )
@@ -167,6 +167,24 @@ slides_url <-
 
 [Moodle](https://dl2.cuni.cz/course/view.php?id=106)
 
+## Naše biologická otázka
+
+::: {.box-question}
+[Chceme odhadnout velikost změny]{.panel-title}
+
+**Mají širší korunní lístky kosatců také větší délku — a pokud ano, o kolik?**
+:::
+
+<br>
+
+::: {.text-center}
+150 květů · dvě měření v centimetrech · jeden první model
+:::
+
+::: {.notes}
+Otevírám výzkumnou otázkou ještě před výsledky učení. Nechám studenty krátce odhadnout směr vztahu a zeptám se, jaký typ odpovědi by od modelu potřebovali. Otázka pak zůstává páteří celé prezentace.
+:::
+
 ## Výsledky učení
 
 Po absolvování této přednášky budete schopni:
@@ -179,7 +197,7 @@ Po absolvování této přednášky budete schopni:
 :::
 
 ::: {.notes}
-Výsledky učení pouze krátce přečtu. Zdůrazním, že dnešním cílem není p-hodnota ani interval spolehlivosti; ty přijdou v L04.
+Výsledky učení navážu přímo na úvodní otázku. Zdůrazním, že dnešním cílem není p-hodnota ani interval spolehlivosti; ty přijdou v následující lekci.
 :::
 
 ## Minule jsme skončili tady
@@ -220,7 +238,7 @@ plot_navaznost_l02 <-
     x = "Délka ploutve (mm)",
     y = "Tělesná hmotnost (g)"
   ) +
-  ggplot2::theme_minimal(base_size = 20)
+  ggplot2::theme_minimal(base_size = 11)
 
 save_local_figure(
   plot = plot_navaznost_l02,
@@ -266,22 +284,6 @@ Toto je přímá návaznost na závěr L02. Připomenu pouze: bodový graf ukazu
 Tato lekce přidá velikost efektu. Nejistotu odhadu přidáme v následující lekci.
 :::
 
-## Dnes budeme měřit květy
-
-::: {.text-center .text-size-heading1 .text-bold}
-Mají širší korunní lístky kosatců také větší délku?
-:::
-
-<br>
-
-::: {.text-center}
-150 květů · dvě měření v centimetrech · jeden první model
-:::
-
-::: {.notes}
-Zde opustím tučňáky. Od této chvíle je jedinou datovou páteří prezentace iris.
-:::
-
 ## Která proměnná má kterou roli?
 
 ::: {.card-question}
@@ -302,7 +304,7 @@ Chceme odhadovat **délku** korunního lístku podle jeho **šířky**. Co je od
 
 ::: {.column width="50%"}
 ::: {.panel-indigo}
-**B)** délka korunního lístku
+[**B)** délka korunního lístku]{.rn-box-indigo}
 :::
 :::
 
@@ -343,7 +345,7 @@ plot_jeden_kvet <-
     x = "Šířka korunního lístku (cm)",
     y = "Délka korunního lístku (cm)"
   ) +
-  ggplot2::theme_minimal(base_size = 20)
+  ggplot2::theme_minimal(base_size = 11)
 
 save_local_figure(
   plot = plot_jeden_kvet,
@@ -384,7 +386,7 @@ plot_ctyri_kvety <-
     x = "Šířka korunního lístku (cm)",
     y = "Délka korunního lístku (cm)"
   ) +
-  ggplot2::theme_minimal(base_size = 20)
+  ggplot2::theme_minimal(base_size = 11)
 
 save_local_figure(
   plot = plot_ctyri_kvety,
@@ -418,7 +420,7 @@ Jak bude vypadat vztah mezi šířkou a délkou korunního lístku u všech 150 
 
 ::: {.column width="34%"}
 ::: {.panel-indigo}
-**B)** zřetelně rostoucí vztah
+[**B)** zřetelně rostoucí vztah]{.rn-circle-orange}
 :::
 :::
 
@@ -470,7 +472,7 @@ plot_data_kosatce <-
     x = "Šířka korunního lístku (cm)",
     y = "Délka korunního lístku (cm)"
   ) +
-  ggplot2::theme_minimal(base_size = 20)
+  ggplot2::theme_minimal(base_size = 11)
 
 save_local_figure(
   plot = plot_data_kosatce,
@@ -514,7 +516,77 @@ O kolik se odhadnutá délka změní při zvýšení šířky o 1 cm?
 
 ::::
 
-## Stejná data můžeme proložit různými přímkami
+## Která z mnoha přímek je správná?
+
+```{r}
+#| label: vytvorit-animaci-mnoha-primek
+#| include: false
+#| message: false
+#| warning: false
+data_animace_primek <-
+  data.frame(
+    a = c(0.2, 0.5, 0.8, 1.1, 1.4, 1.7, 1.4, 1.1, 0.8, 0.5),
+    b = c(2.5, 2.3, 2.1, 1.9, 1.7, 1.5, 1.8, 2.1, 2.4, 2.5)
+  )
+
+vec_soubory_animace_primek <-
+  purrr::map_chr(
+    .x = seq_len(nrow(data_animace_primek)),
+    .f = function(i) {
+      soubor_snimku <-
+        tempfile(fileext = ".png")
+
+      graf_snimku <-
+        plot_data_kosatce +
+        ggplot2::geom_abline(
+          intercept = data_animace_primek$a[i],
+          slope = data_animace_primek$b[i],
+          color = barvy["model"],
+          linewidth = 1.4
+        ) +
+        ggplot2::theme(legend.position = "none") +
+        ggview::canvas(
+          width = 1200,
+          height = 750,
+          units = "px"
+        )
+
+      ggview::save_ggplot(
+        plot = graf_snimku,
+        file = soubor_snimku
+      )
+
+      soubor_snimku
+    }
+  )
+
+save_local_gif(
+  frame_files = vec_soubory_animace_primek,
+  filename = "mnoho_primek.gif",
+  fps = 1
+)
+
+unlink(vec_soubory_animace_primek)
+```
+
+```{r}
+#| label: zobrazit-animaci-mnoha-primek
+#| echo: false
+#| out-width: 82%
+include_local_figure("mnoho_primek.gif")
+```
+
+::: {.panel-olive}
+[Diskuze se sousedem — 30 s]{.panel-title}
+
+Sledujte jeden cyklus. Podle čeho byste mezi přímkami rozhodli?
+:::
+
+::: {.notes}
+Animace ukazuje vždy právě jednu přímku, aby se graf nezměnil v barevnou spleť. Po jednom cyklu ji zastavím otázkou: podle čeho byste poznali, že je jedna z nich lepší než ostatní?
+:::
+
+## Tři kandidátní přímky
 
 ```{r}
 #| label: vytvorit-kandidatni-primky
@@ -750,7 +822,7 @@ plot_odhad_jednoho_kvetu <-
     x = "Šířka korunního lístku (cm)",
     y = "Délka korunního lístku (cm)"
   ) +
-  ggplot2::theme_minimal(base_size = 20)
+  ggplot2::theme_minimal(base_size = 11)
 
 save_local_figure(
   plot = plot_odhad_jednoho_kvetu,
@@ -822,7 +894,7 @@ Naměřená délka šedého bodu leží **pod** odhadem modelu. Residuum je:
 
 ::: {.column width="34%"}
 ::: {.panel-indigo}
-**B)** záporné
+[**B)** záporné]{.rn-circle-orange}
 :::
 :::
 
@@ -917,7 +989,7 @@ plot_rezidua_ctyr_kvetu <-
     x = "Šířka korunního lístku (cm)",
     y = "Délka korunního lístku (cm)"
   ) +
-  ggplot2::theme_minimal(base_size = 20)
+  ggplot2::theme_minimal(base_size = 11)
 
 save_local_figure(
   plot = plot_rezidua_ctyr_kvetu,
@@ -945,20 +1017,195 @@ include_local_figure("rezidua_ctyr_kvetu.png")
 Menší SSE znamená, že body leží celkově blíže přímce.
 :::
 
+## Když se přímka mění, mění se i chyby
+
+```{r}
+#| label: vytvorit-animaci-ctvercu-rezidui
+#| include: false
+#| message: false
+#| warning: false
+data_uzly_animace_sse <-
+  data.frame(
+    snimek = c(1, 4, 7, 10, 13),
+    a = c(0.5, 1.1, 1.7, 1.1, 0.5),
+    b = c(1.8, 2.2, 2.6, 2.2, 1.8)
+  )
+
+data_animace_sse <-
+  data.frame(
+    snimek = seq_len(13),
+    a = stats::approx(
+      x = data_uzly_animace_sse$snimek,
+      y = data_uzly_animace_sse$a,
+      xout = seq_len(13)
+    )$y,
+    b = stats::approx(
+      x = data_uzly_animace_sse$snimek,
+      y = data_uzly_animace_sse$b,
+      xout = seq_len(13)
+    )$y
+  )
+
+vec_soubory_animace_sse <-
+  purrr::map_chr(
+    .x = seq_len(nrow(data_animace_sse)),
+    .f = function(i) {
+      data_snimek <-
+        data4
+
+      data_snimek$odhadnuta_delka <-
+        data_animace_sse$a[i] +
+          data_animace_sse$b[i] * data_snimek$sirka_listku
+
+      data_snimek$residuum <-
+        data_snimek$delka_listku - data_snimek$odhadnuta_delka
+
+      data_snimek$xmax_ctverce <-
+        data_snimek$sirka_listku + abs(data_snimek$residuum)
+
+      data_snimek$ymin_ctverce <-
+        pmin(data_snimek$delka_listku, data_snimek$odhadnuta_delka)
+
+      data_snimek$ymax_ctverce <-
+        pmax(data_snimek$delka_listku, data_snimek$odhadnuta_delka)
+
+      sse_snimku <-
+        sum(data_snimek$residuum^2)
+
+      soubor_snimku <-
+        tempfile(fileext = ".png")
+
+      graf_snimku <-
+        ggplot2::ggplot(
+          data = data_snimek,
+          mapping = ggplot2::aes(
+            x = sirka_listku,
+            y = delka_listku
+          )
+        ) +
+        ggplot2::geom_rect(
+          mapping = ggplot2::aes(
+            xmin = sirka_listku,
+            xmax = xmax_ctverce,
+            ymin = ymin_ctverce,
+            ymax = ymax_ctverce
+          ),
+          inherit.aes = FALSE,
+          fill = barvy["interpretace"],
+          color = barvy["interpretace"],
+          alpha = 0.28,
+          linewidth = 0.8
+        ) +
+        ggplot2::geom_abline(
+          intercept = data_animace_sse$a[i],
+          slope = data_animace_sse$b[i],
+          color = barvy["model"],
+          linewidth = 1.3
+        ) +
+        ggplot2::geom_segment(
+          mapping = ggplot2::aes(
+            xend = sirka_listku,
+            yend = odhadnuta_delka
+          ),
+          color = barvy["interpretace"],
+          linewidth = 1.1
+        ) +
+        ggplot2::geom_point(
+          color = barvy["data"],
+          size = 3.6
+        ) +
+        ggplot2::coord_fixed(
+          xlim = c(0, 5),
+          ylim = c(0, 8.5),
+          expand = FALSE
+        ) +
+        ggplot2::labs(
+          x = "Šířka korunního lístku (cm)",
+          y = "Délka korunního lístku (cm)",
+          subtitle = paste0(
+            "a = ", round(data_animace_sse$a[i], 2),
+            "   b = ", round(data_animace_sse$b[i], 2),
+            "   SSE pro 4 květy = ", round(sse_snimku, 2)
+          )
+        ) +
+        ggplot2::theme_minimal(base_size = 11) +
+        ggplot2::theme(
+          plot.subtitle = ggplot2::element_text(
+            color = barvy["model"],
+            face = "bold"
+          )
+        ) +
+        ggview::canvas(
+          width = 1100,
+          height = 850,
+          units = "px"
+        )
+
+      ggview::save_ggplot(
+        plot = graf_snimku,
+        file = soubor_snimku
+      )
+
+      soubor_snimku
+    }
+  )
+
+save_local_gif(
+  frame_files = vec_soubory_animace_sse,
+  filename = "ctverce_rezidui.gif",
+  fps = 2
+)
+
+unlink(vec_soubory_animace_sse)
+```
+
+:::: {.columns}
+
+::: {.column width="62%"}
+```{r}
+#| label: zobrazit-animaci-ctvercu-rezidui
+#| echo: false
+#| out-width: 88%
+include_local_figure("ctverce_rezidui.gif")
+```
+:::
+
+::: {.column width="38%"}
+::: {.panel-question}
+[Sledujte jeden cyklus]{.panel-title}
+
+Kdy je celková oranžová plocha nejmenší?
+:::
+
+::: {.panel-result .fragment}
+[Co se mění]{.panel-title}
+
+- strana čtverce = $|e_i|$
+- plocha čtverce = $e_i^2$
+- součet ploch = **SSE**
+:::
+:::
+
+::::
+
+::: {.notes}
+Čtverce jsou vykreslené v pevném poměru os, takže jejich strana skutečně odpovídá absolutní velikosti residua a jejich plocha druhé mocnině residua. Nechám animaci proběhnout a požádám studenty, aby sledovali, kdy je celková oranžová plocha nejmenší.
+:::
+
 ## Která přímka je nejlepší podle dat?
 
-|Přímka|Intercept|Sklon|SSE|
+|Přímka|Intercept|Sklon|SSE pro 4 květy|
 |---|---:|---:|---:|
-|A|`r kandidati$a[1]`|`r kandidati$b[1]`|`r round(kandidati$SSE[1], 1)`|
-|B|`r kandidati$a[2]`|`r kandidati$b[2]`|`r round(kandidati$SSE[2], 1)`|
-|C|`r kandidati$a[3]`|`r kandidati$b[3]`|`r round(kandidati$SSE[3], 1)`|
+|A|`r kandidati$a[1]`|`r kandidati$b[1]`|`r round(kandidati$SSE4[1], 2)`|
+|[B]{.rn-circle-orange}|`r kandidati$a[2]`|`r kandidati$b[2]`|`r round(kandidati$SSE4[2], 2)`|
+|C|`r kandidati$a[3]`|`r kandidati$b[3]`|`r round(kandidati$SSE4[3], 2)`|
 
 ::: {.takeaway-strip}
 Když nehlasujeme: vyberte přímku s nejmenším SSE a jednou větou vysvětlete, co toto číslo shrnuje.
 :::
 
 ::: {.notes}
-Studenti se vrátí k předchozí volbě A/B/C. Z kandidátů vychází B. Dodám, že skutečný lineární model není omezen na tyto tři možnosti.
+Studenti se vrátí k předchozí volbě A/B/C. Pro stejné čtyři květy z animace vychází z kandidátů B. Dodám, že skutečný lineární model použije všech 150 květů a není omezen na tyto tři možnosti.
 :::
 
 ## Počítač najde nejlepší přímku
@@ -1047,11 +1294,11 @@ Vyberte biologickou interpretaci
 Odhadnutý sklon je `r round(coef(mod_listky)[["sirka_listku"]], 2)` cm/cm.
 :::
 
-::: {.incremental}
-- **A)** Každý korunní lístek je přesně o `r round(coef(mod_listky)[["sirka_listku"]], 2)` cm delší než předchozí.
-- **B)** Při zvýšení šířky o 1 cm očekáváme v průměru zvýšení délky o `r round(coef(mod_listky)[["sirka_listku"]], 2)` cm.
-- **C)** Šířka vysvětluje `r round(coef(mod_listky)[["sirka_listku"]], 2)` % variability délky.
-:::
+**A)** Každý korunní lístek je přesně o `r round(coef(mod_listky)[["sirka_listku"]], 2)` cm delší než předchozí.
+
+[**B)** Při zvýšení šířky o 1 cm očekáváme v průměru zvýšení délky o `r round(coef(mod_listky)[["sirka_listku"]], 2)` cm.]{.rn-box-indigo}
+
+**C)** Šířka vysvětluje `r round(coef(mod_listky)[["sirka_listku"]], 2)` % variability délky.
 
 ::: {.takeaway-strip}
 Když nehlasujeme: přepište správnou možnost vlastními slovy a zachovejte jednotky i výraz „v průměru“.
@@ -1144,7 +1391,7 @@ plot_rezidua <-
     x = "Odhadnutá délka (cm)",
     y = "Residuum (cm)"
   ) +
-  ggplot2::theme_minimal(base_size = 20)
+  ggplot2::theme_minimal(base_size = 11)
 
 save_local_figure(
   plot = plot_rezidua,
@@ -1240,7 +1487,7 @@ plot_data_podle_druhu <-
     y = "Délka korunního lístku (cm)",
     color = "Druh"
   ) +
-  ggplot2::theme_minimal(base_size = 18) +
+  ggplot2::theme_minimal(base_size = 11) +
   ggplot2::theme(
     legend.position = "bottom",
     legend.direction = "horizontal"
@@ -1291,7 +1538,7 @@ plot_rezidua_podle_druhu <-
     y = "Residuum (cm)",
     color = "Druh"
   ) +
-  ggplot2::theme_minimal(base_size = 18) +
+  ggplot2::theme_minimal(base_size = 11) +
   ggplot2::theme(
     legend.position = "bottom",
     legend.direction = "horizontal"
@@ -1374,7 +1621,7 @@ Model má kladný sklon a body přibližně sledují přímku. Znamená to, že 
 
 **A)** Ano, kladný sklon stačí.
 
-**B)** Ne, nejprve zkontrolujeme residua a biologický kontext.
+[**B)** Ne, nejprve zkontrolujeme residua a biologický kontext.]{.rn-circle-orange}
 
 **C)** Ano, pokud je v datasetu dost pozorování.
 :::

@@ -51,15 +51,15 @@
 ## Slide-role rhythm
 
 - Main interaction slide form used: prediction, multiple choice, pair discussion, and sketching
-- Main evidence reveal form used: progressive annotation of one visual anchor and before/after comparisons
+- Main evidence reveal form used: progressive annotation of one visual anchor, before/after comparisons, and two short parameter-change GIFs with static follow-up frames
 - Main interpretation form used: one-sentence biological interpretation immediately after the evidence
 - Where the bridge to the next concept happens: after candidate lines, after residual sums, after coefficient interpretation, and after the species-coloured diagnostic
 
 ## Risks and fixes
 
 - Visual rhythm risk: repeated scatterplots could feel visually static
-- Content pacing risk: fragments produce 39 exported PDF pages even though several are staged versions of one teaching moment
-- Planned fix: alternate prompts, annotated plots, code, interpretation, and recap slides; use fragments to control the live pace
+- Content pacing risk: fragments and the two animation moments produce 41 exported PDF pages even though several are staged versions of one teaching moment
+- Planned fix: alternate prompts, annotated plots, code, interpretation, and recap slides; use fragments to control the live pace; use GIFs only where motion exposes how candidate lines and squared residuals change
 
 ## Decision
 
