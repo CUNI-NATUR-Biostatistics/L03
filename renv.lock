@@ -1507,6 +1507,11 @@
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
       "Repository": "CRAN"
     },
+    "ggview": {
+      "Package": "ggview",
+      "Version": "0.2.2",
+      "Source": "Repository"
+    },
     "glossary": {
       "Package": "glossary",
       "Version": "1.0.0",
