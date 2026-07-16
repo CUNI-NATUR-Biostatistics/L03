@@ -132,7 +132,7 @@ Představte si, že měříte korunní lístky kosatců. Dá se z jejich šířk
 
 Na tuhle otázku dnes navážeme. V minulé části jsme se naučili dívat na body v grafu a číst z nich jednoduchý trend. Teď tento trend rozšíříme do `r render_glossary_term("linearni-model", display = "lineárního modelu")`, aby z bodů vznikl model, který umí vztah mezi šířkou a délkou korunního lístku shrnout jedním zápisem a jednou interpretací.
 
-Cíl není „umět kliknout na funkci“, ale převést biologickou otázku na modelový zápis a smysluplně interpretovat odhadnutý `r render_glossary_term("efekt", display = "efekt")`.
+Cíl není „umět kliknout na funkci“, ale **převést biologickou otázku na modelový zápis** a **smysluplně interpretovat odhadnutý** `r render_glossary_term("efekt", display = "efekt")`.
 
 Pracovní otázka: Jak se mění `r render_glossary_term("odezva", display = "odezva")` (délka korunního lístku) s rostoucím `r render_glossary_term("prediktor", display = "prediktorem")` (šířka korunního lístku)?
 
@@ -149,7 +149,7 @@ Po prostudování této lekce budete schopni:
 
 Pro první modelovou lekci používáme dataset `iris`, který obsahuje reálná měření 150 květů kosatců. Budeme vysvětlovat vztah mezi šířkou (`Petal.Width`) a délkou (`Petal.Length`) korunního lístku. Data sesbíral botanik Edgar Anderson a později je publikoval Ronald Fisher. Podrobnosti a odkazy na původní publikace uvádí [dokumentace datasetu v R](https://stat.ethz.ch/R-manual/R-devel/RHOME/library/datasets/html/iris.html).
 
-Dataset rozlišuje tři druhy kosatců. V prvním modelu použijeme záměrně jen jeden numerický `r render_glossary_term("prediktor", display = "prediktor")` a druh zatím do modelu nepřidáme. Na konci se k tomuto rozhodnutí vrátíme při diagnostice.
+Dataset rozlišuje tři druhy kosatců. V prvním modelu použijeme záměrně **jen jeden numerický** `r render_glossary_term("prediktor", display = "prediktor")` a **druh zatím do modelu nepřidáme**. Na konci se k tomuto rozhodnutí vrátíme při diagnostice.
 
 ::: {.callout-note collapse="true"}
 ## Proč dataset `iris`?
@@ -259,11 +259,11 @@ Dobrá volba je bodový graf, protože chceme vidět jednotlivé květy a vztah 
 
 V našem případě je `r render_glossary_term("prediktor", display = "prediktorem")` **šířka korunního lístku** a podle ní vysvětlujeme rozdíly v **délce korunního lístku**.
 
-Co z grafu sledujte zejména:
+*Co z grafu sledujte zejména:*
 
-- zda se s rostoucí šířkou obvykle zvětšuje i délka
-- jestli jsou v datech květy, které se chovají výrazně jinak než ostatní
-- jak velký je `r render_glossary_term("rozptyl", display = "rozptyl")` hodnot kolem hlavního trendu
+- **směr vztahu:** zda se s rostoucí šířkou obvykle zvětšuje i délka
+- **neobvyklé květy:** jestli jsou v datech květy, které se chovají výrazně jinak než ostatní
+- **rozptýlení kolem trendu:** jak velký je `r render_glossary_term("rozptyl", display = "rozptyl")` hodnot kolem hlavního trendu
 
 
 ::: {.panel-tabset}
@@ -319,7 +319,7 @@ V celé lekci budeme držet tuto interpretační větu:
 
 "*Když porovnáme dva květy, model pro květ se širším korunním lístkem odhaduje v průměru delší korunní lístek. Velikost tohoto rozdílu popisuje sklon přímky.*"
 
-Pro stejná data existuje více kandidátních přímek a každá vede k trochu jiné interpretaci. Každá přímka má přitom jiné `r render_glossary_term("parametry-modelu", display = "parametry")` (viz níže).
+Pro stejná data existuje **více kandidátních přímek** a každá vede k **trochu jiné interpretaci**. Každá přímka má přitom jiné `r render_glossary_term("parametry-modelu", display = "parametry")` (viz níže).
 
 ```{r}
 #| label: mnoho-primek-jednim-grafem
@@ -385,8 +385,8 @@ Každou přímku popíšeme dvěma `r render_glossary_term("parametry-modelu", d
 
 Intuitivně:
 
-- `a` posouvá přímku nahoru nebo dolů (mění základní úroveň odhadnuté délky)
-- `b` mění strmost přímky, tedy jak rychle roste odhadnutá délka s rostoucí šířkou
+- `a` **posouvá přímku nahoru nebo dolů** (mění základní úroveň odhadnuté délky)
+- `b` **mění strmost přímky**, tedy jak rychle roste odhadnutá délka s rostoucí šířkou
 
 Nejčastější studentská chyba je zaměnit tyto role. Proto je v následujících grafech oddělujeme: nejprve měníme intercept při stejném sklonu, potom sklon při pevném interceptu.
 
@@ -594,7 +594,9 @@ data4
 Jako konkrétní příklad použijeme přímku **(B)** s `r render_glossary_term("intercept", display = "interceptem a =")` **`r a0`** a `r render_glossary_term("sklon", display = "sklonem b =")` **`r b0`**.
 :::
 
-Reziduum je svislá vzdálenost bodu od modelové přímky. Pokud je kladné, model délku podhodnocuje; pokud záporné, délku nadhodnocuje.
+Reziduum je **svislá vzdálenost bodu od modelové přímky**. Pokud je **kladné**, model délku podhodnocuje; pokud **záporné**, délku nadhodnocuje.
+
+Rezidua přitom **očekáváme i u užitečného modelu**. Jednotlivé organismy se v důsledku přirozené biologické `r render_glossary_term("variabilita", display = "variability")` liší, takže žádná jednoduchá přímka nepopíše každý květ přesně. **Samotná existence reziduí proto neznamená, že je model špatný.**
 
 V grafu níže je to vidět přímo jako zlaté úsečky mezi šedými body a fialovou přímkou.
 
@@ -641,7 +643,7 @@ Logický postup pro jeden konkrétní květ:
 2. Dosadíme ji do vztahu **odhadnutá délka = intercept + sklon × šířka**.
 3. Vypočítáme odhadnutou délku tohoto korunního lístku podle zvolené přímky.
 
-Nejprve použijeme názvy veličin z našich dat a dosadíme hodnoty prvního květu. Jeho šířka `r data4$sirka_listku[1]` cm určuje vodorovnou polohu prvního šedého bodu v grafu výše. Intercept `r a0` a sklon `r b0` popisují fialovou přímku:
+Nejprve použijeme názvy veličin z našich dat a dosadíme hodnoty prvního květu. Jeho šířka `r data4$sirka_listku[1]` cm určuje **vodorovnou polohu prvního šedého bodu** v grafu výše. Intercept `r a0` a sklon `r b0` popisují **fialovou přímku**:
 
 $$
 \begin{aligned}
@@ -653,7 +655,7 @@ $$
 \end{aligned}
 $$
 
-Výsledek `r round(odhadnuta_delka[1], 2)` cm je v grafu výše výška fialové přímky při šířce `r data4$sirka_listku[1]` cm — tedy horní konec první zlaté úsečky. Naměřená délka `r data4$delka_listku[1]` cm je naopak výška prvního šedého bodu. Residuum proto vypočítáme opět pomocí názvů a konkrétních hodnot:
+Výsledek `r round(odhadnuta_delka[1], 2)` cm je v grafu výše **výška fialové přímky** při šířce `r data4$sirka_listku[1]` cm — tedy **horní konec první zlaté úsečky**. Naměřená délka `r data4$delka_listku[1]` cm je naopak **výška prvního šedého bodu**. Residuum proto vypočítáme opět pomocí názvů a konkrétních hodnot:
 
 $$
 \begin{aligned}
@@ -664,7 +666,7 @@ $$
 \end{aligned}
 $$
 
-Hodnota `r round(data4$delka_listku[1] - odhadnuta_delka[1], 2)` cm odpovídá první zlaté úsečce. Samotná úsečka má délku `r abs(round(data4$delka_listku[1] - odhadnuta_delka[1], 2))` cm; záporné znaménko residua říká, že šedý bod leží pod fialovou přímkou.
+Hodnota `r round(data4$delka_listku[1] - odhadnuta_delka[1], 2)` cm odpovídá **první zlaté úsečce**. Samotná úsečka má délku `r abs(round(data4$delka_listku[1] - odhadnuta_delka[1], 2))` cm; **záporné znaménko residua** říká, že šedý bod leží pod fialovou přímkou.
 
 ```{r}
 #| label: odhadnuta-delka-jednoho-kvetu
@@ -706,7 +708,7 @@ tab_pred <-
 tab_pred
 ```
 
-Čtení tabulky krok za krokem:
+*Čtení tabulky krok za krokem:*
 
 - sloupec `sirka`: šířka korunního lístku konkrétního květu
 - sloupec `namerena_delka`: skutečně naměřená délka korunního lístku
@@ -725,13 +727,13 @@ $$
 
 ### Jak kvantifikujeme "kvalitu" přímky: SSE
 
-Součet čtverců reziduí (SSE) říká, jak moc jsou body daleko od modelové přímky. Čím menší SSE, tím lépe přímka vystihuje data.
+Součet čtverců reziduí (SSE) říká, jak moc jsou body daleko od modelové přímky. **Čím menší SSE, tím lépe přímka vystihuje data.**
 
 Proč čtverce? Protože:
 
-- odstraní znaménko (kladná a záporná rezidua se neodečtou)
-- více penalizují velké chyby
-- dávají jedno číslo, podle kterého lze férově porovnat kandidátní přímky
+- **odstraní znaménko** (kladná a záporná rezidua se neodečtou)
+- **více penalizují velké chyby**
+- **dávají jedno srovnatelné číslo** pro každou kandidátní přímku
 
 Tabulka výše obsahuje všechny hodnoty potřebné pro ruční výpočet. Pro přehled ji zobrazíme ještě jednou:
 
@@ -836,7 +838,7 @@ Interpretace v biologickém příběhu:
 
 - `a` (intercept) je odhad délky korunního lístku při nulové šířce; nula leží těsně za rozsahem pozorovaných dat
 - `b` (sklon) říká, o kolik se v průměru změní délka korunního lístku při zvýšení jeho šířky o 1 cm
-- $e_i$ je nevysvětlená část `r render_glossary_term("variabilita", display = "variability")` (residuum)
+- $e_i$ je nevysvětlená část variability (residuum)
 
 {{< pagebreak >}}
 
@@ -896,8 +898,8 @@ Tady model jen fitujeme. Grafy uděláme až v dalším kroku.
 
 V této části oddělíme dvě operace:
 
-- `lm()` = odhad parametrů modelu z dat
-- `coef(mod_listky)` vrátí dva parametry, které už znáte z kandidátních přímek
+- **`lm()` odhadne parametry modelu z dat**
+- **`coef(mod_listky)` vrátí dva parametry**, které už znáte z kandidátních přímek
 
 ```{r}
 #| label: fit-jednoducheho-modelu
@@ -925,7 +927,7 @@ Odhadnutý sklon je `r round(coef(mod_listky)[["sirka_listku"]], 2)`. Při zvý�
 
 Odhadnutý intercept je `r round(coef(mod_listky)[["(Intercept)"]], 2)` cm. Popisuje odhadnutou délku při nulové šířce, která leží těsně mimo rozsah pozorovaných dat. V tomto biologickém příběhu je proto důležitější sklon.
 
-Model tak odpovídá na směr a velikost vztahu. Ani dobře vypadající lineární vztah ale automaticky neznamená kauzální vztah: z modelu zatím čteme asociaci mezi proměnnými.
+Model tak odpovídá na **směr a velikost vztahu**. Ani dobře vypadající lineární vztah ale automaticky neznamená **kauzální vztah**: z modelu zatím čteme pouze **asociaci mezi proměnnými**.
 
 ### Odhadnuté délky a graf modelu
 
@@ -1018,120 +1020,257 @@ ggplot2::ggplot(
 ```
 :::
 
-### Residua z `predict()` a z `resid()`
+## `r render_glossary_term("residuum", display = "Residua")` v R a jejich první grafická kontrola
 
-Tato kontrola je užitečná pro jistotu, že dvě běžné cesty dávají stejný výsledek:
-
-- ručně: naměřená délka minus odhadnutá délka z `predict()`
-- přímo: `resid(model)`
-
-Pokud se liší, je v postupu chyba (nejčastěji jiná data nebo jiný model objekt).
+Residua jsou uložena přímo v objektu modelu. Získáme je funkcí `resid()` a uložíme do vektoru, se kterým můžeme dále pracovat:
 
 ```{r}
-#| label: rezidua-predict-a-resid
+#| label: ziskat-rezidua-z-modelu
 #| echo: true
-rez_rucne <-
-  data_kosatce$delka_listku - odhadnuta_delka
-
-rez_fce <-
+vec_rezidua <-
   resid(mod_listky)
 
-head(data.frame(rez_rucne = rez_rucne, rez_fce = rez_fce))
+head(vec_rezidua)
 ```
 
-## Praktická `r render_glossary_term("diagnostika-modelu", display = "diagnostika")` `r render_glossary_term("residuum", display = "reziduí")`
+**Kladné residuum** znamená, že naměřená délka leží nad odhadem modelu. **Záporné residuum** znamená, že naměřená délka leží pod odhadem modelu.
 
-V této části se díváme na diagnostiku modelu co nejjednodušeji: graf odhadnuté hodnoty vs. residua.
+### Nejdříve známý graf: `r render_glossary_term("histogram", display = "histogram")` residuí
 
-Cíl není "udělat všechny testy", ale naučit se první vizuální screening: kdy model vypadá přiměřeně a kdy už je potřeba být opatrný.
-
-### Kotva pro diagnostiku
+Histogram už znáte z předchozích lekcí. Tentokrát na vodorovné ose nejsou původní délky lístků, ale rozdíly mezi naměřenou a odhadnutou délkou:
 
 ```{r}
-#| label: kotva-diagnostika
-#| echo: false
-#| output: true
-#| message: false
-#| warning: false
-#| error: false
-plot(
-  x = fitted(mod_listky),
-  y = resid(mod_listky),
-  xlab = "Odhadnuté hodnoty",
-  ylab = "Rezidua",
-  main = "Diagnostická kotva: odhadnuté hodnoty vs. residua"
+#| label: histogram-rezidui
+#| echo: true
+#| fig-width: 8
+#| fig-height: 5
+hist(
+  x = vec_rezidua,
+  breaks = 12,
+  main = "Histogram residuí",
+  xlab = "Residuum (cm)",
+  ylab = "Četnost",
+  col = "#D9D9D9",
+  border = "white",
+  cex.axis = 1.4,
+  cex.lab = 1.4,
+  cex.main = 1.4
 )
 
-abline(h = 0, lty = 2, col = "#8A8A8A")
+abline(
+  v = 0,
+  lty = 2,
+  col = "#5D2890"
+)
 ```
 
-Co je dobrý signál:
+Přerušovaná čára označuje **nulové residuum**, tedy přesnou shodu naměřené a odhadnuté délky. Histogram ukazuje, **která residua jsou častá** a zda některé květy leží od odhadu neobvykle daleko. Neříká ale, **u kterých odhadnutých délek** tato residua vznikají.
 
-- bodový mrak reziduí je kolem nuly bez zjevného systematického tvaru
-- `r render_glossary_term("rozptyl", display = "rozptyl")` reziduí je přibližně podobný napříč hodnotami šířky
+### Odhadnuté délky vs. residua
 
-Co je varovný signál:
-
-- zakřivený vzor (naznačuje `r render_glossary_term("nelinearita", display = "nelinearitu")`)
-- trychtýřovitý tvar (naznačuje `r render_glossary_term("heteroskedasticita", display = "heteroskedasticitu")`)
-- několik bodů výrazně mimo hlavní mrak (`r render_glossary_term("odlehla-pozorovani", display = "odlehlá pozorování")`)
-
-### Rychlá interpretační otázka
-
-Pokud v reziduích vidíte systematický oblouk, co uděláte jako první krok?
-
-- zkontrolujete, zda je lineární tvar modelu vůbec rozumný
-- zvážíte transformaci nebo jiný funkční tvar vztahu
-- explicitně popíšete, že současný model má omezení
-
-### Co odhalí druh kosatce
-
-V prvním grafu jsme body podle druhu nerozlišovali. Teď stejná rezidua obarvíme podle druhu kosatce. Druh stále nepřidáváme do modelu; pouze kontrolujeme, zda v nevysvětlené části dat nezůstala systematická struktura.
+Proto ke každému květu spojíme odhadnutou délku z `fitted()` s jeho residuem z `resid()`:
 
 ```{r}
-#| label: diagnostika-podle-druhu
-#| echo: false
-#| output: true
-#| message: false
-#| warning: false
-#| error: false
-#| fig-width: 8
-#| fig-height: 4.5
-data_diagnostika <-
-  tibble::tibble(
-    odhadnuta_delka = fitted(mod_listky),
-    reziduum = resid(mod_listky),
-    druh = data_kosatce$druh
+#| label: data-pro-graf-rezidui
+#| echo: true
+vec_odhadnuta_delka <-
+  fitted(mod_listky)
+
+data_rezidua <-
+  data.frame(
+    odhadnuta_delka = vec_odhadnuta_delka,
+    reziduum = vec_rezidua
   )
 
+head(data_rezidua)
+```
+
+Stejný graf si ukážeme nejprve pomocí základních funkcí R a potom pomocí balíčku `{ggplot2}`.
+
+::: {.panel-tabset}
+
+### Základní graf v R
+
+```{r}
+#| label: graf-rezidui-base-r
+#| echo: true
+#| fig-width: 8
+#| fig-height: 5
+plot(
+  x = data_rezidua$odhadnuta_delka,
+  y = data_rezidua$reziduum,
+  xlab = "Odhadnutá délka (cm)",
+  ylab = "Residuum (cm)",
+  main = "Odhadnuté délky vs. residua",
+  pch = 16,
+  col = "#8A8A8A",
+  cex = 1.3,
+  cex.axis = 1.4,
+  cex.lab = 1.4,
+  cex.main = 1.4
+)
+
+abline(
+  h = 0,
+  lty = 2,
+  col = "#5D2890"
+)
+```
+
+### Graf pomocí {ggplot2}
+
+```{r}
+#| label: graf-rezidui-ggplot2
+#| echo: true
+#| fig-width: 8
+#| fig-height: 5
+
 ggplot2::ggplot(
-  data = data_diagnostika,
-  mapping = ggplot2::aes(x = odhadnuta_delka, y = reziduum, color = druh)
+  data = data_rezidua,
+  mapping = ggplot2::aes(x = odhadnuta_delka, y = reziduum)
 ) +
-  ggplot2::geom_hline(yintercept = 0, linetype = 2, color = "#8A8A8A") +
-  ggplot2::geom_point(size = 2, alpha = 0.8) +
+  ggplot2::geom_hline(
+    yintercept = 0,
+    linetype = 2,
+    color = "#5D2890"
+  ) +
+  ggplot2::geom_point(
+    size = 2,
+    alpha = 0.8,
+    color = "#8A8A8A"
+  ) +
   ggplot2::labs(
     x = "Odhadnutá délka (cm)",
-    y = "Reziduum (cm)",
+    y = "Residuum (cm)",
+    title = "Odhadnuté délky vs. residua"
+  ) +
+  ggplot2::theme_bw(base_size = 18)
+```
+
+:::
+
+*Jak tento graf číst:*
+
+- **každý bod** představuje jeden květ
+- **vodorovná poloha** ukazuje délku odhadnutou modelem
+- **svislá poloha** ukazuje rozdíl mezi naměřenou a odhadnutou délkou
+- **bod na nulové čáře** má naměřenou délku přesně rovnou odhadu
+- **bod nad nulou** model podhodnotil, **bod pod nulou** model nadhodnotil
+
+Pro první kontrolu stačí jednoduchá otázka: *tvoří body kolem nuly neuspořádaný mrak, nebo v nich zůstává viditelný vzor?* **Viditelný vzor** znamená, že model v datech něco systematicky nezachytil.
+
+## Co model nevidí: druhy kosatců
+
+Dosud jsme všechny květy zobrazovali stejně a druh kosatce jsme do modelu nezahrnuli. Nyní použijeme barvu pouze jako pomůcku, abychom zjistili, zda se jednotlivé druhy v datech chovají podobně.
+
+### Nejprve obarvíme původní data
+
+Stejné barvy použijeme pro každý druh v obou následujících grafech:
+
+```{r}
+#| label: barvy-druhu-kosatcu
+#| include: false
+barvy_druhu <-
+  c(
+    setosa = "#1B9E77",
+    versicolor = "#D95F02",
+    virginica = "#7570B3"
+  )
+```
+
+```{r}
+#| label: puvodni-data-podle-druhu
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 8
+#| fig-height: 5
+
+ggplot2::ggplot(
+  data = data_kosatce,
+  mapping = ggplot2::aes(
+    x = sirka_listku,
+    y = delka_listku,
+    color = druh
+  )
+) +
+  ggplot2::geom_point(size = 2.3, alpha = 0.8) +
+  ggplot2::scale_color_manual(values = barvy_druhu) +
+  ggplot2::labs(
+    x = "Šířka korunního lístku (cm)",
+    y = "Délka korunního lístku (cm)",
     color = "Druh"
   ) +
   theme_biostat()
 ```
 
-Pokud se barvy v grafu oddělují nebo mají různý rozptyl, jednoduchý model není celým biologickým příběhem. Pro L03 stačí toto omezení pojmenovat. Model s druhem jako dalším `r render_glossary_term("prediktor", display = "prediktorem")` patří do pozdější lekce.
+Barvy ukazují, že **tři druhy netvoří jeden společný bodový mrak**. Jedna přímka vedená přes všechny květy proto shrnuje nejen vztah šířky a délky, ale také **rozdíly mezi druhy**.
 
-## Kdy jednoduchý model nestačí
+### Potom obarvíme graf odhadnutých délek a `r render_glossary_term("residuum", display = "residuí")`
 
-Jednoduchý `r render_glossary_term("linearni-model", display = "lineární model")` je výborný start, ale ne univerzální řešení.
+Ke každému residuu nyní doplníme druh stejného květu:
 
-V našich datech může jednoduchý model nestačit proto, že květy patří ke třem druhům kosatců. V jiných datech může být vztah zjevně `r render_glossary_term("nelinearita", display = "nelineární")` (například saturace nebo práh), takže jedna přímka systematicky podhodnocuje jednu část pozorování a nadhodnocuje jinou.
+```{r}
+#| label: pridat-druh-k-reziduim
+#| include: false
+data_rezidua_druhy <-
+  data_rezidua |>
+  dplyr::mutate(
+    druh = data_kosatce$druh
+  )
+```
 
-V takové situaci je lepší:
+```{r}
+#| label: graf-rezidui-podle-druhu
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 8
+#| fig-height: 5
 
-- nejdřív problém transparentně pojmenovat v interpretaci
-- pak navrhnout vhodné rozšíření (`r render_glossary_term("transformace", display = "transformace")`, nelineární tvar, případně jiný model v navazující lekci)
+ggplot2::ggplot(
+  data = data_rezidua_druhy,
+  mapping = ggplot2::aes(
+    x = odhadnuta_delka,
+    y = reziduum,
+    color = druh
+  )
+) +
+  ggplot2::geom_hline(
+    yintercept = 0,
+    linetype = 2,
+    color = "#8A8A8A"
+  ) +
+  ggplot2::geom_point(size = 2.3, alpha = 0.8) +
+  ggplot2::scale_color_manual(values = barvy_druhu) +
+  ggplot2::labs(
+    x = "Odhadnutá délka (cm)",
+    y = "Residuum (cm)",
+    color = "Druh"
+  ) +
+  theme_biostat()
+```
 
-Tím si udržíte hlavní princip kurzu: model volíme podle dat a biologické otázky, ne podle toho, co jsme se naučili minulý týden.
+Po obarvení vidíme, že residua jednotlivých druhů **neleží kolem nuly úplně stejně**. Model některé druhy častěji **nadhodnocuje** a jiné častěji **podhodnocuje**. Informace o druhu tedy zůstala v části dat, kterou jednoduchý model nevysvětlil.
+
+V této lekci stačí toto omezení rozpoznat a popsat. Druh jako další `r render_glossary_term("prediktor", display = "prediktor")` přidáme do modelu až v některé z navazujících lekcí.
+
+## Co budeme řešit v dalších lekcích
+
+Jednoduchý `r render_glossary_term("linearni-model", display = "lineární model")` je výborný začátek, ale ne univerzální řešení. V této lekci jsme odhalili jeden důvod k opatrnosti: v residuích zůstaly rozdíly mezi druhy kosatců.
+
+V dalších lekcích se naučíme rozlišovat také jiné viditelné vzory:
+
+- zakřivený průběh může ukazovat na `r render_glossary_term("nelinearita", display = "nelinearitu")`
+- postupné rozšiřování nebo zužování bodového mraku souvisí s pojmem `r render_glossary_term("heteroskedasticita", display = "heteroskedasticita")`
+- jednotlivé body daleko od ostatních mohou být `r render_glossary_term("odlehla-pozorovani", display = "odlehlá pozorování")`
+- barevně oddělené skupiny mohou upozornit na důležitý `r render_glossary_term("prediktor", display = "prediktor")`, který v modelu chybí
+
+*Tyto pojmy teď nemusíte umět diagnostikovat ani řešit.* Později podle biologické otázky zvážíme další prediktor, `r render_glossary_term("transformace", display = "transformaci")`, jiný tvar vztahu nebo jiný model.
+
+**Hlavní princip zůstává stejný:** nejprve omezení modelu transparentně pojmenujeme a teprve potom volíme vhodné rozšíření.
+
+V následující lekci ponecháme stejný modelový rámec a přidáme inferenční vrstvu: `r render_glossary_term("interval-spolehlivosti", display = "intervaly spolehlivosti")` a `r render_glossary_term("p-hodnota", display = "p-hodnotu")` jako popis `r render_glossary_term("nejistota", display = "nejistoty")` odhadu.
 
 ## Shrnutí
 
@@ -1139,10 +1278,6 @@ Tím si udržíte hlavní princip kurzu: model volíme podle dat a biologické o
 - Koeficient `r render_glossary_term("sklon", display = "sklonu")` popisuje, o kolik se v průměru změní délka korunního lístku při zvýšení jeho šířky o 1 cm.
 - `r render_glossary_term("residuum", display = "Rezidua")` nejsou „odpad“, ale klíčová informace o tom, co model nevysvětluje.
 - Nejlepší přímka minimalizuje součet čtverců residuí; funkce `lm()` ji najde a vrátí její intercept a sklon.
-
-## Co navazuje v L04
-
-V další lekci ponecháme stejný modelový rámec a přidáme inferenční vrstvu: `r render_glossary_term("interval-spolehlivosti", display = "intervaly spolehlivosti")` a `r render_glossary_term("p-hodnota", display = "p-hodnotu")` jako popis `r render_glossary_term("nejistota", display = "nejistoty")` odhadu.
 
 ## Slovníček pojmů {.unnumbered}
 
