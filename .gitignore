@@ -23,3 +23,6 @@ Learning_materials/skripta_raw.pdf
 # Theme generation R functions — downloaded from _brand at render time
 # (see R/generate_theme.R)
 R/Functions/Theme_generation/
+
+/.quarto/
+**/*.quarto_ipynb

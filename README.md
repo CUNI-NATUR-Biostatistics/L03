@@ -1,4 +1,4 @@
-# _L-template – Šablona repozitáře přednášky
+# L03 – Týdenní repozitář přednášky
 
 Šablona (GitHub Template Repository) pro týdenní repozitáře kurzu
 **Biostatistika (MB120P163)**. Při vytváření nového týdenního repozitáře
@@ -10,12 +10,16 @@ Repozitář je výchozí kostra pro tři propojené výstupy:
 - podkladová skripta v `Learning_materials/`
 - pomocné R skripty pro renderování, téma a sdílené funkce v `R/`
 
+## Doporučený pracovní prostor
+
+Tento repozitář je určený pro práci v multi-root workspace `CUNI-NATUR-Biostatistics`. Sdílený kontext kurzu a kanonické instrukce pro AI asistenty spravuje soukromý repozitář `_internal`; doporučené nastavení je popsané v `_internal/workspace-setup.md`. Při samostatném otevření tohoto repozitáře nemusí mít AI asistent k dispozici úplný kontext kurzu.
+
 ---
 
 ## Struktura repozitáře
 
 ```text
-_L-template/
+L03/
 ├── theme/                          # Zdroje vizuálního tématu – editujte zde
 │   ├── colors.json                 # Paleta barev a sémantická přiřazení
 │   ├── fonts.json                  # Písma pro HTML, RevealJS, Typst a R grafy
@@ -68,22 +72,21 @@ neupravujte ručně.
 
 1. Vytvořte nový repozitář z této šablony a pojmenujte ho podle týdne,
    například `L01`.
-2. Přejmenujte `_L-template.Rproj` na odpovídající název, například
-   `L01.Rproj`.
+2. Soubor projektu je v tomto repozitáři pojmenovaný jako `L03.Rproj`.
 3. Otevřete projekt v RStudiu nebo VS Code a obnovte závislosti příkazem
    `renv::restore()`.
   Lokální pracovní soubory RStudia, Quarto cache a dočasné debug soubory se
   necommitují díky `.gitignore`.
 4. Doplňte obsah do `Presentation/presentation.qmd`,
    `Learning_materials/skripta.qmd` a případně `Exercises/cviceni.R`.
-  Při návrhu nové lekce postupujte podle workflow v
-  `.github/instructions/lesson-authoring.instructions.md`:
+  Při návrhu nové lekce postupujte podle kanonického workflow v
+  `_internal/.ai/authoring/lesson-workflow.md`:
   nejdřív výstupy z učení a dataset, potom podrobná skripta, teprve pak
   prezentace.
 5. Přidejte datové soubory do `data/` a obrázky pro skripta výhradně do
    `Learning_materials/images/`.
   Krátké reprodukční debug skripty ukládejte do `Temp/` podle
-  `.github/instructions/debugging.instructions.md`.
+  `_internal/.ai/core/debugging.md`.
 6. Spusťte renderovací pipeline a commitněte aktualizované výstupy.
 
 ### Praktické šablony pro jednotlivé stage
