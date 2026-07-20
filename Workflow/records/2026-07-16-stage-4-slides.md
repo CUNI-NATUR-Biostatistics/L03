@@ -5,7 +5,7 @@
 - Week: L03
 - Date: 2026-07-16
 - Author: Ondřej Mottl
-- Reviewer: TBD
+- Reviewer: Ondřej Mottl
 
 ## Inspiration consulted
 
@@ -58,10 +58,10 @@
 ## Risks and fixes
 
 - Visual rhythm risk: repeated scatterplots could feel visually static
-- Content pacing risk: fragments and the two animation moments produce 41 exported PDF pages even though several are staged versions of one teaching moment
+- Content pacing risk: fragments and the two animation moments produce 47 exported PDF pages even though several are staged versions of one teaching moment
 - Planned fix: alternate prompts, annotated plots, code, interpretation, and recap slides; use fragments to control the live pace; use GIFs only where motion exposes how candidate lines and squared residuals change
 
 ## Decision
 
 - [x] Slides ready for review
-- Notes: The deck renders successfully and has passed the presentation vision review. Human Stage 5 review remains pending.
+- Notes: The deck renders successfully and has passed the presentation vision review. Stage 4 was accepted as complete on 2026-07-20 and handed over for human Stage 5 review.
