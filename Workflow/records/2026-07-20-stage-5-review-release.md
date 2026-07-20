@@ -106,12 +106,12 @@
 
 - Open with title → biological question / visual hook → learning outcomes; use a previous-lesson callback only after that and keep it strictly within previously taught material.
 - Choose the first data view according to the reasoning task: show the whole dataset for a global-pattern question, or build progressively when accumulation itself is the concept.
-- Introduce model quantities in ordinary words with explicit values and units before symbols or numerical substitution; stage the first `lm()` example from grammar to concrete arguments, fit, coefficients, and interpretation.
+- Introduce new quantities in ordinary words with explicit values, units, and sources before symbols or numerical substitution; stage unfamiliar function calls from argument roles to concrete arguments, result, and interpretation.
 - Reuse a stable visual anchor while adding one layer at a time so students can see exactly what changed.
 - Keep voting options visually identical; after commitment, identify the answer with one rough-notation annotation only, and keep every `Když nehlasujeme` fallback visible from the start.
 - Treat whitespace as part of the composition. Preserve deliberate author-added `<br>` and judge figure size from the rendered footprint and internal whitespace, not `out-width` alone.
-- Use animation only when motion exposes the concept: plausible candidate lines before the criterion, deliberately poor lines while demonstrating SSE, fixed axes/data, a concrete noticing prompt, and a static follow-up.
-- For first residual diagnostics, begin with a familiar histogram, then explain the residual-versus-fitted axes and reference line, and add subgroup structure only afterward.
+- Use animation only when motion exposes the concept: keep reference elements fixed, vary only the comparison target, include a concrete noticing prompt, and provide a static follow-up.
+- Introduce new diagnostic displays through a familiar representation when useful, explain their mappings and reference aids, and add grouping or other complexity only afterward.
 
 ## Final validation checklist
 
