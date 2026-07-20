@@ -894,7 +894,24 @@ $$
 
 ## Jak nejlepší přímku najdeme v R
 
-Tady model jen fitujeme. Grafy uděláme až v dalším kroku.
+Funkce `lm()` fituje `r render_glossary_term("linearni-model", display = "lineární model")`. Nejprve si její zápis přečteme jako obecnou gramatiku:
+
+```r
+lm(
+  formula = odezva ~ prediktor,
+  data = data
+)
+```
+
+V tomto zápisu jsou `r render_glossary_term("odezva", display = "odezva")`, `r render_glossary_term("prediktor", display = "prediktor")` a `data` zástupné názvy. Znak `~` můžeme číst jako „odezvu vysvětlujeme pomocí prediktoru“.
+
+Pro naši biologickou otázku dosadíme:
+
+- odezva: `delka_listku`
+- prediktor: `sirka_listku`
+- data: `data_kosatce`
+
+Teprve potom sestavíme konkrétní volání. Tady model jen fitujeme; grafy uděláme až v dalším kroku.
 
 V této části oddělíme dvě operace:
 

@@ -1507,6 +1507,11 @@
       "Maintainer": "Thomas Lin Pedersen <thomas.pedersen@posit.co>",
       "Repository": "CRAN"
     },
+    "ggview": {
+      "Package": "ggview",
+      "Version": "0.2.2",
+      "Source": "Repository"
+    },
     "glossary": {
       "Package": "glossary",
       "Version": "1.0.0",
@@ -2369,6 +2374,11 @@
       "NeedsCompilation": "yes",
       "Author": "Vitalie Spinu [aut, cre], Garrett Grolemund [aut], Hadley Wickham [aut], Davis Vaughan [ctb], Ian Lyttle [ctb], Imanuel Costigan [ctb], Jason Law [ctb], Doug Mitarotonda [ctb], Joseph Larmarange [ctb], Jonathan Boiser [ctb], Chel Hee Lee [ctb]",
       "Repository": "https://packagemanager.posit.co/cran/latest"
+    },
+    "magick": {
+      "Package": "magick",
+      "Version": "2.9.1",
+      "Source": "Repository"
     },
     "magrittr": {
       "Package": "magrittr",

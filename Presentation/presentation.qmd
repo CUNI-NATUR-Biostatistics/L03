@@ -32,6 +32,12 @@ here::i_am("Presentation/presentation.qmd")
 path_materials <-
   "Presentation/Materials"
 
+dir.create(
+  here::here(path_materials),
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
 include_local_figure <- function(data_source) {
   knitr::include_graphics(
     path = here::here(
@@ -41,6 +47,87 @@ include_local_figure <- function(data_source) {
     error = TRUE
   )
 }
+
+source(here::here("R", "save_local_figure.R"))
+
+barvy <-
+  c(
+    data = "#8A8A8A",
+    model = "#5D2890",
+    interpretace = "#F3A712"
+  )
+
+data(iris)
+
+data_kosatce <-
+  data.frame(
+    sirka_listku = iris$Petal.Width,
+    delka_listku = iris$Petal.Length,
+    druh = iris$Species
+  )
+
+mod_listky <-
+  lm(
+    formula = delka_listku ~ sirka_listku,
+    data = data_kosatce
+  )
+
+vec_odhadnuta_delka <-
+  fitted(mod_listky)
+
+vec_rezidua <-
+  resid(mod_listky)
+
+data_rezidua <-
+  data.frame(
+    odhadnuta_delka = vec_odhadnuta_delka,
+    reziduum = vec_rezidua,
+    druh = data_kosatce$druh
+  )
+
+vybrane_indexy <-
+  c(1, 58, 71, 101)
+
+data4 <-
+  data_kosatce[
+    vybrane_indexy,
+    c("sirka_listku", "delka_listku")
+  ]
+
+a0 <- 1.1
+b0 <- 2.2
+
+data4$odhadnuta_delka <-
+  a0 + b0 * data4$sirka_listku
+
+data4$residuum <-
+  data4$delka_listku - data4$odhadnuta_delka
+
+priklad_index <-
+  4
+
+kandidati <-
+  data.frame(
+    model = c("A", "B", "C"),
+    a = c(0.5, 1.1, 1.7),
+    b = c(2.3, 2.2, 1.9)
+  )
+
+kandidati$SSE4 <-
+  purrr::map_dbl(
+    .x = seq_len(nrow(kandidati)),
+    .f = ~ {
+      sum(
+        (
+          data4$delka_listku -
+            (
+              kandidati$a[.x] +
+                kandidati$b[.x] * data4$sirka_listku
+            )
+        )^2
+      )
+    }
+  )
 ```
 
 ```{r}
@@ -66,7 +153,7 @@ slides_url <-
   )
 ```
 
-## Lineární model s jedním kvantitativním prediktorem
+## Lineární model s jedním numerickým prediktorem
 
 <br>
 
@@ -80,159 +167,1886 @@ slides_url <-
 
 [Moodle](https://dl2.cuni.cz/course/view.php?id=106)
 
-## Výsledky učení
+## Naše biologická otázka
 
-Po absolvování této přednášky budete schopni:
+:::: {.columns .align-center}
 
-- fitovat `lm(y ~ x)` a interpretovat směr a velikost efektu
-- vysvětlit, co jsou rezidua a proč je sledujeme
-- popsat základní diagnostiku modelu pomocí jednoduchých grafů
-
-## Biologická otázka
-
-Jak se mění objem kmene stromu s rostoucím obvodem kmene?
-
-Nejdřív se podíváme na data, pak pojmenujeme model, a teprve potom budeme interpretovat koeficienty.
-
-## Data, se kterými začneme
-
-Dataset `trees` obsahuje měření obvodu (`Girth`) a objemu (`Volume`) kmenů.
-
-První krok: podívat se, jestli data naznačují přibližně lineární vztah.
-
-## Otázka k zamyšlení
-
-Před zobrazením regresní přímky odhadněte:
-
-- A) vztah je téměř nulový
-- B) vztah je kladný a zřetelný
-- C) vztah je silně nelineární
-
-::: {.takeaway-strip}
-Když nehlasujeme: napište si vlastní volbu a jednou větou ji obhajte sousedovi.
-:::
-
-## První pohled na vztah v datech
-
+::: {.column width="42%"}
 ```{r}
-#| label: graf-data
+#| label: zobrazit-kosatec
 #| echo: false
-data(trees)
-
-ggplot2::ggplot(
-  data = trees,
-  mapping = ggplot2::aes(x = Girth, y = Volume)
-) +
-  ggplot2::geom_point(size = 2, alpha = 0.85, color = "#8A8A8A") +
-  ggplot2::labs(
-    x = "Obvod kmene (Girth)",
-    y = "Objem kmene (Volume)",
-    title = "Data: obvod a objem kmene"
-  ) +
-  ggplot2::theme_minimal()
+#| out-width: 100%
+include_local_figure("iris_versicolor.jpg")
 ```
-
-## Pojmenování modelu
-
-Lineární model pro tuto otázku:
-
-$$
-\text{Volume}_i = a + b \cdot \text{Girth}_i + e_i
-$$
-
-Co nás zajímá nejvíc:
-
-- směr koeficientu $b$
-- velikost změny odezvy při zvýšení prediktoru
-- co zůstává v reziduích
-
-## Ukázkový kód pro studenty
-
-```{r}
-#| label: demo-model
-#| echo: true
-data(trees)
-
-mod_objem <-
-  lm(
-    formula = Volume ~ Girth,
-    data = trees
-  )
-
-ggplot2::ggplot(
-  data = trees,
-  mapping = ggplot2::aes(x = Girth, y = Volume)
-) +
-  ggplot2::geom_point(size = 2, alpha = 0.85, color = "#8A8A8A") +
-  ggplot2::geom_smooth(method = "lm", se = FALSE, color = "#5D2890", linewidth = 1) +
-  ggplot2::labs(
-    x = "Obvod kmene (Girth)",
-    y = "Objem kmene (Volume)"
-  ) +
-  ggplot2::theme_minimal()
-
-summary(mod_objem)
-```
-
-## Diskuze ve dvojicích (2 min)
-
-Která část výstupu `summary(mod_objem)` je pro biologickou interpretaci důležitější než samotná p-hodnota?
-
-- vysvětlete sousedovi proč
-- dohodněte se na jedné větě, kterou byste použili v biologické interpretaci
-
-## Interpretační úkol: rezidua
-
-Představte si diagnostický graf reziduí:
-
-- Co by vás varovalo, že lineární model není vhodný?
-- Jaký vzor v reziduích by naznačoval nelinearitu?
-
-::: {.takeaway-strip}
-Nejde o „správný obrázek naslepo“, ale o argument: proč by daný vzor byl problém pro interpretaci modelu.
 :::
 
-## Co už víme / Co ještě nevíme
+::: {.column width="58%"}
+::: {.box-question}
+[Biologická otázka]{.panel-title}
 
-:::: {.columns}
-
-::: {.column width="50%"}
-::: {.panel-result}
-[Co už víme]{.panel-title}
-
-- Obvod kmene a objem jsou v datech zjevně propojené.
-- Jednoduchý lineární model je rozumný první krok.
-:::
+**Mají širší korunní lístky kosatců také větší délku — a pokud ano, o kolik?**
 :::
 
-::: {.column width="50%"}
-::: {.panel-question}
-[Co ještě nevíme]{.panel-title}
+<br>
 
-- Jak velká je nejistota odhadu koeficientu?
-- Kdy by stejný přístup naopak selhal?
+::: {.panel-data}
+[Co budeme sledovat]{.panel-title}
+
+**150 květů**
+
+šířka a délka korunního lístku v centimetrech
 :::
 :::
 
 ::::
 
-## Kontrola častého omylu
+::: {.footer}
+Foto: [Danielle Langlois / Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Iris_versicolor_4.jpg), CC BY-SA 3.0
+:::
 
-„Když body přibližně rostou, máme hotovo."
+::: {.notes}
+Otevírám výzkumnou otázkou ještě před výsledky učení. Nechám studenty krátce odhadnout směr vztahu a zeptám se, jaký typ odpovědi by od modelu potřebovali. Otázka pak zůstává páteří celé prezentace.
+:::
 
-To je nebezpečné zjednodušení. Po vizuálním trendu vždy potřebujeme ještě zkontrolovat rezidua a interpretaci efektu v biologickém kontextu.
+## Výsledky učení
+
+Po absolvování této přednášky budete schopni:
+
+::: {.incremental}
+- převést biologickou otázku na modelovou otázku s odezvou a prediktorem
+- fitovat model `lm(y ~ x)` a interpretovat směr i velikost efektu
+- vysvětlit, co je residuum a co říká o konkrétním pozorování
+- přečíst základní graf residuí a rozpoznat, že model něco systematicky nezachytil
+:::
+
+::: {.notes}
+Výsledky učení navážu přímo na úvodní otázku. Zdůrazním, že dnešním cílem není p-hodnota ani interval spolehlivosti; ty přijdou v následující lekci.
+:::
+
+## Minule jsme skončili tady
+
+```{r}
+#| label: vytvorit-navaznost-na-l02
+#| include: false
+#| message: false
+#| warning: false
+data_tucnaci <-
+  palmerpenguins::penguins[
+    !is.na(palmerpenguins::penguins$flipper_length_mm) &
+      !is.na(palmerpenguins::penguins$body_mass_g),
+    c("flipper_length_mm", "body_mass_g")
+  ]
+
+pearson_r <-
+  cor(
+    x = data_tucnaci$flipper_length_mm,
+    y = data_tucnaci$body_mass_g,
+    method = "pearson"
+  )
+
+plot_navaznost_l02 <-
+  ggplot2::ggplot(
+    data = data_tucnaci,
+    mapping = ggplot2::aes(
+      x = flipper_length_mm,
+      y = body_mass_g
+    )
+  ) +
+  ggplot2::geom_point(
+    color = barvy["data"],
+    alpha = 0.55,
+    size = 2.2
+  ) +
+  ggplot2::labs(
+    x = "Délka ploutve (mm)",
+    y = "Tělesná hmotnost (g)"
+  ) +
+  ggplot2::theme_minimal(base_size = 11)
+
+save_local_figure(
+  plot = plot_navaznost_l02,
+  filename = "navaznost_l02.png"
+)
+```
+
+:::: {.columns .align-center}
+
+::: {.column width="68%"}
+```{r}
+#| label: zobrazit-navaznost-na-l02
+#| echo: false
+#| out-width: 96%
+include_local_figure("navaznost_l02.png")
+```
+:::
+
+::: {.column width="32%"}
+::: {.panel-result}
+[Pearsonova korelace]{.panel-title}
+
+::: {.text-center .text-size-heading1 .text-bold}
+$r = `r round(pearson_r, 2)`$
+:::
+
+Rostoucí a poměrně těsný vztah.
+:::
+:::
+
+::::
+
+::: {.notes}
+Toto je přímá návaznost na závěr L02. Připomenu pouze: bodový graf ukazuje směr a rozptýlení, Pearsonova korelace shrne směr a těsnost. Přímku zatím nepoužívám, protože v L02 ještě nebyla součástí výkladu.
+:::
+
+## Co přidá model?
+
+<br>
+
+:::: {.columns .fragment}
+
+::: {.column width="48%"}
+::: {.panel-result}
+[Co už umíme]{.panel-title}
+
+- vztah zobrazit
+- popsat jeho směr
+- shrnout jeho těsnost korelací
+:::
+:::
+
+::: {.column width="52%"}
+::: {.panel-question}
+[Co ještě potřebujeme]{.panel-title}
+
+**O kolik** se typicky změní odezva, když se prediktor zvýší o jednu jednotku?
+:::
+:::
+
+::::
+
+<br>
+
+::: {.takeaway-strip .fragment}
+Tato lekce přidá velikost efektu. Nejistotu odhadu přidáme v následující lekci.
+:::
+
+## Která proměnná má kterou roli?
+
+::: {.card-question}
+::: {.card-title}
+Otázka
+:::
+
+Chceme odhadovat **délku** korunního lístku podle jeho **šířky**. Co je **odezva**?
+:::
+
+<br>
+
+:::: {.columns}
+
+::: {.column width="50%"}
+::: {.panel-olive}
+**A)** šířka korunního lístku
+:::
+:::
+
+::: {.column width="50%"}
+::: {.panel-indigo}
+[**B)** délka korunního lístku]{.rn-box-indigo}
+:::
+:::
+
+::::
+
+<br>
+
+::: {.takeaway-strip}
+Když nehlasujeme: napište „odezva = …, prediktor = …“ a doplňte názvy obou měření.
+:::
+
+::: {.notes}
+Nechám 20 sekund na volbu a krátké zdůvodnění sousedovi. Odezva je délka, prediktor šířka. Zároveň upozorním, že na rozdíl od korelace už role os nejsou zaměnitelné.
+:::
+
+## Všech 150 květů
+
+```{r}
+#| label: vytvorit-bodovy-graf-kosatcu
+#| include: false
+#| message: false
+#| warning: false
+plot_data_kosatce <-
+  ggplot2::ggplot(
+    data = data_kosatce,
+    mapping = ggplot2::aes(
+      x = sirka_listku,
+      y = delka_listku
+    )
+  ) +
+  ggplot2::geom_point(
+    color = barvy["data"],
+    alpha = 0.72,
+    size = 2.7
+  ) +
+  ggplot2::scale_x_continuous(
+    limits = c(0, 2.7),
+    expand = ggplot2::expansion(mult = c(0, 0.03))
+  ) +
+  ggplot2::scale_y_continuous(
+    limits = c(0, 7.2),
+    expand = ggplot2::expansion(mult = c(0, 0.03))
+  ) +
+  ggplot2::labs(
+    x = "Šířka korunního lístku (cm)",
+    y = "Délka korunního lístku (cm)"
+  ) +
+  ggplot2::theme_minimal(base_size = 11)
+
+save_local_figure(
+  plot = plot_data_kosatce,
+  filename = "data_kosatce.png"
+)
+```
+
+```{r}
+#| label: zobrazit-bodovy-graf-kosatcu
+#| echo: false
+#| out-width: 86%
+include_local_figure("data_kosatce.png")
+```
+
+::: {.notes}
+Nejprve ukážu celý dataset bez dalšího vedení. Studenti mají několik sekund na orientaci v osách a v rozložení všech 150 květů.
+:::
+
+## Jaký vztah vidíte?
+
+:::: {.columns .align-center}
+
+::: {.column width="58%"}
+```{r}
+#| label: zobrazit-data-pro-otazku-o-vztahu
+#| echo: false
+#| out-width: 96%
+include_local_figure("data_kosatce.png")
+```
+:::
+
+::: {.column width="42%"}
+::: {.panel-question}
+[Vyberte nejlepší popis]{.panel-title}
+
+**A)** bez zřetelného vztahu
+
+[**B)** přibližně lineární růst]{.rn-circle-orange}
+
+**C)** výrazně zakřivený růst
+:::
+:::
+
+::::
+
+<br>
+
+::: {.takeaway-strip}
+Když nehlasujeme: doplňte „S rostoucí šířkou délka v průměru …“.
+:::
+
+::: {.notes}
+Studenti nejprve pojmenují viditelný tvar. Správně je B: vztah je rostoucí a přibližně lineární, ale kolem něj zůstává variabilita.
+:::
+
+## Co z grafu zatím můžeme říct?
+
+:::: {.columns .align-center}
+
+::: {.column width="58%"}
+```{r}
+#| label: zobrazit-bodovy-graf-kosatcu-znovu
+#| echo: false
+#| out-width: 94%
+include_local_figure("data_kosatce.png")
+```
+:::
+
+::: {.column width="42%"}
+::: {.panel-result .fragment}
+[Co vidíme]{.panel-title}
+
+- vztah je rostoucí
+- kolem trendu zůstává variabilita
+- jednotlivé květy neleží na jedné přímce
+:::
+
+<br>
+
+::: {.panel-question .fragment}
+[Co ještě nevíme]{.panel-title}
+
+O kolik se odhadnutá délka změní při zvýšení šířky o 1 cm?
+:::
+:::
+
+::::
+
+## Která z mnoha přímek je správná?
+
+```{r}
+#| label: vytvorit-animaci-mnoha-primek
+#| include: false
+#| message: false
+#| warning: false
+data_animace_primek <-
+  data.frame(
+    a = c(0.2, 0.5, 0.8, 1.1, 1.4, 1.7, 1.4, 1.1, 0.8, 0.5),
+    b = c(2.5, 2.3, 2.1, 1.9, 1.7, 1.5, 1.8, 2.1, 2.4, 2.5)
+  )
+
+vec_soubory_animace_primek <-
+  purrr::map_chr(
+    .x = seq_len(nrow(data_animace_primek)),
+    .f = function(i) {
+      soubor_snimku <-
+        tempfile(fileext = ".png")
+
+      graf_snimku <-
+        plot_data_kosatce +
+        ggplot2::geom_abline(
+          intercept = data_animace_primek$a[i],
+          slope = data_animace_primek$b[i],
+          color = barvy["model"],
+          linewidth = 1.4
+        ) +
+        ggplot2::theme(legend.position = "none") +
+        ggview::canvas(
+          width = 1200,
+          height = 750,
+          units = "px"
+        )
+
+      ggview::save_ggplot(
+        plot = graf_snimku,
+        file = soubor_snimku
+      )
+
+      soubor_snimku
+    }
+  )
+
+save_local_gif(
+  frame_files = vec_soubory_animace_primek,
+  filename = "mnoho_primek.gif",
+  fps = 1
+)
+
+unlink(vec_soubory_animace_primek)
+```
+
+```{r}
+#| label: zobrazit-animaci-mnoha-primek
+#| echo: false
+#| out-width: 82%
+include_local_figure("mnoho_primek.gif")
+```
+
+::: {.panel-olive}
+[Diskuze se sousedem — 30 s]{.panel-title}
+
+Sledujte jeden cyklus. Podle čeho byste mezi přímkami rozhodli?
+:::
+
+::: {.notes}
+Animace ukazuje vždy právě jednu přímku, aby se graf nezměnil v barevnou spleť. Po jednom cyklu ji zastavím otázkou: podle čeho byste poznali, že je jedna z nich lepší než ostatní?
+:::
+
+## Tři kandidátní přímky
+
+```{r}
+#| label: vytvorit-kandidatni-primky
+#| include: false
+#| message: false
+#| warning: false
+plot_kandidatni_primky <-
+  plot_data_kosatce +
+  ggplot2::geom_abline(
+    data = kandidati,
+    mapping = ggplot2::aes(
+      intercept = a,
+      slope = b,
+      color = model
+    ),
+    linewidth = 1.25
+  ) +
+  ggplot2::scale_color_manual(
+    values = c(
+      A = "#8A8A8A",
+      B = "#5D2890",
+      C = "#F3A712"
+    )
+  ) +
+  ggplot2::labs(color = "Přímka") +
+  ggplot2::theme(
+    legend.position = "inside",
+    legend.position.inside = c(0.88, 0.22)
+  )
+
+save_local_figure(
+  plot = plot_kandidatni_primky,
+  filename = "kandidatni_primky.png"
+)
+```
+
+```{r}
+#| label: zobrazit-kandidatni-primky
+#| echo: false
+include_local_figure("kandidatni_primky.png")
+```
+
+## Kterou přímku byste vybrali?
+
+```{r}
+#| label: zobrazit-kandidatni-primky-pro-hlasovani
+#| echo: false
+#| out-width: 72%
+include_local_figure("kandidatni_primky.png")
+```
+
+<br>
+
+::: {.takeaway-strip}
+Když nehlasujeme: zvolte A/B/C a napište, podle čeho posuzujete „nejlepší“ přímku.
+:::
+
+::: {.notes}
+Nechám hlasovat, ale zatím nepotvrdím odpověď. Přijmu intuitivní argument „body jsou jí celkově nejblíže“ a proměním ho v potřebu reziduí.
+:::
+
+## Co se změní, když přímku posuneme?
+
+```{r}
+#| label: vytvorit-intercepty
+#| include: false
+#| message: false
+#| warning: false
+data_intercepty <-
+  data.frame(
+    a = c(0.5, 1.1, 1.7),
+    b = 2.2,
+    popisek = c(
+      "intercept = 0,5",
+      "intercept = 1,1",
+      "intercept = 1,7"
+    )
+  )
+
+plot_intercepty <-
+  plot_data_kosatce +
+  ggplot2::geom_abline(
+    data = data_intercepty,
+    mapping = ggplot2::aes(
+      intercept = a,
+      slope = b,
+      color = popisek
+    ),
+    linewidth = 1.2
+  ) +
+  ggplot2::scale_color_manual(
+    values = c(
+      "intercept = 0,5" = "#8A8A8A",
+      "intercept = 1,1" = "#5D2890",
+      "intercept = 1,7" = "#F3A712"
+    )
+  ) +
+  ggplot2::labs(color = "Intercept")
+
+save_local_figure(
+  plot = plot_intercepty,
+  filename = "intercepty.png"
+)
+```
+
+```{r}
+#| label: zobrazit-intercepty
+#| echo: false
+include_local_figure("intercepty.png")
+```
+
+::: {.takeaway-strip}
+Intercept (a) posouvá přímku nahoru nebo dolů.
+:::
+
+## Co se změní, když přímku nakloníme?
+
+```{r}
+#| label: vytvorit-sklony
+#| include: false
+#| message: false
+#| warning: false
+data_sklony <-
+  data.frame(
+    a = 1.1,
+    b = c(1.8, 2.2, 2.6),
+    popisek = c("sklon = 1,8", "sklon = 2,2", "sklon = 2,6")
+  )
+
+plot_sklony <-
+  plot_data_kosatce +
+  ggplot2::geom_abline(
+    data = data_sklony,
+    mapping = ggplot2::aes(
+      intercept = a,
+      slope = b,
+      color = popisek
+    ),
+    linewidth = 1.2
+  ) +
+  ggplot2::scale_color_manual(
+    values = c(
+      "sklon = 1,8" = "#8A8A8A",
+      "sklon = 2,2" = "#5D2890",
+      "sklon = 2,6" = "#F3A712"
+    )
+  ) +
+  ggplot2::labs(color = "Sklon")
+
+save_local_figure(
+  plot = plot_sklony,
+  filename = "sklony.png"
+)
+```
+
+```{r}
+#| label: zobrazit-sklony
+#| echo: false
+include_local_figure("sklony.png")
+```
+
+::: {.takeaway-strip}
+Sklon (b) říká, jak rychle se mění odhadnutá délka s rostoucí šířkou.
+:::
+
+## Dvě čísla popíší každou přímku
+
+<br>
+
+::: {.text-center .text-size-heading1}
+$$
+\text{odhadnutá délka}
+=
+\text{intercept }(a)
++
+\text{sklon }(b) \cdot \text{šířka}
+$$
+:::
+
+<br>
+
+:::: {.columns .fragment}
+
+::: {.column width="50%"}
+::: {.panel-olive}
+**intercept ($a$)**
+
+Kde přímka začíná při šířce 0 cm.
+:::
+:::
+
+::: {.column width="50%"}
+::: {.panel-indigo}
+**sklon ($b$)**
+
+Změna odhadnuté délky při zvýšení šířky o 1 cm.
+:::
+:::
+
+::::
+
+::: {.notes}
+Název parametrů přichází až po dvojici vizuálních manipulací. Vzorec zde pouze pojmenuje to, co už studenti viděli.
+:::
+
+## Co přímka odhaduje pro jeden květ?
+
+```{r}
+#| label: vytvorit-postup-odhadu-jednoho-kvetu
+#| include: false
+#| message: false
+#| warning: false
+data_jeden_odhad <-
+  data4[priklad_index, ]
+
+plot_odhad_zaklad <-
+  ggplot2::ggplot(
+    data = data_jeden_odhad,
+    mapping = ggplot2::aes(
+      x = sirka_listku,
+      y = delka_listku
+    )
+  ) +
+  ggplot2::geom_abline(
+    intercept = a0,
+    slope = b0,
+    color = barvy["model"],
+    linewidth = 1.3
+  ) +
+  ggplot2::scale_x_continuous(
+    breaks = seq(0, 2.5, by = 0.5),
+    limits = c(0, 2.7),
+    expand = ggplot2::expansion(mult = c(0, 0.03))
+  ) +
+  ggplot2::scale_y_continuous(
+    limits = c(0, 7.2),
+    expand = ggplot2::expansion(mult = c(0, 0.03))
+  ) +
+  ggplot2::labs(
+    x = "Šířka korunního lístku (cm)",
+    y = "Délka korunního lístku (cm)"
+  ) +
+  ggplot2::theme_minimal(base_size = 11)
+
+plot_odhad_s_merenim <-
+  plot_odhad_zaklad +
+  ggplot2::geom_point(
+    color = barvy["data"],
+    size = 5
+  )
+
+plot_odhad_s_odhadem <-
+  plot_odhad_s_merenim +
+  ggplot2::geom_point(
+    mapping = ggplot2::aes(y = odhadnuta_delka),
+    color = barvy["model"],
+    size = 5,
+    shape = 18
+  )
+
+plot_reziduum_jednoho_kvetu <-
+  plot_odhad_s_odhadem +
+  ggplot2::geom_segment(
+    mapping = ggplot2::aes(
+      xend = sirka_listku,
+      yend = odhadnuta_delka
+    ),
+    color = barvy["interpretace"],
+    linewidth = 2,
+    lineend = "round"
+  )
+
+plot_odhad_s_popiskem <-
+  plot_odhad_s_odhadem +
+  ggplot2::annotate(
+    geom = "label",
+    x = 1.45,
+    y = data_jeden_odhad$odhadnuta_delka,
+    label = paste0(
+      "odhadnutá délka = ",
+      round(data_jeden_odhad$odhadnuta_delka, 2),
+      " cm"
+    ),
+    color = barvy["model"],
+    fill = "white",
+    label.size = 0,
+    size = 3.3
+  )
+
+plot_reziduum_s_popisky <-
+  plot_reziduum_jednoho_kvetu +
+  ggplot2::annotate(
+    geom = "label",
+    x = 1.45,
+    y = data_jeden_odhad$delka_listku,
+    label = paste0(
+      "naměřená délka = ",
+      round(data_jeden_odhad$delka_listku, 2),
+      " cm"
+    ),
+    color = barvy["data"],
+    fill = "white",
+    label.size = 0,
+    size = 3.3
+  ) +
+  ggplot2::annotate(
+    geom = "label",
+    x = 1.45,
+    y = data_jeden_odhad$odhadnuta_delka,
+    label = paste0(
+      "odhadnutá délka = ",
+      round(data_jeden_odhad$odhadnuta_delka, 2),
+      " cm"
+    ),
+    color = barvy["model"],
+    fill = "white",
+    label.size = 0,
+    size = 3.3
+  )
+
+save_local_figure(
+  plot = plot_odhad_zaklad,
+  filename = "odhad_krok_1_primka.png"
+)
+
+save_local_figure(
+  plot = plot_odhad_s_merenim,
+  filename = "odhad_krok_2_mereni.png"
+)
+
+save_local_figure(
+  plot = plot_odhad_s_odhadem,
+  filename = "odhad_krok_3_odhad.png"
+)
+
+save_local_figure(
+  plot = plot_reziduum_jednoho_kvetu,
+  filename = "odhad_krok_4_residuum.png"
+)
+
+save_local_figure(
+  plot = plot_odhad_s_popiskem,
+  filename = "odhad_s_popiskem.png"
+)
+
+save_local_figure(
+  plot = plot_reziduum_s_popisky,
+  filename = "reziduum_s_popisky.png"
+)
+```
+
+```{r}
+#| label: zobrazit-primku-pro-jeden-kvet
+#| echo: false
+#| out-width: 84%
+include_local_figure("odhad_krok_1_primka.png")
+```
+
+::: {.notes}
+Nejprve ukážu pouze modelovou přímku. Pro každou šířku na ose x vrací jednu odhadnutou délku na ose y.
+:::
+
+## Přidáme jeden naměřený květ
+
+```{r}
+#| label: zobrazit-mereni-jednoho-kvetu
+#| echo: false
+#| out-width: 84%
+include_local_figure("odhad_krok_2_mereni.png")
+```
+
+::: {.takeaway-strip}
+Šedý bod: skutečně naměřená délka při šířce `r data_jeden_odhad$sirka_listku` cm.
+:::
+
+## Přímka vrátí odhad
+
+```{r}
+#| label: zobrazit-odhad-pro-jeden-kvet
+#| echo: false
+#| out-width: 84%
+include_local_figure("odhad_krok_3_odhad.png")
+```
+
+::: {.takeaway-strip}
+Fialový bod: odhadnutá délka na přímce při stejné šířce.
+:::
+
+## Mezi měřením a odhadem zůstává rozdíl
+
+```{r}
+#| label: zobrazit-rozdil-pro-jeden-kvet
+#| echo: false
+#| out-width: 84%
+include_local_figure("odhad_krok_4_residuum.png")
+```
+
+::: {.fragment .takeaway-strip}
+Zaoblená oranžová úsečka ukazuje **residuum**.
+:::
+
+## Jaké znaménko má residuum?
+
+<br>
+
+::: {.text-center .text-size-large}
+Naměřená délka šedého bodu leží **pod** odhadem modelu. Residuum je:
+:::
+
+<br>
+
+:::: {.columns}
+
+::: {.column width="33%"}
+::: {.panel-olive}
+**A)** kladné
+:::
+:::
+
+::: {.column width="34%"}
+::: {.panel-indigo}
+[**B)** záporné]{.rn-circle-orange}
+:::
+:::
+
+::: {.column width="33%"}
+::: {.panel-orange}
+**C)** nulové
+:::
+:::
+
+::::
+
+<br>
+
+::: {.takeaway-strip}
+Když nehlasujeme: doplňte „naměřená − odhadnutá = …“, včetně znaménka.
+:::
+
+::: {.notes}
+Správně B. Nechám studenty nejprve použít slovní pořadí naměřená minus odhadnutá; symbolický zápis přijde až na dalším slidu.
+:::
+
+## Jak residuum počítáme?
+
+<br>
+
+:::: {.columns .align-center}
+
+::: {.column width="58%"}
+::: {.panel-data}
+[Nejprve odhad modelu]{.panel-title}
+
+$$
+\text{odhadnutá délka}
+=
+\text{intercept}
++
+\text{sklon} \cdot \text{šířka}
+$$
+:::
+
+<br>
+
+::: {.panel-result .fragment}
+[Potom rozdíl]{.panel-title}
+
+$$
+\text{residuum}
+=
+\text{naměřená délka}
+-
+\text{odhadnutá délka}
+$$
+:::
+:::
+
+::: {.column width="42%"}
+```{r}
+#| label: zobrazit-obecny-rozdil-v-grafu
+#| echo: false
+#| out-width: 96%
+include_local_figure("odhad_krok_4_residuum.png")
+```
+:::
+
+::::
+
+## 1. Odhadnutá délka
+
+<br>
+
+::: {.takeaway-strip}
+Naše přímka: **intercept (a) = `r a0` cm** · **sklon (b) = `r b0` cm/cm**
+:::
+
+<br>
+
+:::: {.columns .align-center}
+
+::: {.column width="55%"}
+::: {.panel-data}
+[Dosadíme hodnoty]{.panel-title}
+
+$$
+\begin{aligned}
+\text{odhadnutá délka}
+&=
+\text{intercept}
++
+\text{sklon} \cdot \text{šířka} \\
+&=
+`r a0`
++
+`r b0` \cdot `r data_jeden_odhad$sirka_listku` \\
+&=
+`r round(data_jeden_odhad$odhadnuta_delka, 2)`\ \text{cm}
+\end{aligned}
+$$
+:::
+:::
+
+::: {.column width="45%"}
+```{r}
+#| label: zobrazit-popisek-odhadnute-delky
+#| echo: false
+#| out-width: 98%
+include_local_figure("odhad_s_popiskem.png")
+```
+:::
+
+::::
+
+## 2. Residuum
+
+<br>
+
+:::: {.columns .align-center}
+
+::: {.column width="55%"}
+::: {.panel-result}
+[Naměřená minus odhadnutá]{.panel-title}
+
+$$
+\begin{aligned}
+\text{residuum}
+&=
+\text{naměřená délka}
+-
+\text{odhadnutá délka} \\
+&=
+`r data_jeden_odhad$delka_listku`
+-
+`r round(data_jeden_odhad$odhadnuta_delka, 2)` \\
+&=
+`r round(data_jeden_odhad$residuum, 2)`\ \text{cm}
+\end{aligned}
+$$
+:::
+
+:::
+
+::: {.column width="45%"}
+```{r}
+#| label: zobrazit-popisky-pro-vypocet-rezidua
+#| echo: false
+#| out-width: 98%
+include_local_figure("reziduum_s_popisky.png")
+```
+:::
+
+::::
+
+<br>
+
+::: {.fragment .takeaway-strip}
+Zkráceně: $e_i = y_i - \hat{y}_i$
+:::
+
+## Residua očekáváme i u užitečného modelu
+
+<br>
+
+::: {.card-insight}
+::: {.card-title}
+Důležitá myšlenka
+:::
+
+::: {.panel-lead}
+Biologická variabilita nezmizí jen proto, že jsme nakreslili přímku
+:::
+:::
+
+<br>
+
+::: {.text-center}
+Model nemusí trefit každý květ přesně. Potřebujeme ale zjistit, zda chyby působí náhodně, nebo zda v nich zůstává vzor.
+:::
+
+## Jak porovnat celé přímky?
+
+::: {.incremental}
+1. Pro každý květ změříme residuum.
+2. Residua umocníme, aby se kladné a záporné rozdíly nevyrušily.
+3. Čtverce sečteme do jednoho čísla: **SSE**.
+:::
+
+<br>
+
+::: {.fragment .takeaway-strip}
+Menší SSE znamená, že body leží celkově blíže přímce.
+:::
+
+## Když se přímka mění, mění se i chyby
+
+<br>
+
+```{r}
+#| label: vytvorit-animaci-ctvercu-rezidui
+#| include: false
+#| message: false
+#| warning: false
+data_uzly_animace_sse <-
+  data.frame(
+    snimek = c(1, 4, 7, 10, 13),
+    a = c(0, 1.1, 3.5, 1.1, 0),
+    b = c(3.4, 2.2, 0.8, 2.2, 3.4)
+  )
+
+data_animace_sse <-
+  data.frame(
+    snimek = seq_len(13),
+    a = stats::approx(
+      x = data_uzly_animace_sse$snimek,
+      y = data_uzly_animace_sse$a,
+      xout = seq_len(13)
+    )$y,
+    b = stats::approx(
+      x = data_uzly_animace_sse$snimek,
+      y = data_uzly_animace_sse$b,
+      xout = seq_len(13)
+    )$y
+  )
+
+pomer_stran_ctverce <-
+  0.42
+
+vec_soubory_animace_sse <-
+  purrr::map_chr(
+    .x = seq_len(nrow(data_animace_sse)),
+    .f = function(i) {
+      data_snimek <-
+        data4
+
+      data_snimek$odhadnuta_delka <-
+        data_animace_sse$a[i] +
+        data_animace_sse$b[i] * data_snimek$sirka_listku
+
+      data_snimek$residuum <-
+        data_snimek$delka_listku - data_snimek$odhadnuta_delka
+
+      data_snimek$kvet <-
+        factor(
+          seq_len(nrow(data_snimek)),
+          labels = paste("květ", seq_len(nrow(data_snimek)))
+        )
+
+      data_snimek$ctverec_rezidua <-
+        data_snimek$residuum^2
+
+      data_snimek$xmax_ctverce <-
+        data_snimek$sirka_listku +
+        pomer_stran_ctverce * abs(data_snimek$residuum)
+
+      data_snimek$ymin_ctverce <-
+        pmin(data_snimek$delka_listku, data_snimek$odhadnuta_delka)
+
+      data_snimek$ymax_ctverce <-
+        pmax(data_snimek$delka_listku, data_snimek$odhadnuta_delka)
+
+      sse_snimku <-
+        sum(data_snimek$residuum^2)
+
+      soubor_snimku <-
+        tempfile(fileext = ".png")
+
+      graf_ctvercu <-
+        ggplot2::ggplot(
+          data = data_snimek,
+          mapping = ggplot2::aes(
+            x = sirka_listku,
+            y = delka_listku
+          )
+        ) +
+        ggplot2::geom_rect(
+          mapping = ggplot2::aes(
+            xmin = sirka_listku,
+            xmax = xmax_ctverce,
+            ymin = ymin_ctverce,
+            ymax = ymax_ctverce
+          ),
+          inherit.aes = FALSE,
+          fill = barvy["interpretace"],
+          color = barvy["interpretace"],
+          alpha = 0.28,
+          linewidth = 0.8
+        ) +
+        ggplot2::geom_abline(
+          intercept = data_animace_sse$a[i],
+          slope = data_animace_sse$b[i],
+          color = barvy["model"],
+          linewidth = 1.3
+        ) +
+        ggplot2::geom_segment(
+          mapping = ggplot2::aes(
+            xend = sirka_listku,
+            yend = odhadnuta_delka
+          ),
+          color = barvy["interpretace"],
+          linewidth = 1.1
+        ) +
+        ggplot2::geom_point(
+          color = barvy["data"],
+          size = 2
+        ) +
+        ggplot2::coord_fixed(
+          ratio = pomer_stran_ctverce,
+          xlim = c(-3, 5),
+          ylim = c(0, 8.5),
+          expand = FALSE
+        ) +
+        ggplot2::labs(
+          x = "Šířka (cm)",
+          y = "Délka (cm)",
+          title = paste0(
+            "intercept = ", round(data_animace_sse$a[i], 2),
+            "\nsklon = ", round(data_animace_sse$b[i], 2)
+          )
+        ) +
+        ggplot2::theme_minimal(base_size = 11) +
+        ggplot2::theme(
+          plot.title = ggplot2::element_text(
+            color = barvy["model"],
+            face = "bold"
+          )
+        )
+
+      graf_soucet <-
+        ggplot2::ggplot(
+          data = data_snimek,
+          mapping = ggplot2::aes(
+            x = kvet,
+            y = ctverec_rezidua
+          )
+        ) +
+        ggplot2::geom_col(
+          fill = barvy["interpretace"],
+          alpha = 0.72,
+          width = 0.68
+        ) +
+        ggplot2::geom_text(
+          mapping = ggplot2::aes(
+            label = round(ctverec_rezidua, 2)
+          ),
+          vjust = -0.5,
+          size = 3.5,
+          color = barvy["data"]
+        ) +
+        ggplot2::scale_y_continuous(
+          limits = c(0, 7.5),
+          expand = ggplot2::expansion(mult = c(0, 0.02))
+        ) +
+        ggplot2::labs(
+          x = NULL,
+          y = expression(e[i]^2),
+          title = "Čtverce residuí",
+          subtitle = paste0(
+            "SSE pro 4 květy = ",
+            round(sse_snimku, 2)
+          )
+        ) +
+        ggplot2::theme_minimal(base_size = 11) +
+        ggplot2::theme(
+          plot.title = ggplot2::element_text(
+            color = barvy["model"],
+            face = "bold"
+          ),
+          plot.subtitle = ggplot2::element_text(
+            color = barvy["interpretace"],
+            face = "bold"
+          ),
+          axis.text.x = ggplot2::element_text(angle = 0)
+        )
+
+      graf_snimku <-
+        ggplot2::ggplot() +
+        ggplot2::annotation_custom(
+          grob = ggplot2::ggplotGrob(graf_ctvercu),
+          xmin = 0,
+          xmax = 1.08,
+          ymin = 0,
+          ymax = 1
+        ) +
+        ggplot2::annotation_custom(
+          grob = ggplot2::ggplotGrob(graf_soucet),
+          xmin = 1.08,
+          xmax = 2,
+          ymin = 0,
+          ymax = 1
+        ) +
+        ggplot2::coord_cartesian(
+          xlim = c(0, 2),
+          ylim = c(0, 1),
+          expand = FALSE
+        ) +
+        ggplot2::theme_void() +
+        ggview::canvas(
+          width = 1700,
+          height = 520,
+          units = "px"
+        )
+
+      ggview::save_ggplot(
+        plot = graf_snimku,
+        file = soubor_snimku
+      )
+
+      soubor_snimku
+    }
+  )
+
+save_local_gif(
+  frame_files = vec_soubory_animace_sse,
+  filename = "ctverce_rezidui.gif",
+  fps = 2
+)
+
+unlink(vec_soubory_animace_sse)
+```
+
+```{r}
+#| label: zobrazit-animaci-ctvercu-rezidui
+#| echo: false
+#| out-width: 100%
+include_local_figure("ctverce_rezidui.gif")
+```
+
+:::: {.columns .align-center}
+
+::: {.column width="48%"}
+::: {.panel-question .card-compact .text-size-smaller}
+**Sledujte jeden cyklus:** Kdy je celková oranžová plocha nejmenší?
+:::
+:::
+
+::: {.column width="52%"}
+::: {.panel-result .card-compact .text-size-smaller .fragment}
+**Co se mění:** strana = $|e_i|$ · plocha = $e_i^2$ · součet = **SSE**
+:::
+:::
+
+::::
+
+::: {.notes}
+Čtverce jsou vykreslené v pevném poměru os, takže jejich strana skutečně odpovídá absolutní velikosti residua a jejich plocha druhé mocnině residua. Nechám animaci proběhnout a požádám studenty, aby sledovali, kdy je celková oranžová plocha nejmenší.
+:::
+
+## Která přímka je nejlepší podle dat?
+
+<br>
+
+:::: {.columns .text-bold .text-center}
+::: {.column width="18%"}
+Přímka
+:::
+::: {.column width="24%"}
+Intercept
+:::
+::: {.column width="24%"}
+Sklon
+:::
+::: {.column width="34%"}
+SSE pro 4 květy
+:::
+::::
+
+::: {.panel-data .card-compact}
+:::: {.columns .text-center}
+::: {.column width="18%"}
+**A**
+:::
+::: {.column width="24%"}
+`r kandidati$a[1]`
+:::
+::: {.column width="24%"}
+`r kandidati$b[1]`
+:::
+::: {.column width="34%"}
+`r round(kandidati$SSE4[1], 2)`
+:::
+::::
+:::
+
+::: {.panel-data .card-compact .rn-circle-orange}
+:::: {.columns .text-center}
+::: {.column width="18%"}
+**B**
+:::
+::: {.column width="24%"}
+`r kandidati$a[2]`
+:::
+::: {.column width="24%"}
+`r kandidati$b[2]`
+:::
+::: {.column width="34%"}
+`r round(kandidati$SSE4[2], 2)`
+:::
+::::
+:::
+
+::: {.panel-data .card-compact}
+:::: {.columns .text-center}
+::: {.column width="18%"}
+**C**
+:::
+::: {.column width="24%"}
+`r kandidati$a[3]`
+:::
+::: {.column width="24%"}
+`r kandidati$b[3]`
+:::
+::: {.column width="34%"}
+`r round(kandidati$SSE4[3], 2)`
+:::
+::::
+:::
+
+<br>
+
+::: {.takeaway-strip}
+Když nehlasujeme: vyberte přímku s nejmenším SSE a jednou větou vysvětlete, co toto číslo shrnuje.
+:::
+
+::: {.notes}
+Studenti se vrátí k předchozí volbě A/B/C. Pro stejné čtyři květy z animace vychází z kandidátů B. Dodám, že skutečný lineární model použije všech 150 květů a není omezen na tyto tři možnosti.
+:::
+
+## Počítač najde nejlepší přímku
+
+<br>
+
+::: {.text-center .text-size-heading1 .text-bold}
+`lm()` najde intercept a sklon, které minimalizují SSE.
+:::
+
+<br>
+
+::: {.text-center}
+My už ale víme, **co** hledá a **proč** právě tuto přímku preferuje.
+:::
+
+## Stejná data v R
+
+<br>
+
+:::: {.columns .align-center}
+
+::: {.column width="58%"}
+
+```{r}
+#| label: ukazat-pripravu-dat
+#| echo: true
+data(iris)
+
+data_kosatce <-
+  data.frame(
+    sirka_listku = iris$Petal.Width,
+    delka_listku = iris$Petal.Length,
+    druh = iris$Species
+  )
+```
+:::
+
+::: {.column width="42%"}
+::: {.panel-data}
+[Tři sloupce]{.panel-title}
+
+- `sirka_listku`: prediktor
+- `delka_listku`: odezva
+- `druh`: zatím mimo model
+:::
+:::
+
+::::
+
+## Co obsahuje `data_kosatce`?
+
+<br>
+
+```{r}
+#| label: shrnout-data-kosatce
+#| echo: true
+summary(data_kosatce)
+```
+
+::: {.takeaway-strip}
+Před modelováním vždy nejprve zkontrolujeme názvy, rozsahy a případné chybějící hodnoty.
+:::
+
+## Gramatika funkce `lm()`
+
+<br>
+
+```r
+lm(
+  formula = odezva ~ prediktor,
+  data = data
+)
+```
+
+<br>
+
+::: {.text-center .text-size-large .fragment}
+Znak `~` čteme: **odezvu vysvětlujeme pomocí prediktoru**.
+:::
+
+## Dosadíme názvy z naší otázky
+
+<br>
+
+:::: {.columns .align-center}
+
+::: {.column width="50%"}
+::: {.panel-data}
+[Formula]{.panel-title}
+
+`delka_listku ~ sirka_listku`
+
+odezva ~ prediktor
+:::
+:::
+
+::: {.column width="50%"}
+::: {.panel-data .fragment}
+[Data]{.panel-title}
+
+`data = data_kosatce`
+
+tabulka se všemi 150 květy
+:::
+:::
+
+::::
+
+## Fitujeme první model
+
+<br>
+
+```{r}
+#| label: fitovat-model-v-r
+#| echo: true
+mod_listky <-
+  lm(
+    formula = delka_listku ~ sirka_listku,
+    data = data_kosatce
+  )
+```
+
+::: {.fragment .takeaway-strip}
+Model ukládáme jako `mod_listky`, abychom se k němu mohli vracet.
+:::
+
+## Jaké koeficienty model odhadl?
+
+<br>
+
+:::: {.columns .align-center}
+
+::: {.column width="46%"}
+```{r}
+#| label: zobrazit-koeficienty-modelu
+#| echo: true
+coef(mod_listky)
+```
+:::
+
+::: {.column width="54%"}
+::: {.panel-result}
+[Odhadnuté koeficienty]{.panel-title}
+
+- intercept: **`r round(coef(mod_listky)[["(Intercept)"]], 2)` cm**
+- sklon: **`r round(coef(mod_listky)[["sirka_listku"]], 2)` cm/cm**
+:::
+:::
+
+::::
+
+## Co znamená odhadnutý sklon?
+
+<br>
+
+::: {.text-center .text-size-large}
+Sklon je **`r round(coef(mod_listky)[["sirka_listku"]], 2)` cm/cm**. Která interpretace je správná?
+:::
+
+<br>
+
+:::: {.columns .align-stretch}
+
+::: {.column width="32%"}
+::: {.panel-olive}
+**A)** Přesná změna každého jednotlivého květu.
+:::
+:::
+
+::: {.column width="36%"}
+::: {.panel-result}
+[**B)** Průměrná změna délky při zvýšení šířky o 1 cm.]{.rn-box-indigo}
+:::
+:::
+
+::: {.column width="32%"}
+::: {.panel-orange}
+**C)** Procento variability vysvětlené šířkou.
+:::
+:::
+
+::::
+
+<br>
+
+::: {.takeaway-strip}
+Bez hlasování: přepište B vlastními slovy; zachovejte **1 cm** a **v průměru**.
+:::
+
+::: {.notes}
+Po volbě nechám studenty přesvědčit souseda. Správně B. A zaměňuje průměrný vztah za přesné pravidlo, C zaměňuje sklon za procento vysvětlené variability.
+:::
+
+## Vracíme se k biologické otázce
+
+<br>
+<br>
+
+::: {.box-question}
+**Mají širší korunní lístky kosatců také větší délku, a pokud ano, jak velká je tato změna?**
+:::
+
+<br>
+
+::: {.panel-result .fragment}
+[Co můžeme říct]{.panel-title}
+
+Při zvýšení šířky o 1 cm model odhaduje v průměru zvýšení délky o **`r round(coef(mod_listky)[["sirka_listku"]], 2)` cm**.
+:::
+
+## Co ještě nevíme?
+
+<br>
+<br>
+
+:::: {.columns .align-stretch}
+
+::: {.column width="50%"}
+::: {.panel-question}
+[Nejistota]{.panel-title}
+
+Jak přesný je odhad **2,23 cm/cm**?
+:::
+:::
+
+::: {.column width="50%"}
+::: {.panel-warning .fragment}
+[Zbývající struktura]{.panel-title}
+
+Přehlíží jedna přímka systematický vzor?
+:::
+:::
+
+::::
+
+## Směr a velikost nejsou příčina
+
+<br>
+<br>
+
+::: {.box-rule}
+::: {.card-title}
+Biologický závěr
+:::
+
+::: {.text-center .text-size-heading1 .text-bold}
+Asociace $\neq$ příčina
+:::
+
+Model popisuje vztah v datech. Bez dalšího výzkumného designu neprokazuje, že větší šířka **způsobuje** větší délku.
+:::
+
+## Co zůstalo po odhadu přímky?
+
+```{r}
+#| label: vytvorit-grafy-rezidui
+#| include: false
+#| message: false
+#| warning: false
+plot_histogram_rezidui <-
+  ggplot2::ggplot(
+    data = data_rezidua,
+    mapping = ggplot2::aes(x = reziduum)
+  ) +
+  ggplot2::geom_histogram(
+    binwidth = 0.25,
+    boundary = 0,
+    fill = barvy["interpretace"],
+    color = "white",
+    alpha = 0.78
+  ) +
+  ggplot2::geom_vline(
+    xintercept = 0,
+    linetype = 2,
+    color = barvy["model"],
+    linewidth = 1
+  ) +
+  ggplot2::labs(
+    x = "Residuum (cm)",
+    y = "Počet květů"
+  ) +
+  ggplot2::theme_minimal(base_size = 11)
+
+plot_rezidua <-
+  ggplot2::ggplot(
+    data = data_rezidua,
+    mapping = ggplot2::aes(
+      x = odhadnuta_delka,
+      y = reziduum
+    )
+  ) +
+  ggplot2::geom_hline(
+    yintercept = 0,
+    linetype = 2,
+    color = barvy["model"],
+    linewidth = 1
+  ) +
+  ggplot2::geom_point(
+    color = barvy["data"],
+    alpha = 0.72,
+    size = 2.7
+  ) +
+  ggplot2::labs(
+    x = "Odhadnutá délka (cm)",
+    y = "Residuum (cm)"
+  ) +
+  ggplot2::theme_minimal(base_size = 11)
+
+save_local_figure(
+  plot = plot_histogram_rezidui,
+  filename = "histogram_rezidui.png"
+)
+
+save_local_figure(
+  plot = plot_rezidua,
+  filename = "graf_rezidui.png"
+)
+```
+
+```{r}
+#| label: zobrazit-histogram-rezidui
+#| echo: false
+#| out-width: 86%
+include_local_figure("histogram_rezidui.png")
+```
+
+::: {.notes}
+Nejprve se podíváme na rozdělení všech residuí. Histogram ukáže jejich typickou velikost a znaménko, ale skryje, u kterých odhadnutých hodnot jednotlivé chyby vznikly. Proto v dalším kroku residua vrátíme k odhadnutým hodnotám.
+:::
+
+## Jak tento graf čteme?
+
+:::: {.columns}
+
+::: {.column width="58%"}
+```{r}
+#| label: zobrazit-graf-rezidui-znovu
+#| echo: false
+include_local_figure("graf_rezidui.png")
+```
+:::
+
+::: {.column width="42%"}
+::: {.incremental}
+- každý bod je jeden květ
+- nad nulou model délku podhodnotil
+- pod nulou model délku nadhodnotil
+- hledáme neuspořádaný mrak kolem nuly
+:::
+:::
+
+::::
+
+## Vidíte náhodný mrak, nebo zbývající vzor?
+
+<br>
+
+::: {.text-center .text-size-heading1 .text-bold}
+Prohlédněte si graf 30 sekund a najděte jednu část, která vás zneklidňuje.
+:::
+
+<br>
+
+::: {.panel-olive}
+[Diskuze se sousedem — 2 min]{.panel-title}
+
+Popište pouze to, co v grafu vidíte. Zatím nenavrhujte řešení.
+:::
+
+::: {.notes}
+Toto je hlavní diagnostická interpretace. Nechám studenty formulovat polohu shluků nebo systematické odchylky kolem nuly, aniž bych vyžadoval pokročilé názvy diagnostických problémů.
+:::
+
+## Stejná původní data, ale s druhem
+
+```{r}
+#| label: vytvorit-data-podle-druhu
+#| include: false
+#| message: false
+#| warning: false
+barvy_druhu <-
+  c(
+    setosa = "#1B9E77",
+    versicolor = "#D95F02",
+    virginica = "#7570B3"
+  )
+
+plot_data_podle_druhu <-
+  ggplot2::ggplot(
+    data = data_kosatce,
+    mapping = ggplot2::aes(
+      x = sirka_listku,
+      y = delka_listku,
+      color = druh
+    )
+  ) +
+  ggplot2::geom_point(
+    alpha = 0.78,
+    size = 2.8
+  ) +
+  ggplot2::geom_abline(
+    intercept = coef(mod_listky)[["(Intercept)"]],
+    slope = coef(mod_listky)[["sirka_listku"]],
+    color = barvy["model"],
+    linewidth = 1.25
+  ) +
+  ggplot2::scale_color_manual(values = barvy_druhu) +
+  ggplot2::scale_x_continuous(limits = c(0, 2.7)) +
+  ggplot2::scale_y_continuous(limits = c(0, 7.2)) +
+  ggplot2::labs(
+    x = "Šířka korunního lístku (cm)",
+    y = "Délka korunního lístku (cm)",
+    color = "Druh"
+  ) +
+  ggplot2::theme_minimal(base_size = 11) +
+  ggplot2::theme(
+    legend.position = "bottom",
+    legend.direction = "horizontal"
+  )
+
+save_local_figure(
+  plot = plot_data_podle_druhu,
+  filename = "data_podle_druhu.png"
+)
+```
+
+```{r}
+#| label: zobrazit-data-podle-druhu
+#| echo: false
+#| out-width: 90%
+include_local_figure("data_podle_druhu.png")
+```
+
+## Stejná residua, ale s druhem
+
+```{r}
+#| label: vytvorit-rezidua-podle-druhu
+#| include: false
+#| message: false
+#| warning: false
+plot_rezidua_podle_druhu <-
+  ggplot2::ggplot(
+    data = data_rezidua,
+    mapping = ggplot2::aes(
+      x = odhadnuta_delka,
+      y = reziduum,
+      color = druh
+    )
+  ) +
+  ggplot2::geom_hline(
+    yintercept = 0,
+    linetype = 2,
+    color = barvy["data"],
+    linewidth = 1
+  ) +
+  ggplot2::geom_point(
+    alpha = 0.8,
+    size = 2.8
+  ) +
+  ggplot2::scale_color_manual(values = barvy_druhu) +
+  ggplot2::labs(
+    x = "Odhadnutá délka (cm)",
+    y = "Residuum (cm)",
+    color = "Druh"
+  ) +
+  ggplot2::theme_minimal(base_size = 11) +
+  ggplot2::theme(
+    legend.position = "bottom",
+    legend.direction = "horizontal"
+  )
+
+save_local_figure(
+  plot = plot_rezidua_podle_druhu,
+  filename = "rezidua_podle_druhu.png"
+)
+```
+
+```{r}
+#| label: zobrazit-rezidua-podle-druhu
+#| echo: false
+#| out-width: 90%
+include_local_figure("rezidua_podle_druhu.png")
+```
+
+## Co model neviděl?
+
+<br>
+
+::: {.panel-question}
+[Chybějící prediktor]{.panel-title}
+
+::: {.text-center .text-size-heading1 .text-bold}
+Druh kosatce
+:::
+
+Jedna přímka zachytila celkový růst, ale druhy netvoří jeden společný mrak. Jejich struktura proto zůstává v residuích.
+:::
+
+## Co ještě z lineárního modelu neplyne?
+
+::: {.incremental}
+- neznáme nejistotu odhadnutého sklonu
+- neprokázali jsme příčinný mechanismus
+- nezahrnuli jsme druh kosatce jako další prediktor
+- nevyřešili jsme všechny možné diagnostické problémy
+:::
+
+<br>
+
+::: {.fragment .takeaway-strip}
+První model je začátek argumentu, ne jeho automatický konec.
+:::
 
 ## Shrnutí
 
-- Lineární model zavádí hlavní pracovní rámec.
-- Začínáme biologickou otázkou a grafem, ne názvem metody.
-- Koeficient modelu interpretujeme jako biologicky smysluplnou změnu odezvy.
-- Rezidua používáme jako kontrolu toho, co model nevysvětluje.
+::: {.blockquote}
+::: {.incremental}
+- Biologickou otázku převádíme na odezvu a prediktor.
+- Sklon popisuje změnu odhadnuté odezvy při změně prediktoru o jednu jednotku.
+- `lm()` hledá přímku s nejmenším součtem čtverců residuí.
+- Residua ukazují, co model u jednotlivých pozorování nevysvětlil.
+- Vzor v residuích upozorňuje na chybějící strukturu nebo omezení modelu.
+:::
+:::
 
-## Závěrečná otázka
+## Poslední kontrola
 
-Ve které situaci by pro vztah dvou proměnných byl jednoduchý `lm(y ~ x)` nevhodný, i když bodový graf na první pohled vypadá lineárně?
+::: {.box-question}
+[Model má kladný sklon]{.panel-title}
 
-::: {.takeaway-strip}
-Zapište si jednu podmínku, kterou byste před použitím tohoto modelu vždy zkontrolovali.
+**Co zkontrolujete před biologickou interpretací?**
+:::
+
+<br>
+
+::: {.panel-result .fragment}
+[Minimální odpověď]{.panel-title}
+
+Residua a biologický kontext modelu.
+:::
+
+::: {.notes}
+Studenti napíší jednu kontrolu nebo ji řeknou sousedovi. Po odhalení minimální odpovědi uzavřu L03 a připomenu, že L04 přidá interval spolehlivosti a p-hodnotu jako popis nejistoty odhadu.
 :::
