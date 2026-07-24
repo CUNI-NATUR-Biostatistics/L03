@@ -9,7 +9,9 @@
 
 ## Inspiration check
 
-- Which external pattern ended up most useful: L02/L-example-style question–answer reveals with rough notation, combined with progressive construction of one stable visual anchor.
+- Which external pattern ended up most useful: L02 and early L01-pilot
+  question–answer reveals with rough notation, combined with progressive
+  construction of one stable visual anchor.
 - Which pattern looked promising but was dropped: Keeping the complete fitted-value and residual calculation on one slide; the content became clearer as a short staged sequence.
 - Did any imported idea feel too advanced, too technical, or too far from model-first teaching: Symbol-first formulas did. The revised sequence introduces intercept, slope, fitted value, and residual in ordinary words before compact notation.
 

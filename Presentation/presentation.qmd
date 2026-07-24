@@ -220,7 +220,9 @@ Po absolvování této přednášky budete schopni:
 :::
 
 ::: {.notes}
-Výsledky učení navážu přímo na úvodní otázku. Zdůrazním, že dnešním cílem není p-hodnota ani interval spolehlivosti; ty přijdou v následující lekci.
+Výsledky učení navážu přímo na úvodní otázku. Zdůrazním, že dnešním cílem
+je bodový odhad efektu. L04 přidá výběrovou variabilitu a interval
+spolehlivosti; testování hypotéz a p-hodnota přijdou až v L05.
 :::
 
 ## Minule jsme skončili tady
@@ -2048,5 +2050,7 @@ Residua a biologický kontext modelu.
 :::
 
 ::: {.notes}
-Studenti napíší jednu kontrolu nebo ji řeknou sousedovi. Po odhalení minimální odpovědi uzavřu L03 a připomenu, že L04 přidá interval spolehlivosti a p-hodnotu jako popis nejistoty odhadu.
+Studenti napíší jednu kontrolu nebo ji řeknou sousedovi. Po odhalení minimální
+odpovědi uzavřu L03 a připomenu, že L04 přidá výběrovou variabilitu a interval
+spolehlivosti jako vyjádření nejistoty odhadu. P-hodnota patří až do L05.
 :::

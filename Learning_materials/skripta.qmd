@@ -1287,7 +1287,11 @@ V dalších lekcích se naučíme rozlišovat také jiné viditelné vzory:
 
 **Hlavní princip zůstává stejný:** nejprve omezení modelu transparentně pojmenujeme a teprve potom volíme vhodné rozšíření.
 
-V následující lekci ponecháme stejný modelový rámec a přidáme inferenční vrstvu: `r render_glossary_term("interval-spolehlivosti", display = "intervaly spolehlivosti")` a `r render_glossary_term("p-hodnota", display = "p-hodnotu")` jako popis `r render_glossary_term("nejistota", display = "nejistoty")` odhadu.
+V následující lekci ponecháme stejný modelový rámec a přidáme první
+inferenční vrstvu: výběrovou variabilitu a
+`r render_glossary_term("interval-spolehlivosti", display = "intervaly spolehlivosti")`
+jako vyjádření `r render_glossary_term("nejistota", display = "nejistoty")`
+odhadu. Testování hypotéz a p-hodnota přijdou až v L05.
 
 ## Shrnutí
 
