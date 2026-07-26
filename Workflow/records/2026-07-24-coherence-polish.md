@@ -13,6 +13,14 @@
   question, candidate lines, visible relationship, and variability.
 - Preserved the approved sequence from biological question through candidate
   lines, fitted values, residuals, SSE, and `lm()`.
+- Wrapped dataset preparation and the four-row teaching dataset as optional
+  supplementary content.
+- Added the complete words → text-only equation → numbers → symbols
+  progression for the introduced calculations.
+- Clarified that `geom_smooth(method = "lm")` is useful for a quick first
+  visualisation but does not replace a stored `lm()` object.
+- Retained learning outcomes as an incremental highlighted bullet list and
+  added semantic strips only where they clarify model or residual meaning.
 - Marked `Exercises/cviceni.R` explicitly deferred; no practical content was
   authored.
 
@@ -26,9 +34,19 @@
 - [x] Fresh-session activation resolved to
   `D:/GITHUB/CUNI-NATUR-Biostatistics/L03`; `renv::status()` reported no
   issues.
-- [x] The complete deck overview remains the previously approved visual
-  sequence; source changes affect only speaker-note bridges.
-- [ ] Rerender written HTML after the companion exact-slug glossary-helper
-  change is available without the legacy warning.
-- [ ] Complete final UTF-8, chunk-label, link, and glossary checks immediately
-  before publication.
+- [x] The complete 47-state deck overview and all revised high-risk slides were
+  visually inspected.
+- [x] Completed final UTF-8, chunk-label, link, glossary, visible-code, and
+  source-diff checks.
+- [x] Confirmed that `Presentation/presentation.html` and `docs/index.html`
+  remain byte-identical after the final render.
+
+## Human review decision
+
+Approved by the human reviewer on 2026-07-25. The validated regression arc is
+retained, the learning outcomes remain highlighted bullets rather than panels,
+and the revised bridge assigns confidence intervals to the following lesson
+and p-values to the lesson after that.
+
+The companion `slovnik` PR remains a shared release dependency, but the current
+lesson source and rendered artifacts have passed their local validation.
