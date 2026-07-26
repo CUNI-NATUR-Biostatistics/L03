@@ -137,7 +137,7 @@ project_name <-
   basename(here::here())
 
 display_name <-
-  paste("Biostatistika", "-", project_name)
+  "Biostatistika"
 
 github_url <-
   paste0(
@@ -157,7 +157,7 @@ slides_url <-
 
 <br>
 
-::: {.text-color-white .text-font-heading .text-size-heading .text-bold}
+::: {.text-color-indigo_velvet .text-font-heading .text-size-heading .text-bold}
 `r display_name`
 :::
 
@@ -210,17 +210,22 @@ Otevírám výzkumnou otázkou ještě před výsledky učení. Nechám studenty
 
 ## Výsledky učení
 
-Po absolvování této přednášky budete schopni:
+Po dnešní přednášce budete schopni:
 
 ::: {.incremental}
-- převést biologickou otázku na modelovou otázku s odezvou a prediktorem
-- fitovat model `lm(y ~ x)` a interpretovat směr i velikost efektu
-- vysvětlit, co je residuum a co říká o konkrétním pozorování
-- přečíst základní graf residuí a rozpoznat, že model něco systematicky nezachytil
+- převést biologickou otázku na vztah mezi
+  [odezvou]{.text-hgl-indigo_velvet} a [prediktorem]{.text-hgl-orange}
+- fitovat `lm(y ~ x)` a interpretovat
+  [směr]{.text-hgl-indigo_velvet} i [velikost efektu]{.text-hgl-orange}
+- vysvětlit [residuum]{.text-hgl-orange} jako rozdíl mezi
+  [měřením]{.text-hgl-graphite} a [odhadem]{.text-hgl-indigo_velvet}
+- číst graf residuí a rozpoznat [zbývající vzor]{.text-hgl-orange}
 :::
 
 ::: {.notes}
-Výsledky učení navážu přímo na úvodní otázku. Zdůrazním, že dnešním cílem není p-hodnota ani interval spolehlivosti; ty přijdou v následující lekci.
+Výsledky učení navážu přímo na úvodní otázku. Zdůrazním, že dnešním cílem
+je bodový odhad efektu. Následující lekce přidá výběrovou variabilitu a interval
+spolehlivosti; testování hypotéz a p-hodnota přijdou až později.
 :::
 
 ## Minule jsme skončili tady
@@ -295,10 +300,10 @@ Rostoucí a poměrně těsný vztah.
 ::::
 
 ::: {.notes}
-Toto je přímá návaznost na závěr L02. Připomenu pouze: bodový graf ukazuje směr a rozptýlení, Pearsonova korelace shrne směr a těsnost. Přímku zatím nepoužívám, protože v L02 ještě nebyla součástí výkladu.
+Toto je přímá návaznost na závěr minulé lekce. Připomenu pouze: bodový graf ukazuje směr a rozptýlení, Pearsonova korelace shrne směr a těsnost. Přímku zatím nepoužívám, protože ještě nebyla součástí výkladu.
 :::
 
-## Co přidá model?
+## Co přidá [model]{.text-hgl-indigo_velvet}?
 
 <br>
 
@@ -308,9 +313,9 @@ Toto je přímá návaznost na závěr L02. Připomenu pouze: bodový graf ukazu
 ::: {.panel-result}
 [Co už umíme]{.panel-title}
 
-- vztah zobrazit
-- popsat jeho směr
-- shrnout jeho těsnost korelací
+- [vztah zobrazit]{.text-hgl-graphite}
+- popsat jeho [směr]{.text-hgl-indigo_velvet}
+- shrnout jeho [těsnost korelací]{.text-hgl-orange}
 :::
 :::
 
@@ -318,7 +323,8 @@ Toto je přímá návaznost na závěr L02. Připomenu pouze: bodový graf ukazu
 ::: {.panel-question}
 [Co ještě potřebujeme]{.panel-title}
 
-**O kolik** se typicky změní odezva, když se prediktor zvýší o jednu jednotku?
+[O kolik]{.text-hgl-orange} se typicky změní
+[odezva]{.text-hgl-indigo_velvet}, když se prediktor zvýší o jednu jednotku?
 :::
 :::
 
@@ -327,17 +333,19 @@ Toto je přímá návaznost na závěr L02. Připomenu pouze: bodový graf ukazu
 <br>
 
 ::: {.takeaway-strip .fragment}
-Tato lekce přidá velikost efektu. Nejistotu odhadu přidáme v následující lekci.
+Tato lekce přidá [velikost efektu]{.text-hgl-indigo_velvet}.
+[Nejistotu odhadu]{.text-hgl-orange} přidáme v následující lekci.
 :::
 
-## Která proměnná má kterou roli?
+## Která [proměnná]{.text-hgl-orange} má kterou roli?
 
 ::: {.card-question}
 ::: {.card-title}
 Otázka
 :::
 
-Chceme odhadovat **délku** korunního lístku podle jeho **šířky**. Co je **odezva**?
+Chceme odhadovat [délku]{.text-hgl-indigo_velvet} korunního lístku podle jeho
+[šířky]{.text-hgl-orange}. Co je **odezva**?
 :::
 
 <br>
@@ -671,7 +679,7 @@ save_local_figure(
 include_local_figure("intercepty.png")
 ```
 
-::: {.takeaway-strip}
+::: {.strip-indigo}
 Intercept (a) posouvá přímku nahoru nebo dolů.
 :::
 
@@ -721,11 +729,11 @@ save_local_figure(
 include_local_figure("sklony.png")
 ```
 
-::: {.takeaway-strip}
+::: {.strip-indigo}
 Sklon (b) říká, jak rychle se mění odhadnutá délka s rostoucí šířkou.
 :::
 
-## Dvě čísla popíší každou přímku
+## [Dvě čísla]{.text-hgl-indigo_velvet} popíší každou přímku
 
 <br>
 
@@ -932,7 +940,7 @@ include_local_figure("odhad_krok_2_mereni.png")
 ```
 
 ::: {.takeaway-strip}
-Šedý bod: skutečně naměřená délka při šířce `r data_jeden_odhad$sirka_listku` cm.
+[Šedý bod]{.text-hgl-graphite}: skutečně naměřená délka při šířce `r data_jeden_odhad$sirka_listku` cm.
 :::
 
 ## Přímka vrátí odhad
@@ -945,10 +953,10 @@ include_local_figure("odhad_krok_3_odhad.png")
 ```
 
 ::: {.takeaway-strip}
-Fialový bod: odhadnutá délka na přímce při stejné šířce.
+[Fialový bod]{.text-hgl-indigo_velvet}: odhadnutá délka na přímce při stejné šířce.
 :::
 
-## Mezi měřením a odhadem zůstává rozdíl
+## Mezi [měřením]{.text-hgl-graphite} a [odhadem]{.text-hgl-indigo_velvet} zůstává rozdíl
 
 ```{r}
 #| label: zobrazit-rozdil-pro-jeden-kvet
@@ -957,8 +965,8 @@ Fialový bod: odhadnutá délka na přímce při stejné šířce.
 include_local_figure("odhad_krok_4_residuum.png")
 ```
 
-::: {.fragment .takeaway-strip}
-Zaoblená oranžová úsečka ukazuje **residuum**.
+::: {.fragment .strip-orange}
+Zaoblená oranžová úsečka ukazuje [residuum]{.text-hgl-orange}.
 :::
 
 ## Jaké znaménko má residuum?
@@ -966,7 +974,8 @@ Zaoblená oranžová úsečka ukazuje **residuum**.
 <br>
 
 ::: {.text-center .text-size-large}
-Naměřená délka šedého bodu leží **pod** odhadem modelu. Residuum je:
+[Naměřená délka]{.text-hgl-graphite} šedého bodu leží **pod**
+[odhadem modelu]{.text-hgl-indigo_velvet}. Residuum je:
 :::
 
 <br>
@@ -1003,7 +1012,7 @@ Když nehlasujeme: doplňte „naměřená − odhadnutá = …“, včetně zna
 Správně B. Nechám studenty nejprve použít slovní pořadí naměřená minus odhadnutá; symbolický zápis přijde až na dalším slidu.
 :::
 
-## Jak residuum počítáme?
+## Jak [residuum]{.text-hgl-orange} počítáme?
 
 <br>
 
@@ -1149,7 +1158,8 @@ Důležitá myšlenka
 :::
 
 ::: {.panel-lead}
-Biologická variabilita nezmizí jen proto, že jsme nakreslili přímku
+[Biologická variabilita]{.text-hgl-orange} nezmizí jen proto, že jsme
+nakreslili [modelovou přímku]{.text-hgl-indigo_velvet}
 :::
 :::
 
@@ -1161,11 +1171,36 @@ Model nemusí trefit každý květ přesně. Potřebujeme ale zjistit, zda chyby
 
 ## Jak porovnat celé přímky?
 
-::: {.incremental}
-1. Pro každý květ změříme residuum.
-2. Residua umocníme, aby se kladné a záporné rozdíly nevyrušily.
-3. Čtverce sečteme do jednoho čísla: **SSE**.
+:::: {.columns .align-stretch}
+
+::: {.column width="32%"}
+::: {.panel-data}
+[1 · Změřit rozdíl]{.panel-title}
+
+Pro každý květ určíme
+[residuum]{.text-hgl-orange}.
 :::
+:::
+
+::: {.column width="34%"}
+::: {.panel-orange .fragment}
+[2 · Odstranit znaménko]{.panel-title}
+
+Každé residuum
+[umocníme]{.text-hgl-orange}.
+:::
+:::
+
+::: {.column width="32%"}
+::: {.panel-result .fragment}
+[3 · Shrnout přímku]{.panel-title}
+
+Čtverce sečteme do
+[jednoho čísla: SSE]{.text-hgl-indigo_velvet}.
+:::
+:::
+
+::::
 
 <br>
 
@@ -1427,7 +1462,7 @@ include_local_figure("ctverce_rezidui.gif")
 Čtverce jsou vykreslené v pevném poměru os, takže jejich strana skutečně odpovídá absolutní velikosti residua a jejich plocha druhé mocnině residua. Nechám animaci proběhnout a požádám studenty, aby sledovali, kdy je celková oranžová plocha nejmenší.
 :::
 
-## Která přímka je nejlepší podle dat?
+## Která [přímka]{.text-hgl-indigo_velvet} je nejlepší podle [dat]{.text-hgl-orange}?
 
 <br>
 
@@ -1509,16 +1544,33 @@ Studenti se vrátí k předchozí volbě A/B/C. Pro stejné čtyři květy z ani
 
 ## Počítač najde nejlepší přímku
 
-<br>
+:::: {.columns .align-stretch}
 
-::: {.text-center .text-size-heading1 .text-bold}
-`lm()` najde intercept a sklon, které minimalizují SSE.
+::: {.column width="49%"}
+::: {.panel-data}
+[Co hledá `lm()`]{.panel-title}
+
+[Intercept a sklon]{.text-hgl-indigo_velvet}, které dávají
+[nejmenší SSE]{.text-hgl-orange}.
+:::
 :::
 
+::: {.column width="49%"}
+::: {.panel-result .fragment}
+[Proč tuto přímku]{.panel-title}
+
+Její body leží podle zvoleného pravidla
+[celkově nejblíže datům]{.text-hgl-indigo_velvet}.
+:::
+:::
+
+::::
+
 <br>
 
-::: {.text-center}
-My už ale víme, **co** hledá a **proč** právě tuto přímku preferuje.
+::: {.takeaway-strip .fragment}
+`lm()` výpočet automatizuje; [statistické pravidlo]{.text-hgl-orange}
+jsme už sestavili sami.
 :::
 
 ## Stejná data v R
@@ -1657,12 +1709,14 @@ coef(mod_listky)
 
 ::::
 
-## Co znamená odhadnutý sklon?
+## Co znamená odhadnutý [sklon]{.text-hgl-indigo_velvet}?
 
 <br>
 
 ::: {.text-center .text-size-large}
-Sklon je **`r round(coef(mod_listky)[["sirka_listku"]], 2)` cm/cm**. Která interpretace je správná?
+[Sklon]{.text-hgl-indigo_velvet} je
+**`r round(coef(mod_listky)[["sirka_listku"]], 2)` cm/cm**.
+Která interpretace je správná?
 :::
 
 <br>
@@ -1741,7 +1795,7 @@ Přehlíží jedna přímka systematický vzor?
 
 ::::
 
-## Směr a velikost nejsou příčina
+## [Směr a velikost]{.text-hgl-indigo_velvet} nejsou [příčina]{.text-hgl-orange}
 
 <br>
 <br>
@@ -1752,7 +1806,7 @@ Biologický závěr
 :::
 
 ::: {.text-center .text-size-heading1 .text-bold}
-Asociace $\neq$ příčina
+[Asociace]{.text-hgl-indigo_velvet} $\neq$ [příčina]{.text-hgl-orange}
 :::
 
 Model popisuje vztah v datech. Bez dalšího výzkumného designu neprokazuje, že větší šířka **způsobuje** větší délku.
@@ -1990,7 +2044,7 @@ save_local_figure(
 include_local_figure("rezidua_podle_druhu.png")
 ```
 
-## Co model neviděl?
+## Co [model]{.text-hgl-indigo_velvet} neviděl?
 
 <br>
 
@@ -2001,33 +2055,36 @@ include_local_figure("rezidua_podle_druhu.png")
 Druh kosatce
 :::
 
-Jedna přímka zachytila celkový růst, ale druhy netvoří jeden společný mrak. Jejich struktura proto zůstává v residuích.
+Jedna přímka zachytila [celkový růst]{.text-hgl-indigo_velvet}, ale druhy
+netvoří jeden společný mrak. Jejich
+[struktura proto zůstává v residuích]{.text-hgl-orange}.
 :::
 
-## Co ještě z lineárního modelu neplyne?
+## Co ještě z [lineárního modelu]{.text-hgl-indigo_velvet} neplyne?
 
 ::: {.incremental}
-- neznáme nejistotu odhadnutého sklonu
-- neprokázali jsme příčinný mechanismus
-- nezahrnuli jsme druh kosatce jako další prediktor
-- nevyřešili jsme všechny možné diagnostické problémy
+- neznáme [nejistotu odhadnutého sklonu]{.text-hgl-orange}
+- neprokázali jsme [příčinný mechanismus]{.text-hgl-orange}
+- nezahrnuli jsme [druh kosatce]{.text-hgl-indigo_velvet} jako další prediktor
+- nevyřešili jsme všechny možné [diagnostické problémy]{.text-hgl-indigo_velvet}
 :::
 
 <br>
 
 ::: {.fragment .takeaway-strip}
-První model je začátek argumentu, ne jeho automatický konec.
+[První model]{.text-hgl-indigo_velvet} je začátek argumentu,
+[ne jeho automatický konec]{.text-hgl-orange}.
 :::
 
 ## Shrnutí
 
 ::: {.blockquote}
 ::: {.incremental}
-- Biologickou otázku převádíme na odezvu a prediktor.
-- Sklon popisuje změnu odhadnuté odezvy při změně prediktoru o jednu jednotku.
-- `lm()` hledá přímku s nejmenším součtem čtverců residuí.
-- Residua ukazují, co model u jednotlivých pozorování nevysvětlil.
-- Vzor v residuích upozorňuje na chybějící strukturu nebo omezení modelu.
+- Biologickou otázku převádíme na [odezvu a prediktor]{.text-hgl-indigo_velvet}.
+- [Sklon]{.text-hgl-indigo_velvet} popisuje změnu odhadnuté odezvy při změně prediktoru o jednu jednotku.
+- `lm()` hledá přímku s [nejmenším součtem čtverců residuí]{.text-hgl-orange}.
+- [Residua]{.text-hgl-orange} ukazují, co model u jednotlivých pozorování nevysvětlil.
+- [Vzor v residuích]{.text-hgl-orange} upozorňuje na chybějící strukturu nebo omezení modelu.
 :::
 :::
 
@@ -2048,5 +2105,7 @@ Residua a biologický kontext modelu.
 :::
 
 ::: {.notes}
-Studenti napíší jednu kontrolu nebo ji řeknou sousedovi. Po odhalení minimální odpovědi uzavřu L03 a připomenu, že L04 přidá interval spolehlivosti a p-hodnotu jako popis nejistoty odhadu.
+Studenti napíší jednu kontrolu nebo ji řeknou sousedovi. Po odhalení minimální
+odpovědi uzavřu dnešní lekci a připomenu, že následující lekce přidá výběrovou variabilitu a interval
+spolehlivosti jako vyjádření nejistoty odhadu. P-hodnota patří až do pozdější lekce.
 :::

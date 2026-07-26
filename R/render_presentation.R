@@ -44,12 +44,8 @@ system2(
   )
 )
 
-# Linearize the PDF for reliable rendering in different PDF viewers.
-system2(
-  command = "qpdf",
-  args = c(
-    "--linearize",
-    here::here("Presentation", "presentation_raw.pdf"),
-    here::here("Presentation", "presentation.pdf")
-  )
+# compress the PDF to make it small enough to upload to GH
+qpdf::pdf_compress(
+  input = here::here("Presentation", "presentation_raw.pdf"),
+  output = here::here("Presentation", "presentation.pdf")
 )
