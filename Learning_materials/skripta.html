@@ -2199,10 +2199,6 @@ vertical-align: -.125em;
 
      Do not edit directly. Run R/generate_theme.R to regenerate. -->
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <style type="text/css">@font-face {
 font-family: 'Inter';
 font-style: normal;
@@ -2808,7 +2804,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Upraveno</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">25. července 2026</p>
+      <p class="date-modified">26. července 2026</p>
     </div>
   </div>
     
@@ -2890,8 +2886,8 @@ document.addEventListener('DOMContentLoaded', function() {
 <p><strong>Mají širší korunní lístky kosatců také větší délku, a pokud ano, jak velká je tato změna?</strong></p>
 </div>
 </div>
-<p>Na tuhle otázku dnes navážeme. V minulé části jsme se naučili dívat na body v grafu a číst z nich jednoduchý trend. Teď tento trend rozšíříme do <a class="glossary" href>lineárního modelu<span class="def"></span></a>, aby z bodů vznikl model, který umí vztah mezi šířkou a délkou korunního lístku shrnout jedním zápisem a jednou interpretací.</p>
-<p>Cíl není „umět kliknout na funkci“, ale <strong>převést biologickou otázku na modelový zápis</strong> a <strong>smysluplně interpretovat odhadnutý</strong> <a class="glossary" href>efekt<span class="def">Kvantitativní popis toho, jak silně prediktor ovlivňuje odezvu - zahrnuje směr, velikost a nejistotu (interval spolehlivosti).</span></a>.</p>
+<p>Na tuhle otázku dnes navážeme. V minulé části jsme se naučili dívat na body v grafu a číst z nich jednoduchý trend. Teď tento trend rozšíříme do <a class="glossary" href>lineárního modelu<span class="def">Statistický model předpokládající, že odezva je lineární funkcí prediktorů plus chybový člen s normálním rozdělením (y = a + b·x + ε).</span></a>, aby z bodů vznikl model, který umí vztah mezi šířkou a délkou korunního lístku shrnout jedním zápisem a jednou interpretací.</p>
+<p>Cíl není „umět kliknout na funkci“, ale <strong>převést biologickou otázku na modelový zápis</strong> a <strong>smysluplně interpretovat odhadnutý</strong> <a class="glossary" href>efekt<span class="def">Kvantitativní popis toho, jak se podle modelu mění odezva s prediktorem; zahrnuje směr, velikost a nejistotu odhadu, ale sám o sobě nedokládá příčinu.</span></a>.</p>
 <p>Pracovní otázka: Jak se mění <a class="glossary" href>odezva<span class="def">Proměnná, jejíž variabilitu se snažíme vysvětlit nebo předpovědět; v notaci modelu y ~ x je odezva y.</span></a> (délka korunního lístku) s rostoucím <a class="glossary" href>prediktorem<span class="def">Proměnná, pomocí níž vysvětlujeme variabilitu odezvy; v notaci y ~ x je prediktor x.</span></a> (šířka korunního lístku)?</p>
 </section>
 <section id="výsledky-učení" class="level2" data-number="2">
@@ -2899,7 +2895,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <p>Po prostudování této lekce budete schopni:</p>
 <ul>
 <li>převést biologickou otázku na modelovou otázku s <a class="glossary" href>odezvou<span class="def">Proměnná, jejíž variabilitu se snažíme vysvětlit nebo předpovědět; v notaci modelu y ~ x je odezva y.</span></a> a <a class="glossary" href>prediktorem<span class="def">Proměnná, pomocí níž vysvětlujeme variabilitu odezvy; v notaci y ~ x je prediktor x.</span></a></li>
-<li>fitovat model <code>lm(y ~ x)</code> a interpretovat směr i velikost <a class="glossary" href>efektu<span class="def">Kvantitativní popis toho, jak silně prediktor ovlivňuje odezvu - zahrnuje směr, velikost a nejistotu (interval spolehlivosti).</span></a></li>
+<li>fitovat model <code>lm(y ~ x)</code> a interpretovat směr i velikost <a class="glossary" href>efektu<span class="def">Kvantitativní popis toho, jak se podle modelu mění odezva s prediktorem; zahrnuje směr, velikost a nejistotu odhadu, ale sám o sobě nedokládá příčinu.</span></a></li>
 <li>vysvětlit, co je <a class="glossary" href>residuum<span class="def">Rozdíl mezi pozorovanou hodnotou odezvy a hodnotou predikovanou modelem: eᵢ = yᵢ − ŷᵢ.</span></a>, a proč je důležité pro kontrolu modelu</li>
 <li>popsat základní <a class="glossary" href>diagnostický graf<span class="def">Soubor grafických a numerických kontrol ověřujících, zda jsou splněny předpoklady modelu: linearita, normalita reziduí, homoskedasticita, absence vlivných bodů.</span></a> a rozpoznat v něm možné problémy</li>
 </ul>
@@ -2924,7 +2920,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <li>měří biologicky srozumitelné veličiny ve stejných jednotkách</li>
 <li>obsahuje přirozenou <a class="glossary" href>variabilitu<span class="def">Obecný termín pro rozsah, v němž se hodnoty proměnné liší od sebe navzájem; kvantifikuje se pomocí rozptylu, SD, IQR nebo rozsahu.</span></a> mezi květy</li>
 <li>hodnoty šířky začínají blízko nuly, takže <a class="glossary" href>intercept<span class="def">Parametr modelu: hodnota odezvy predikovaná modelem, když jsou všechny prediktory rovno nule; geometricky jde o úsek na ose y (kde regresní přímka protíná osu y).</span></a> můžeme ukázat bez stlačení dat do malé části grafu</li>
-<li>umožňuje plynulý přechod od bodového grafu k <a class="glossary" href>lineárnímu modelu<span class="def"></span></a></li>
+<li>umožňuje plynulý přechod od bodového grafu k <a class="glossary" href>lineárnímu modelu<span class="def">Statistický model předpokládající, že odezva je lineární funkcí prediktorů plus chybový člen s normálním rozdělením (y = a + b·x + ε).</span></a></li>
 </ul>
 </div>
 </div>
@@ -3636,7 +3632,7 @@ b = \frac{\Delta \hat{y}}{\Delta x}
 </section>
 <section id="jak-nejlepší-přímku-najdeme-v-r" class="level2" data-number="6">
 <h2 data-number="6" class="anchored" data-anchor-id="jak-nejlepší-přímku-najdeme-v-r"><span class="header-section-number">6</span> Jak nejlepší přímku najdeme v R</h2>
-<p>Funkce <code>lm()</code> fituje <a class="glossary" href>lineární model<span class="def"></span></a>. Nejprve si její zápis přečteme jako obecnou gramatiku:</p>
+<p>Funkce <code>lm()</code> fituje <a class="glossary" href>lineární model<span class="def">Statistický model předpokládající, že odezva je lineární funkcí prediktorů plus chybový člen s normálním rozdělením (y = a + b·x + ε).</span></a>. Nejprve si její zápis přečteme jako obecnou gramatiku:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Obecný zápis nejprve pojmenuje role proměnných a dat</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lm</span>(</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> odezva <span class="sc">~</span> prediktor,</span>
@@ -4015,7 +4011,7 @@ b = \frac{\Delta \hat{y}}{\Delta x}
 </section>
 <section id="co-budeme-řešit-v-dalších-lekcích" class="level2" data-number="9">
 <h2 data-number="9" class="anchored" data-anchor-id="co-budeme-řešit-v-dalších-lekcích"><span class="header-section-number">9</span> Co budeme řešit v dalších lekcích</h2>
-<p>Jednoduchý <a class="glossary" href>lineární model<span class="def"></span></a> je výborný začátek, ale ne univerzální řešení. V této lekci jsme odhalili jeden důvod k opatrnosti: v residuích zůstaly rozdíly mezi druhy kosatců.</p>
+<p>Jednoduchý <a class="glossary" href>lineární model<span class="def">Statistický model předpokládající, že odezva je lineární funkcí prediktorů plus chybový člen s normálním rozdělením (y = a + b·x + ε).</span></a> je výborný začátek, ale ne univerzální řešení. V této lekci jsme odhalili jeden důvod k opatrnosti: v residuích zůstaly rozdíly mezi druhy kosatců.</p>
 <p>V dalších lekcích se naučíme rozlišovat také jiné viditelné vzory:</p>
 <ul>
 <li>zakřivený průběh může ukazovat na <a class="glossary" href>nelinearitu<span class="def">Situace, kdy vztah mezi prediktorem a odezvou není dobře popsatelný přímkou - má zakřivení nebo jinou nelineární formu.</span></a></li>
@@ -4030,7 +4026,7 @@ b = \frac{\Delta \hat{y}}{\Delta x}
 <section id="shrnutí" class="level2" data-number="10">
 <h2 data-number="10" class="anchored" data-anchor-id="shrnutí"><span class="header-section-number">10</span> Shrnutí</h2>
 <ul>
-<li><a class="glossary" href>Lineární model<span class="def"></span></a> zavádí hlavní rámec: biologická otázka → graf → model → interpretace → diagnostika.</li>
+<li><a class="glossary" href>Lineární model<span class="def">Statistický model předpokládající, že odezva je lineární funkcí prediktorů plus chybový člen s normálním rozdělením (y = a + b·x + ε).</span></a> zavádí hlavní rámec: biologická otázka → graf → model → interpretace → diagnostika.</li>
 <li>Koeficient <a class="glossary" href>sklonu<span class="def">Parametr lineárního modelu udávající, o kolik se změní odezva, pokud prediktor vzroste o jednu jednotku (při zachování ostatních prediktorů).</span></a> popisuje, o kolik se v průměru změní délka korunního lístku při zvýšení jeho šířky o 1 cm.</li>
 <li><a class="glossary" href>Rezidua<span class="def">Rozdíl mezi pozorovanou hodnotou odezvy a hodnotou predikovanou modelem: eᵢ = yᵢ − ŷᵢ.</span></a> nejsou „odpad“, ale klíčová informace o tom, co model nevysvětluje.</li>
 <li>Nejlepší přímka minimalizuje součet čtverců residuí; funkce <code>lm()</code> ji najde a vrátí její intercept a sklon.</li>
@@ -4053,7 +4049,7 @@ b = \frac{\Delta \hat{y}}{\Delta x}
 </tr>
 <tr class="even">
 <td style="text-align: left;">efekt</td>
-<td style="text-align: left;">Kvantitativní popis toho, jak silně prediktor ovlivňuje odezvu - zahrnuje směr, velikost a nejistotu (interval spolehlivosti).</td>
+<td style="text-align: left;">Kvantitativní popis toho, jak se podle modelu mění odezva s prediktorem; zahrnuje směr, velikost a nejistotu odhadu, ale sám o sobě nedokládá příčinu.</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">heteroskedasticita</td>
@@ -4073,7 +4069,7 @@ b = \frac{\Delta \hat{y}}{\Delta x}
 </tr>
 <tr class="odd">
 <td style="text-align: left;">linearni-model</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">Statistický model předpokládající, že odezva je lineární funkcí prediktorů plus chybový člen s normálním rozdělením (y = a + b·x + ε).</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">nejistota</td>
@@ -4118,10 +4114,6 @@ b = \frac{\Delta \hat{y}}{\Delta x}
 <tr class="even">
 <td style="text-align: left;">variabilita</td>
 <td style="text-align: left;">Obecný termín pro rozsah, v němž se hodnoty proměnné liší od sebe navzájem; kvantifikuje se pomocí rozptylu, SD, IQR nebo rozsahu.</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">zobecneny-linearni-model</td>
-<td style="text-align: left;"></td>
 </tr>
 </tbody>
 </table>
