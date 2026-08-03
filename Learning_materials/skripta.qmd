@@ -2,6 +2,8 @@
 title: "Lineární model s jedním numerickým prediktorem"
 subtitle: "Podkladové čtenářské materiály k přednášce"
 lang: cs
+filters:
+  - ../theme/semantic-boxes.lua
 format:
   html:
     toc: true
@@ -125,8 +127,7 @@ if (knitr::is_html_output()) {
 
 Představte si, že měříte korunní lístky kosatců. Dá se z jejich šířky odhadnout jejich délka?
 
-::: {.callout-important}
-## Hlavní otázka této lekce
+::: {.box-question title="Hlavní otázka této lekce"}
 
 **Mají širší korunní lístky kosatců také větší délku, a pokud ano, jak velká je tato změna?**
 :::
@@ -152,8 +153,7 @@ Pro první modelovou lekci používáme dataset `iris`, který obsahuje reálná
 
 Dataset rozlišuje tři druhy kosatců. V prvním modelu použijeme záměrně **jen jeden numerický** `r render_glossary_term("prediktor", display = "prediktor")` a **druh zatím do modelu nepřidáme**. Na konci se k tomuto rozhodnutí vrátíme při diagnostice.
 
-::: {.callout-note collapse="true"}
-## Proč dataset `iris`?
+::: {.box-data collapse="true" title="Doplňující: proč dataset iris?"}
 
 - měří biologicky srozumitelné veličiny ve stejných jednotkách
 - obsahuje přirozenou `r render_glossary_term("variabilita", display = "variabilitu")` mezi květy
@@ -163,8 +163,7 @@ Dataset rozlišuje tři druhy kosatců. V prvním modelu použijeme záměrně *
 :::
 
 
-::: {.callout-tip collapse="true"}
-## Doplňující: příprava dat
+::: {.box-data collapse="true" title="Doplňující: příprava dat"}
 
 Tento blok připravuje české názvy sloupců pro další výklad. Pro pochopení lineárního modelu jej můžete přeskočit; důležité je vědět, že každý řádek objektu `data_kosatce` představuje jeden květ.
 
@@ -212,8 +211,7 @@ Z předchozích lekcí už víme dvě základní věci:
 
 Základní shrnutí jednotlivých proměnných si můžete otevřít jako krátké zopakování. Pro dnešní otázku ale bude nejdůležitější jejich vzájemný vztah.
 
-::: {.callout-note collapse="true"}
-## Zopakování: každá proměnná samostatně
+::: {.box-data collapse="true" title="Doplňující: zopakování každé proměnné samostatně"}
 
 ::: {.panel-tabset}
 ## Šířka korunního lístku
@@ -264,8 +262,7 @@ ggplot2::ggplot(data_kosatce, ggplot2::aes(x = "Délka", y = delka_listku)) +
 
 Než vybereme graf, zkusme si malý mentální úkol: když máme dvě numerické proměnné, jaký typ grafu dává největší smysl?
 
-::: {.callout-note collapse="true"}
-## Odpověď
+::: {.box-result collapse="true" title="Odpověď: pro dvě měření použijeme bodový graf"}
 
 Dobrá volba je bodový graf, protože chceme vidět jednotlivé květy a vztah mezi dvěma měřeními.
 :::
@@ -575,8 +572,7 @@ ggplot2::ggplot(
 
 Teď už umíme každou kandidátní přímku popsat. Jak ale poznáme, která z nich nejlépe vystihuje vztah mezi šířkou a délkou korunního lístku?
 
-::: {.callout-note collapse="true"}
-## Co potřebujeme
+::: {.box-rule collapse="true" title="Kritérium pro výběr přímky musí využít residua"}
 
 Potřebujeme kritérium, které využije vzdálenosti naměřených délek od přímky při dané šířce. Nejprve proto musíme pochopit odhadnuté délky a residua.
 :::
@@ -596,8 +592,7 @@ b0 <- 2.2
 
 Než porovnáme kandidátní přímky ve všech datech, ukážeme princip na čtyřech květech rozprostřených napříč grafem.
 
-::: {.callout-tip collapse="true"}
-## Doplňující: výběr čtyř řádků
+::: {.box-data collapse="true" title="Doplňující: výběr čtyř řádků"}
 
 Tento technický krok pouze vybírá malý, přehledný příklad. Čísla řádků nejsou součástí statistické metody a pro pochopení dalšího výpočtu je nemusíte znát.
 
@@ -617,7 +612,7 @@ data4
 
 :::
 
-::: {.callout-note collapse="false"}
+::: {.box-data collapse="false" title="Konkrétní kandidátní přímka"}
 Jako konkrétní příklad použijeme přímku **(B)** s `r render_glossary_term("intercept", display = "interceptem a =")` **`r a0`** a `r render_glossary_term("sklon", display = "sklonem b =")` **`r b0`**.
 :::
 
@@ -881,8 +876,7 @@ knitr::kable(
 
 Otázka: Který model nejlépe odpovídá výzkumné otázce o vztahu šířky a délky korunního lístku?
 
-::: {.callout-note collapse="true"}
-## Odpověď
+::: {.box-result collapse="true" title="Odpověď: nejlepší přímka má nejmenší SSE"}
 
 Z nabízených přímek je nejlepší B, protože má nejmenší SSE. Lineární model ale není omezen na tyto tři možnosti: hledá takový intercept a sklon, které SSE minimalizují mezi všemi možnými přímkami.
 :::
@@ -1034,8 +1028,7 @@ Co vidíme za parametry (koeficienty) modelu:
 - `r render_glossary_term("intercept", display = "Intercept")` odpovídá parametru `a`
 - odhad u `sirka_listku` odpovídá `r render_glossary_term("sklon", display = "sklonu")` `b`
 
-::: {.callout-important}
-## Odpověď na biologickou otázku
+::: {.box-result title="Odpověď na biologickou otázku"}
 
 Odhadnutý sklon je `r round(coef(mod_listky)[["sirka_listku"]], 2)`. Při zvýšení šířky korunního lístku o 1 cm proto očekáváme v průměru zvýšení jeho délky o `r round(coef(mod_listky)[["sirka_listku"]], 2)` cm.
 :::
@@ -1105,8 +1098,7 @@ ggplot2::ggplot(
   ggplot2::theme_bw(base_size = 18)
 ```
 
-::: {.callout-note collapse="true"}
-## Kratší alternativa pomocí `geom_smooth()`
+::: {.box-data collapse="true" title="Doplňující: kratší alternativa pomocí geom_smooth()"}
 
 Balíček `{ggplot2}` umí lineární model odhadnout a nakreslit přímo pomocí `geom_smooth(method = "lm")`. Tuto zkratku používejte hlavně pro **první rychlou vizualizaci vztahu**. Vrstva sice model interně odhadne, ale nevytvoří snadno dostupný objekt modelu, ze kterého bychom mohli získat koeficienty, residua nebo další výsledky. Pro vlastní analýzu proto model fitujeme zvlášť pomocí `lm()` a uložíme jej do objektu. Argument `se = FALSE` zde vypíná zobrazení pásu nejistoty, ke kterému se vrátíme v další lekci.
 
