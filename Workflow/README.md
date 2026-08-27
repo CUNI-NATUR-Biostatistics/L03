@@ -14,6 +14,8 @@ Use these files to keep implementation practical, reviewable, and historically t
 3. Add one short entry to `Workflow/STAGE_LOG.md` summarizing what changed.
 4. Link the record file in your PR description.
 
+Stage 6 release validation happens after the presentation PR is merged. It checks the exact public allowlist, privacy and assessment boundaries, provenance and reuse terms, repository visibility, licensing status, stable lesson routes, and the expected HUB refresh. If it finds a source problem, fix that on a separate release-fix branch and PR.
+
 ## Recommended sequence
 
 1. `stage-0-scope.md`
