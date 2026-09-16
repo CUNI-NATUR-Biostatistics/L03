@@ -65,3 +65,7 @@
 
 - [x] Slides ready for review
 - Notes: The deck renders successfully and has passed the presentation vision review. Stage 4 was accepted as complete on 2026-07-20 and handed over for human Stage 5 review.
+
+## Issue #5 title-screen retrofit (2026-09-16)
+
+Ondřej Mottl approved sketch A for L03–L06 on 2026-09-16. The first slide of L03 now leads with the existing lesson question, while the original formal topic remains secondary. The next biological or visual hook, learning outcomes, and remaining teaching sequence are unchanged. This title-only retrofit does not rewrite the historical story-map approval or approve the later Issue #6 illustration pass.

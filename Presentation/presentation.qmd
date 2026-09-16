@@ -153,19 +153,23 @@ slides_url <-
   )
 ```
 
-## Lineární model s jedním numerickým prediktorem
+## Mají širší korunní lístky kosatců také větší délku — a pokud ano, o kolik? {.course-title .bg-indigo}
 
-<br>
-
-::: {.text-color-indigo_velvet .text-font-heading .text-size-heading .text-bold}
-`r display_name`
+::: {.course-title-mark}
+![Logo kurzu Biostatistika](../theme/course-logo-reversed.svg) BIOSTATISTIKA
 :::
 
-<br>
+::: {.course-title-number}
+L03
+:::
 
-[👤](https://ondrejmottl.github.io/) Ondřej Mottl
+::: {.course-title-formal}
+Lineární model s jedním numerickým prediktorem
+:::
 
-[Moodle](https://dl2.cuni.cz/course/view.php?id=106)
+::: {.course-title-link}
+[cuni-natur-biostatistics.github.io/materialy.html](https://cuni-natur-biostatistics.github.io/materialy.html)
+:::
 
 ## Naše biologická otázka
 
@@ -228,79 +232,12 @@ je bodový odhad efektu. Následující lekce přidá výběrovou variabilitu a 
 spolehlivosti; testování hypotéz a p-hodnota přijdou až později.
 :::
 
-## Minule jsme skončili tady
+{{< include ../pollslive/generated/active.qmd >}}
 
-```{r}
-#| label: vytvorit-navaznost-na-l02
-#| include: false
-#| message: false
-#| warning: false
-data_tucnaci <-
-  palmerpenguins::penguins[
-    !is.na(palmerpenguins::penguins$flipper_length_mm) &
-      !is.na(palmerpenguins::penguins$body_mass_g),
-    c("flipper_length_mm", "body_mass_g")
-  ]
+## Od vztahu k modelu
 
-pearson_r <-
-  cor(
-    x = data_tucnaci$flipper_length_mm,
-    y = data_tucnaci$body_mass_g,
-    method = "pearson"
-  )
-
-plot_navaznost_l02 <-
-  ggplot2::ggplot(
-    data = data_tucnaci,
-    mapping = ggplot2::aes(
-      x = flipper_length_mm,
-      y = body_mass_g
-    )
-  ) +
-  ggplot2::geom_point(
-    color = barvy["data"],
-    alpha = 0.55,
-    size = 2.2
-  ) +
-  ggplot2::labs(
-    x = "Délka ploutve (mm)",
-    y = "Tělesná hmotnost (g)"
-  ) +
-  ggplot2::theme_minimal(base_size = 11)
-
-save_local_figure(
-  plot = plot_navaznost_l02,
-  filename = "navaznost_l02.png"
-)
-```
-
-:::: {.columns .align-center}
-
-::: {.column width="68%"}
-```{r}
-#| label: zobrazit-navaznost-na-l02
-#| echo: false
-#| out-width: 96%
-include_local_figure("navaznost_l02.png")
-```
-:::
-
-::: {.column width="32%"}
-::: {.panel-result}
-[Pearsonova korelace]{.panel-title}
-
-::: {.text-center .text-size-heading1 .text-bold}
-$r = `r round(pearson_r, 2)`$
-:::
-
-Rostoucí a poměrně těsný vztah.
-:::
-:::
-
-::::
-
-::: {.notes}
-Toto je přímá návaznost na závěr minulé lekce. Připomenu pouze: bodový graf ukazuje směr a rozptýlení, Pearsonova korelace shrne směr a těsnost. Přímku zatím nepoužívám, protože ještě nebyla součástí výkladu.
+::: {.takeaway-strip .text-center}
+Bodový graf ukazuje, že dvě proměnné souvisejí. Dnes se zeptáme: **o kolik se očekávaná délka korunního lístku změní, když se změní jeho šířka?**
 :::
 
 ## Co přidá [model]{.text-hgl-indigo_velvet}?
@@ -335,6 +272,21 @@ Toto je přímá návaznost na závěr minulé lekce. Připomenu pouze: bodový 
 ::: {.takeaway-strip .fragment}
 Tato lekce přidá [velikost efektu]{.text-hgl-indigo_velvet}.
 [Nejistotu odhadu]{.text-hgl-orange} přidáme v následující lekci.
+:::
+
+## Jedna přímka shrnuje mnoho květů
+
+```{r}
+#| label: zobrazit-kosatce-a-modelove-pravitko
+#| echo: false
+#| out-width: "84%"
+#| fig-alt: "Terénní botanička přikládá rovné pravítko k několika kosatcům s různými rozměry; pravítko představuje jednu přímku shrnující proměnlivá pozorování."
+#| fig-cap: "Ilustrační obraz vytvořen AI."
+include_local_figure("iris_model_ruler.png")
+```
+
+::: {.takeaway-strip .text-center}
+Modelová přímka data nenahrazuje. Stručně popisuje jejich systematický vztah.
 :::
 
 ## Která [proměnná]{.text-hgl-orange} má kterou roli?
@@ -1684,7 +1636,45 @@ mod_listky <-
 Model ukládáme jako `mod_listky`, abychom se k němu mohli vracet.
 :::
 
+
+
 ## Jaké koeficienty model odhadl?
+
+```{r}
+#| label: pripravit-tabulku-koeficientu-listku
+#| include: false
+koeficienty_listky <-
+  broom::tidy(mod_listky)
+
+odhad_interceptu_listky <-
+  koeficienty_listky |>
+  dplyr::filter(term == "(Intercept)") |>
+  dplyr::pull(estimate)
+
+odhad_sklonu_listky <-
+  koeficienty_listky |>
+  dplyr::filter(term == "sirka_listku") |>
+  dplyr::pull(estimate)
+
+tabulka_koeficientu_listky <-
+  koeficienty_listky |>
+  dplyr::transmute(
+    Parametr = dplyr::recode(
+      term,
+      "(Intercept)" = "Intercept",
+      "sirka_listku" = "Sklon"
+    ),
+    Odhad = formatC(estimate, format = "f", digits = 2, decimal.mark = ","),
+    Jednotka = c("cm", "cm/cm")
+  )
+
+stopifnot(
+  isTRUE(all.equal(
+    unname(koeficienty_listky$estimate),
+    unname(coef(mod_listky))
+  ))
+)
+```
 
 <br>
 
@@ -1699,12 +1689,11 @@ coef(mod_listky)
 :::
 
 ::: {.column width="54%"}
-::: {.panel-result}
-[Odhadnuté koeficienty]{.panel-title}
-
-- intercept: **`r round(coef(mod_listky)[["(Intercept)"]], 2)` cm**
-- sklon: **`r round(coef(mod_listky)[["sirka_listku"]], 2)` cm/cm**
-:::
+```{r}
+#| label: zobrazit-tabulku-koeficientu-listku
+#| echo: false
+tinytable::tt(tabulka_koeficientu_listky)
+```
 :::
 
 ::::
@@ -1715,7 +1704,7 @@ coef(mod_listky)
 
 ::: {.text-center .text-size-large}
 [Sklon]{.text-hgl-indigo_velvet} je
-**`r round(coef(mod_listky)[["sirka_listku"]], 2)` cm/cm**.
+**`r round(odhad_sklonu_listky, 2)` cm/cm**.
 Která interpretace je správná?
 :::
 
@@ -1767,7 +1756,7 @@ Po volbě nechám studenty přesvědčit souseda. Správně B. A zaměňuje prů
 ::: {.panel-result .fragment}
 [Co můžeme říct]{.panel-title}
 
-Při zvýšení šířky o 1 cm model odhaduje v průměru zvýšení délky o **`r round(coef(mod_listky)[["sirka_listku"]], 2)` cm**.
+Při zvýšení šířky o 1 cm model odhaduje v průměru zvýšení délky o **`r round(odhad_sklonu_listky, 2)` cm**.
 :::
 
 ## Co ještě nevíme?
