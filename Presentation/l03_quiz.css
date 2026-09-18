@@ -1,0 +1,5 @@
+/* Keep graph evidence legible in the three L02 retrieval questions. */
+.reveal .quiz-evidence {
+  max-height: 270px;
+  max-width: 90%;
+}

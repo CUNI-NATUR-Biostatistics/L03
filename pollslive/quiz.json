@@ -1,0 +1,98 @@
+{
+  "$schema": "https://raw.githubusercontent.com/CUNI-NATUR-Biostatistics/_internal/main/pollslive/quiz.schema.json",
+  "schemaVersion": 2,
+  "academicYear": "2026-27",
+  "lesson": "L03",
+  "retrievesLesson": "L02",
+  "lectureDate": "2026-10-19",
+  "title": "L03 – Opakování předchozí lekce – 2026/27",
+  "questions": [
+    {
+      "id": "graf-pro-dve-ciselne-promenne",
+      "text": "Máme délku ploutve a tělesnou hmotnost každého tučňáka. Který graf je vhodný jako první pohled na jejich vztah?",
+      "options": [
+        {
+          "id": "bodovy-graf",
+          "label": "Bodový graf"
+        },
+        {
+          "id": "jeden-histogram",
+          "label": "Jeden histogram"
+        },
+        {
+          "id": "kolacovy-graf",
+          "label": "Koláčový graf"
+        },
+        {
+          "id": "tabulka-cetnosti",
+          "label": "Tabulka četností kategorií"
+        }
+      ],
+      "correctOptionId": "bodovy-graf",
+      "explanation": "Obě proměnné jsou číselné a každá dvojice měření patří jednomu tučňákovi. Bodový graf zachová obě hodnoty i jejich párování.",
+      "media": {
+        "path": "assets/l02-graph-choice-gallery.png",
+        "alt": "Čtyři možnosti označené A až D: bodový graf ploutve a hmotnosti, histogram délky ploutve, kruhový graf druhů a tabulka počtů druhů.",
+        "provenance": "Generated in R/render_pollslive_assets.R from palmerpenguins::penguins, the dataset used in L02; all four candidates show real penguin data without marking the correct answer."
+      }
+    },
+    {
+      "id": "smer-vztahu-tucnaku",
+      "text": "Jaký směr vztahu vidíme v bodovém grafu délky ploutve a tělesné hmotnosti?",
+      "options": [
+        {
+          "id": "rostouci",
+          "label": "Převážně rostoucí"
+        },
+        {
+          "id": "klesajici",
+          "label": "Převážně klesající"
+        },
+        {
+          "id": "bez-smeru",
+          "label": "Bez viditelného směru"
+        },
+        {
+          "id": "jedna-promenna",
+          "label": "Graf ukazuje pouze jednu proměnnou"
+        }
+      ],
+      "correctOptionId": "rostouci",
+      "explanation": "Tučňáci s delší ploutví bývají v tomto souboru těžší. Body proto tvoří převážně rostoucí oblak.",
+      "media": {
+        "path": "assets/l02-penguin-scatterplot.png",
+        "alt": "Bodový graf délky ploutve v milimetrech a tělesné hmotnosti v gramech pro 342 tučňáků; oblak bodů převážně roste.",
+        "provenance": "Generated in R/render_pollslive_assets.R from the same complete-case palmerpenguins::penguins measurements used in the approved L02 scatterplot."
+      }
+    },
+    {
+      "id": "asociace-bez-kauzality",
+      "text": "Které tvrzení odpovídá tomu, co z tohoto pozorovacího grafu smíme vyvodit?",
+      "options": [
+        {
+          "id": "ploutev-zpusobuje-hmotnost",
+          "label": "Delší ploutev způsobuje vyšší tělesnou hmotnost."
+        },
+        {
+          "id": "hmotnost-zpusobuje-ploutev",
+          "label": "Tělesná hmotnost způsobuje růst ploutve."
+        },
+        {
+          "id": "promenne-souviseji",
+          "label": "Délka ploutve a tělesná hmotnost spolu v těchto datech souvisejí."
+        },
+        {
+          "id": "druh-nema-vliv",
+          "label": "Druh tučňáka nemůže vztah ovlivnit."
+        }
+      ],
+      "correctOptionId": "promenne-souviseji",
+      "explanation": "Graf podporuje tvrzení o asociaci v pozorovaných datech. Sám neurčuje příčinu ani nevylučuje další proměnné.",
+      "media": {
+        "path": "assets/l02-correlation-not-causation.png",
+        "alt": "Bodový graf délky ploutve a tělesné hmotnosti tučňáků, s body barevně odlišenými podle druhu Adelie, Chinstrap a Gentoo.",
+        "provenance": "Generated in R/render_pollslive_assets.R from palmerpenguins::penguins, following the species-coloured scatterplot taught in approved L02."
+      }
+    }
+  ]
+}
