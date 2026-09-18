@@ -9,6 +9,7 @@ format:
     output-ext: "html"
     highlight-style: github-light
     include-in-header: "../theme/fonts-include.html"
+    css: "l03_quiz.css"
 filters:
   - ../theme/rn-shorthand.lua
   - ../_extensions/EmilHvitfeldt/roughnotation/rough.lua
@@ -212,6 +213,8 @@ Foto: [Danielle Langlois / Wikimedia Commons](https://commons.wikimedia.org/wiki
 Otevírám výzkumnou otázkou ještě před výsledky učení. Nechám studenty krátce odhadnout směr vztahu a zeptám se, jaký typ odpovědi by od modelu potřebovali. Otázka pak zůstává páteří celé prezentace.
 :::
 
+{{< include ../pollslive/generated/active.qmd >}}
+
 ## Výsledky učení
 
 Po dnešní přednášce budete schopni:
@@ -231,8 +234,6 @@ Výsledky učení navážu přímo na úvodní otázku. Zdůrazním, že dnešn�
 je bodový odhad efektu. Následující lekce přidá výběrovou variabilitu a interval
 spolehlivosti; testování hypotéz a p-hodnota přijdou až později.
 :::
-
-{{< include ../pollslive/generated/active.qmd >}}
 
 ## Od vztahu k modelu
 
