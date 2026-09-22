@@ -6,7 +6,8 @@
 - Lesson: L03, one quantitative predictor in a linear model
 - Source: approved L03 written lesson and presentation, `_internal/osnova_lekci.md`, and L01/L02 practical scripts
 - Branch: `lesson/l03-exercises`, created from clean `main` after presentation work merged
-- Status: complete 12-task independent re-review passed with no findings; awaiting course-owner exercise approval
+- Human exercise approval: Ondřej Mottl, 2026-09-22, in the current conversation
+- Status: independent re-review passed with no findings; human approved; PR pending
 
 The worksheet serves a facilitated 90-minute practical and independent study. The core route has 69 minutes of direct work; approximately 21 minutes remain for explanation and slower groups. Optional tasks are outside this budget. Teachers may skip the short L02 refresher when students are comfortable with paired observations, `plot()`, `complete.cases()`, and running multiline commands.
 
@@ -45,7 +46,7 @@ Keep confidence intervals and sampling uncertainty for L04, formal tests and p-v
 
 ## Review and release gates
 
-Before human review, parse and run the unfilled script in a clean R session and temporary working directory, solve every task in an untracked reference harness, verify expected values and Czech-labelled saved plots, check UTF-8 and prohibited patterns, audit first use of objects and actions, and rehearse obtaining the script. Assign the complete script and this blueprint to a separate read-only reviewer using `_internal/.ai/agents/exercise-reviewer.md`; resolve credible findings and recheck affected paths. Course-owner approval is required before including the script in the release manifest and README. Validate the release after the exercise pull request merges. Git and publishing operations retain separate authorization boundaries.
+Before human review, parse and run the unfilled script in a clean R session and temporary working directory, solve every task in an untracked reference harness, verify expected values and Czech-labelled saved plots, check UTF-8 and prohibited patterns, audit first use of objects and actions, and rehearse obtaining the script. Assign the complete script and this blueprint to a separate read-only reviewer using `_internal/.ai/agents/exercise-reviewer.md`; resolve credible findings and recheck affected paths. Ondřej Mottl approved the complete script on 2026-09-22, after which the release manifest and README link were added. Validate the release after the exercise pull request merges. Git and publishing operations retain separate authorization boundaries.
 
 ## Validation and independent review
 
@@ -54,4 +55,5 @@ Before human review, parse and run the unfilled script in a clean R session and 
 - Ten saved base-R and `ggplot2` graphs were visually inspected under a working UTF-8 R locale. Czech labels, units, species colours, stored iris model line, and the two new residual plots rendered correctly. The default validation shell requested an unavailable locale, so the author set `LC_ALL=cs_CZ.UTF-8` for plot validation; no locale command appears in student code.
 - All 12 task IDs and all required task fields are present. The worksheet, blueprint, and stage log are UTF-8 without BOM or replacement characters; `git diff --check` passed. The earlier missing-`palmerpenguins` preflight simulation produced a clear Czech recovery message.
 - The first ten-task draft passed independent read-only review after corrections. A fresh complete read-only review of the 12-task worksheet and updated blueprint returned `No findings`; the reviewer also independently confirmed the new slopes and assessed the 69-minute core and 27–33-minute optional transfer budget as plausible.
-- The 69-minute direct-work budget is unchanged and plausible on paper; U05 and U08 still need a novice classroom pacing trial. The planned `/L03/current/code/cviceni.R` URL currently returns HTTP 404 because `website-release.yml` excludes exercises. Rehearse the live route after course-owner approval, manifest/README inclusion, and an authorized stable release.
+- After human approval, `website-release.yml` includes `Exercises/cviceni.R` and the README links to `/L03/current/code/cviceni.R`. The canonical course packager built a temporary bundle with a validation-only tag; its `code/cviceni.R` matched the source SHA-256 and appeared in the generated public manifest. No release or tag was created.
+- The 69-minute direct-work budget is unchanged and plausible on paper; U05 and U08 still need a novice classroom pacing trial. The planned `/L03/current/code/cviceni.R` URL currently returns HTTP 404 because the existing stable release predates exercise inclusion. Rehearse the live route after an authorized stable release.
