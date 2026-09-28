@@ -47,5 +47,5 @@
 - Independent amendment review: final cross-lesson re-review found no issue in the new assumptions sequence, figures, knowledge boundaries or glossary wrappers.
 - Glossary coverage: rechecked against the local glossary; first occurrences of `odezva`, `histogram` and the newly added `nejistota` wording are wrapped, and the added wrappers use existing slugs with the correct Czech display forms.
 - Source checks: UTF-8 without BOM, no replacement characters, `git diff --check` passed.
-- Render: project-native HTML and PDF render passed. Visual QA caught and corrected an initial wrong residual-column reference; the final 31-page PDF was inspected through contact sheets, and the affected assumption page was rechecked after the wording fix with no clipping, overlap or broken layout.
+- Render: project-native HTML and PDF render passed. Visual QA caught and corrected an initial wrong residual-column reference; all 31 PDF pages were inspected through lesson-wide contact sheets, and the three new assumption/figure pages were checked at readable size with no clipping, overlap, broken glyphs or orphaned blocks.
 - Pre-existing full-artifact review notes outside this amendment: a hardcoded iris row count, several workflow-style headings and an incomplete visible missingness check remain candidates for a later cleanup.
