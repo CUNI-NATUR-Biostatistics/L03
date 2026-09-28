@@ -1287,6 +1287,187 @@ ggplot2::ggplot(
 
 Pro první kontrolu stačí jednoduchá otázka: *tvoří body kolem nuly neuspořádaný mrak, nebo v nich zůstává viditelný vzor?* **Viditelný vzor** znamená, že model v datech něco systematicky nezachytil.
 
+## Co musí být rozumné, aby `r render_glossary_term("linearni-model", display = "lineární model")` odpovídal na naši otázku?
+
+Lineární model je zjednodušený popis dat. Nemusí být dokonale pravdivý, ale jeho zjednodušení nesmí být v přímém rozporu s otázkou a daty. U jednoduchého modelu sledujeme čtyři odlišné oblasti:
+
+1. **Tvar vztahu:** průměrná délka by se v pozorovaném rozsahu šířek měla měnit přibližně po přímce. Zřetelný oblouk v `r render_glossary_term("residuum", display = "residuích")` by upozornil, že lineární tvar nestačí.
+2. **Rozptýlení kolem přímky:** svislý `r render_glossary_term("rozptyl", display = "rozptyl")` residuí by se neměl systematicky zvětšovat nebo zmenšovat. Trychtýřovitý tvar by znamenal, že model zachází se všemi částmi vztahu jako se stejně proměnlivými, přestože data tak nevypadají.
+3. **Tvar residuí:** aby pozdější `r render_glossary_term("standardni-chyba", display = "standardní chyby")`, intervaly a testy přiměřeně zachycovaly `r render_glossary_term("nejistota", display = "nejistotu")`, nesmí tvar residuí ukazovat silný rozpor s použitým modelem. Několik drobných odchylek od ideálního tvaru je v reálných datech běžných.
+4. **Nezávislá informace:** zda jsou `r render_glossary_term("pozorovani", display = "pozorování")` nezávislá, vyplývá především ze způsobu získání dat. Graf residuí sám nepozná, že několik měření pochází ze stejného jedince, lokality nebo časové řady.
+
+### Čtyři otázky, čtyři různé stopy v grafu
+
+Následující schémata nejsou další čtyři datasety ani automatický test. Jsou to čtyři záměrně zjednodušené obrazy, které pomáhají pojmenovat, na jaký druh problému se díváme.
+
+```{r}
+#| label: pripravit-schematicke-vzory-residui
+#| include: false
+
+pocet_schematickych_bodu <- 40
+poradi_schematickych_bodu <- seq_len(pocet_schematickych_bodu)
+osa_schematickych_odhadu <- seq(
+  from = -2,
+  to = 2,
+  length.out = pocet_schematickych_bodu
+)
+schematicky_sum <-
+  0.30 * sin(poradi_schematickych_bodu * sqrt(2)) +
+  0.16 * cos(poradi_schematickych_bodu * sqrt(3))
+
+nazvy_schematickych_vzoru <- c(
+  "Bez zjevného vzoru\nžádný nápadný rozpor",
+  "Oblouk\nlineární tvar nestačí",
+  "Trychtýř\nrozptýlení se mění",
+  "Běhy v pořadí\nmožná závislost"
+)
+
+data_schematicke_vzory <-
+  dplyr::bind_rows(
+    tibble::tibble(
+      vzor = nazvy_schematickych_vzoru[1],
+      osa = osa_schematickych_odhadu,
+      residuum = schematicky_sum,
+      cteni = "bez zjevného rozporu"
+    ),
+    tibble::tibble(
+      vzor = nazvy_schematickych_vzoru[2],
+      osa = osa_schematickych_odhadu,
+      residuum =
+        0.42 * (osa_schematickych_odhadu^2 - mean(osa_schematickych_odhadu^2)) +
+        0.10 * sin(poradi_schematickych_bodu * sqrt(2)),
+      cteni = "stopa k prověření"
+    ),
+    tibble::tibble(
+      vzor = nazvy_schematickych_vzoru[3],
+      osa = osa_schematickych_odhadu,
+      residuum =
+        (0.08 + 0.28 * (osa_schematickych_odhadu - min(osa_schematickych_odhadu))) *
+        sin(poradi_schematickych_bodu * sqrt(5)),
+      cteni = "stopa k prověření"
+    ),
+    tibble::tibble(
+      vzor = nazvy_schematickych_vzoru[4],
+      osa = poradi_schematickych_bodu,
+      residuum =
+        rep(c(-0.55, 0.55, -0.38, 0.38), each = 10) +
+        0.08 * sin(poradi_schematickych_bodu),
+      cteni = "stopa k prověření"
+    )
+  ) |>
+  dplyr::mutate(
+    vzor = factor(vzor, levels = nazvy_schematickych_vzoru)
+  )
+```
+
+```{r}
+#| label: schematicke-vzory-residui
+#| echo: false
+#| fig-width: 8
+#| fig-height: 6.2
+#| fig-cap: "Schématické stopy v grafech residuí. Vodorovná čárkovaná čára označuje nulové residuum; spodní pravý panel jako jediný používá na vodorovné ose pořadí měření."
+#| fig-alt: "Čtyři schematické bodové grafy residuí: neuspořádaný mrak kolem nuly, oblouk, trychtýř s rostoucím rozptýlením a dlouhé běhy bodů nad a pod nulou v pořadí měření."
+
+ggplot2::ggplot(
+  data = data_schematicke_vzory,
+  mapping = ggplot2::aes(x = osa, y = residuum, color = cteni)
+) +
+  ggplot2::geom_hline(yintercept = 0, linetype = 2, color = "#5D2890") +
+  ggplot2::geom_point(size = 1.8, alpha = 0.85) +
+  ggplot2::facet_wrap(
+    facets = ggplot2::vars(vzor),
+    ncol = 2,
+    scales = "free_x"
+  ) +
+  ggplot2::scale_color_manual(
+    values = c(
+      "bez zjevného rozporu" = "#007C91",
+      "stopa k prověření" = "#D95F02"
+    ),
+    guide = "none"
+  ) +
+  ggplot2::labs(
+    x = "Odhadnutá hodnota; vpravo dole pořadí měření",
+    y = "Residuum",
+    title = "Stejný typ grafu může ukázat různé stopy"
+  ) +
+  theme_biostat()
+```
+
+Vlevo nahoře nevidíme nápadný rozpor, ale ani tento obraz správnost modelu nedokazuje. Oblouk upozorňuje na tvar vztahu, trychtýř na měnící se rozptýlení. Dlouhé běhy nad a pod nulou se ukážou teprve tehdy, když zachováme pořadí měření; nezávislost proto posuzujeme společně s informací o tom, jak data vznikla.
+
+### `r render_glossary_term("odezva", display = "Odezva")` a residua mohou mít jiný tvar
+
+U kosatců můžeme porovnat dvě skutečná rozdělení. Levý `r render_glossary_term("histogram", display = "histogram")` popisuje naměřené délky korunních lístků. Pravý histogram popisuje odchylky těchto délek od hodnot odhadnutých přímkou.
+
+```{r}
+#| label: pripravit-porovnani-odezvy-a-residui
+#| include: false
+
+data_tvar_odezvy_a_residui <-
+  dplyr::bind_rows(
+    tibble::tibble(
+      co_zobrazujeme = "Naměřená délka korunního lístku",
+      hodnota_cm = data_kosatce$delka_listku
+    ),
+    tibble::tibble(
+      co_zobrazujeme = "Residuum kolem přímky",
+      hodnota_cm = data_rezidua$reziduum
+    )
+  )
+```
+
+```{r}
+#| label: porovnani-tvaru-odezvy-a-residui
+#| echo: false
+#| fig-width: 8
+#| fig-height: 3.8
+#| fig-cap: "Naměřená odezva a residua stejného modelu odpovídají na jiné otázky, a proto jejich rozdělení nemusí mít stejný tvar. Vodorovné osy panelů mají odlišný rozsah."
+#| fig-alt: "Dva histogramy dat kosatců. Vlevo je rozdělení naměřené délky korunního lístku, vpravo rozdělení residuí kolem lineárního modelu."
+
+ggplot2::ggplot(
+  data = data_tvar_odezvy_a_residui,
+  mapping = ggplot2::aes(x = hodnota_cm, fill = co_zobrazujeme)
+) +
+  ggplot2::geom_histogram(bins = 15, color = "white", linewidth = 0.3) +
+  ggplot2::facet_wrap(
+    facets = ggplot2::vars(co_zobrazujeme),
+    nrow = 1,
+    scales = "free_x"
+  ) +
+  ggplot2::scale_fill_manual(
+    values = c(
+      "Naměřená délka korunního lístku" = "#007C91",
+      "Residuum kolem přímky" = "#5D2890"
+    ),
+    guide = "none"
+  ) +
+  ggplot2::labs(
+    x = "Hodnota (cm)",
+    y = "Počet květů",
+    title = "Původní měření není totéž co odchylka od modelu"
+  ) +
+  theme_biostat()
+```
+
+Histogram odezvy se ptá, jaké délky jsme naměřili. Histogram residuí se ptá, jak se skutečné délky liší od přímky při dané šířce. Ani jeden histogram sám neposoudí linearitu, měnící se rozptýlení nebo nezávislost; k tomu potřebujeme předchozí grafy a znalost uspořádání studie.
+
+`r render_glossary_term("diagnostika-modelu", display = "Diagnostika")` proto není zkouška, kterou model jednou provždy „udělá“ nebo „neudělá“. Spojuje grafy, znalost uspořádání studie a otázku, zda případný problém může změnit biologický závěr. V této lekci problémy pouze rozpoznáváme; jejich řešení přijdou postupně v dalších lekcích.
+
+::: {.box-data collapse="true" title="Doplňující: předpoklady se týkají residuí kolem modelu"}
+
+Lineární model nevyžaduje, aby samotná šířka nebo délka korunních lístků měla dokonale normální rozdělení. Důležité je, jak se chovají odchylky délky od hodnot očekávaných při dané šířce. Proto diagnostikujeme residua kolem přímky, nikoli pouze histogram původní odezvy.
+
+Ani residua nemusí vytvořit dokonalou zvonovitou křivku. U malého souboru lze tvar posoudit jen hrubě; u velkého souboru zase i nepatrná odchylka může vypadat „statisticky zjistitelně“. Smyslem kontroly je hledat odchylku natolik výraznou, že zpochybňuje použitý model nebo jeho nejistotu, nikoli získat mechanické razítko správnosti.
+:::
+
+::: {.box-data collapse="true" title="Doplňující: odlehlý, krajní a vlivný bod nejsou totéž"}
+
+`r render_glossary_term("odlehla-pozorovani", display = "Odlehlé pozorování")` má neobvykle velkou odchylku od toho, co jsme čekali. **Krajní bod** má neobvyklou hodnotu `r render_glossary_term("prediktor", display = "prediktoru")`, například mimo většinu pozorovaných šířek. **Vlivný bod** je takový, jehož přítomnost výrazně mění odhadnutý `r render_glossary_term("intercept", display = "intercept")` nebo `r render_glossary_term("sklon", display = "sklon")`.
+
+Jeden květ může splňovat jednu, dvě nebo všechny tři vlastnosti. Žádná z nich sama neznamená chybu ani povolení řádek smazat. Nejdříve ověříme měření a biologický kontext, potom zkoumáme citlivost závěru. Formální míru vlivu si ukážeme až u modelu s více prediktory.
+:::
+
 ## Co model nevidí: druhy kosatců
 
 Dosud jsme všechny květy zobrazovali stejně a druh kosatce jsme do modelu nezahrnuli. Nyní použijeme barvu pouze jako pomůcku, abychom zjistili, zda se jednotlivé druhy v datech chovají podobně.
