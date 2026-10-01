@@ -17,12 +17,21 @@
 ## Jak se skriptem pracovat -----
 #--------------------------------------------------#
 
-# Skript stáhněte z veřejné stránky lekce L03 na HUBu kurzu:
-# https://cuni-natur-biostatistics.github.io/L03/current/code/cviceni.R
-# Uložte si jej mezi své studijní soubory. V RStudiu zvolte
-# File > Open File, vyberte stažený cviceni.R a otevřete jej
-# v panelu se skriptem. Odpovědi zapisujte do své kopie souboru
-# a průběžně ji ukládejte pomocí Ctrl + S.
+# Z veřejné stránky lekce stáhněte dva soubory:
+# - skript cviceni.R:
+#   https://cuni-natur-biostatistics.github.io/L03/current/code/cviceni.R
+# - data kosatce.csv:
+#   https://cuni-natur-biostatistics.github.io/L03/current/data/kosatce.csv
+#
+# V počítači vytvořte složku L03_praktikum a v ní podsložku data.
+# Soubor cviceni.R uložte do L03_praktikum a kosatce.csv do data.
+# RStudio Project používá L03_praktikum jako hlavní složku práce. Soubor
+# s koncovkou .Rproj pomáhá RStudio tuto složku znovu otevřít; skript
+# a data přitom zůstávají samostatnými soubory uvnitř složky.
+# V RStudio zvolte File > New Project > Existing Directory, vyberte
+# L03_praktikum a potvrďte Create Project. Potom otevřete cviceni.R.
+# Odpovědi zapisujte do své kopie souboru a průběžně ji ukládejte
+# pomocí Ctrl + S.
 #
 # Ve společném praktiku dokončete Hlavní úlohy L03-U01 až L03-U08.
 # Úlohy navíc jsou dobrovolné a lze se k nim vrátit při samostudiu.
@@ -60,23 +69,21 @@
 ## Technická kontrola -----
 #--------------------------------------------------#
 
-# Kosatce jsou v základní instalaci R. Později použijeme stejné
-# tučňáky jako v L02; jejich data jsou v balíčku {palmerpenguins}.
-# Kontrola nic neinstaluje ani nepřipojuje.
+# Cesta začíná v hlavní složce otevřeného projektu.
+# Kontrola nic nestahuje ani nemění ve vašem počítači.
+soubor_kosatce <- "data/kosatce.csv"
+
 if (
-  !requireNamespace(
-    package = "palmerpenguins",
-    quietly = TRUE
-  )) {
+  !file.exists(soubor_kosatce)) {
   stop(
-    "Chybí balíček {palmerpenguins}. Nainstalujte jej podle pokynů kurzu a spusťte skript znovu.",
+    paste0(
+      "Soubor data/kosatce.csv nebyl nalezen. ",
+      "Otevřete projekt L03_praktikum a zkontrolujte název ",
+      "i umístění CSV ve složce data."
+    ),
     call. = FALSE
   )
 }
-
-# Pokud pracujete mimo připravené kurzové prostředí, můžete
-# jednou spustit v Console tento příkaz a potom skript znovu:
-# install.packages(pkgs = "palmerpenguins")
 
 
 #----------------------------------------------------------#
@@ -91,12 +98,11 @@ if (
 # představuje jeden květ, ne jeden druh. Měření pocházejí
 # z botanických dat Edgara Andersona, později publikovaných
 # Ronaldem Fisherem. Délka i šířka jsou v centimetrech.
-# Z původních sloupců vytvoříme tabulku s českými názvy.
+# Připravený soubor má české názvy sloupců.
 data_kosatce <-
-  data.frame(
-    sirka_listku = iris$Petal.Width,
-    delka_listku = iris$Petal.Length,
-    druh = iris$Species
+  read.csv(
+    file = soubor_kosatce,
+    na.strings = ""
   )
 
 head(x = data_kosatce)
@@ -291,11 +297,32 @@ barvy_kosatcu <-
 ## Souvisí délka ploutve s hmotností tučňáka? -----
 #--------------------------------------------------#
 
+# Pro tuto část stáhněte data Palmer Penguins:
+# https://cuni-natur-biostatistics.github.io/L03/current/data/palmer_penguins.csv
+# Soubor uložte jako palmer_penguins.csv do složky data v projektu
+# L03_praktikum. Stejný soubor později využívá také úloha navíc L03-N02.
+soubor_tucnaci <- "data/palmer_penguins.csv"
+
+if (
+  !file.exists(soubor_tucnaci)) {
+  stop(
+    paste0(
+      "Soubor data/palmer_penguins.csv nebyl nalezen. ",
+      "Zkontrolujte název i umístění CSV ve složce data."
+    ),
+    call. = FALSE
+  )
+}
+
 # Vracíme se k měřením jednotlivých tučňáků z L02. V tabulce
 # je jeden řádek jeden jedinec. Délka ploutve je v mm,
 # hmotnost v g. Chybějící hodnoty musíme vyřadit po celých
 # řádcích, aby obě měření zůstala spárovaná.
-data_tucnaci_raw <- palmerpenguins::penguins
+data_tucnaci_raw <-
+  read.csv(
+    file = soubor_tucnaci,
+    na.strings = ""
+  )
 
 data_mereni_par <-
   data_tucnaci_raw[, c("flipper_length_mm", "body_mass_g")]
@@ -423,11 +450,11 @@ head(x = data_mereni_par)
 
 # Délka korunního a kališního lístku pochází vždy
 # ze stejného květu. Obě měření jsou v centimetrech.
-# Nová tabulka zachovává pořadí všech 150 květů z iris.
+# Nová tabulka zachovává pořadí všech 150 květů z připraveného CSV.
 data_kalich <-
   data.frame(
-    delka_korunniho_listku = iris$Petal.Length,
-    delka_kalisniho_listku = iris$Sepal.Length
+    delka_korunniho_listku = data_kosatce$delka_listku,
+    delka_kalisniho_listku = data_kosatce$delka_kalisniho_listku
   )
 
 head(x = data_kalich)
