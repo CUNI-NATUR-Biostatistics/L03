@@ -1461,11 +1461,353 @@ Lineární model nevyžaduje, aby samotná šířka nebo délka korunních líst
 Ani residua nemusí vytvořit dokonalou zvonovitou křivku. U malého souboru lze tvar posoudit jen hrubě; u velkého souboru zase i nepatrná odchylka může vypadat „statisticky zjistitelně“. Smyslem kontroly je hledat odchylku natolik výraznou, že zpochybňuje použitý model nebo jeho nejistotu, nikoli získat mechanické razítko správnosti.
 :::
 
+::: {.box-data collapse="true" title="Doplňující: Q–Q graf residuí"}
+
+Tvar histogramu residuí závisí také na tom, kolik sloupců zvolíme. Podrobnější pohled na tvar residuí nabízí **Q–Q graf** (z anglického *quantile–quantile*). Využívá `r render_glossary_term("kvantil", display = "kvantily")` – obecný název pro percentily a kvartily z první lekce, tedy hodnoty, pod nimiž leží určitý podíl seřazených dat. Residua seřadíme od nejmenšího po největší a každé porovnáme s hodnotou, kterou bychom na stejném místě pořadí čekali u souměrného zvonovitého (normálního) rozdělení.
+
+<!-- TODO: add slugs qq-graf, pakovy-efekt and cookova-vzdalenost to pojmy.yaml -->
+
+::: {.panel-tabset}
+
+#### Základní graf v R
+
+```{r}
+#| label: qq-graf-rezidui-base-r
+#| echo: true
+#| fig-width: 8
+#| fig-height: 5
+qqnorm(
+  # Seřazená residua porovnáme s kvantily normálního rozdělení
+  y = vec_rezidua,
+  main = "Q–Q graf residuí",
+  xlab = "Teoretické kvantily normálního rozdělení",
+  ylab = "Residuum (cm)",
+  pch = 16,
+  col = "#8A8A8A",
+  cex = 1.3,
+  cex.axis = 1.4,
+  cex.lab = 1.4,
+  cex.main = 1.4
+)
+
+qqline(
+  # Referenční přímka prochází prvním a třetím kvartilem residuí
+  y = vec_rezidua,
+  lty = 2,
+  lwd = 2,
+  col = "#5D2890"
+)
+```
+
+#### Graf pomocí {ggplot2}
+
+```{r}
+#| label: qq-graf-rezidui-ggplot2
+#| echo: true
+#| fig-width: 8
+#| fig-height: 5
+
+ggplot2::ggplot(
+  # Stejná residua jako v předchozím grafu v základním R
+  data = data_rezidua,
+  mapping = ggplot2::aes(sample = reziduum)
+) +
+  ggplot2::stat_qq_line(
+    # Referenční přímka prochází prvním a třetím kvartilem residuí
+    linetype = 2,
+    color = "#5D2890"
+  ) +
+  ggplot2::stat_qq(
+    size = 2,
+    alpha = 0.8,
+    color = "#8A8A8A"
+  ) +
+  ggplot2::labs(
+    x = "Teoretické kvantily normálního rozdělení",
+    y = "Residuum (cm)",
+    title = "Q–Q graf residuí"
+  ) +
+  ggplot2::theme_bw(base_size = 18)
+```
+
+:::
+
+*Jak tento graf číst:*
+
+- **každý bod** je residuum jednoho květu; **svislá osa** ukazuje jeho skutečnou hodnotu v cm
+- **vodorovná osa** ukazuje, kde by residuum se stejným pořadím leželo u normálního rozdělení, měřeno ve směrodatných odchylkách od středu
+- **přerušovaná přímka** ukazuje, kde by body ležely při dokonale zvonovitém tvaru
+- **body blízko přímky:** tvar residuí se od zvonovitého rozdělení výrazně neliší
+- **oba konce se odklánějí opačnými směry** (vlevo dolů, vpravo nahoru): velkých kladných i záporných residuí je víc, než by odpovídalo zvonovité křivce
+- **body tvoří oblouk:** residua jsou nesouměrná, na jedné straně nuly sahají dál než na druhé
+
+U kosatců leží prostřední residua téměř přesně na přímce. Na obou koncích se body mírně odklánějí opačnými směry: několik květů má o něco větší kladná i záporná residua, než by odpovídalo zvonovité křivce. Odchylka se týká hlavně nejkrajnějších bodů a je mírná; sama o sobě proto použití lineárního modelu nezpochybňuje.
+
+Q–Q graf není test, který model „schválí“. I residua vzniklá přesně ze zvonovitého rozdělení se na koncích grafu trochu vlní, zvlášť u malého počtu pozorování. Hledáme proto výraznou a souvislou odchylku, ne každý bod mimo přímku.
+:::
+
+{{< pagebreak >}}
+
 ::: {.box-data collapse="true" title="Doplňující: odlehlý, krajní a vlivný bod nejsou totéž"}
 
 `r render_glossary_term("odlehla-pozorovani", display = "Odlehlé pozorování")` má neobvykle velkou odchylku od toho, co jsme čekali. **Krajní bod** má neobvyklou hodnotu `r render_glossary_term("prediktor", display = "prediktoru")`, například mimo většinu pozorovaných šířek. **Vlivný bod** je takový, jehož přítomnost výrazně mění odhadnutý `r render_glossary_term("intercept", display = "intercept")` nebo `r render_glossary_term("sklon", display = "sklon")`.
 
-Jeden květ může splňovat jednu, dvě nebo všechny tři vlastnosti. Žádná z nich sama neznamená chybu ani povolení řádek smazat. Nejdříve ověříme měření a biologický kontext, potom zkoumáme citlivost závěru. Formální míru vlivu si ukážeme až u modelu s více prediktory.
+Jeden květ může splňovat jednu, dvě nebo všechny tři vlastnosti. Žádná z nich sama neznamená chybu ani povolení řádek smazat. Nejdříve ověříme měření a biologický kontext, potom zkoumáme citlivost závěru. Jak „krajnost“ a vliv jednotlivých květů změřit, ukazují dva následující doplňující rámečky.
+:::
+
+::: {.box-data collapse="true" title="Doplňující: jak „krajní“ je květ – pákový efekt"}
+
+**Pákový efekt** (anglicky *leverage*) měří, jak neobvyklou hodnotu prediktoru má jedno pozorování. Přímku si můžeme představit jako páku: květ, jehož šířka leží daleko od průměrné šířky, ji může naklonit snáz než květ uprostřed rozsahu. V R pákový efekt získáme funkcí `hatvalues()`:
+
+```{r}
+#| label: pakovy-efekt-vypocet
+#| echo: true
+vec_pakovy_efekt <-
+  # hatvalues() vrátí pákový efekt pro každý květ
+  hatvalues(model = mod_listky)
+
+# Spojíme měření, residua a pákový efekt jednotlivých květů
+data_vliv_kvetu <-
+  data.frame(
+    sirka_listku = data_kosatce$sirka_listku,
+    delka_listku = data_kosatce$delka_listku,
+    reziduum = vec_rezidua,
+    pakovy_efekt = vec_pakovy_efekt
+  )
+
+# Zkontrolujeme nejmenší a největší pákový efekt
+range(vec_pakovy_efekt)
+```
+
+Pákový efekt nemá jednotky. S jediným prediktorem závisí pouze na šířce lístku: čím dál je šířka od průměrné šířky, tím je hodnota větší, a to na obě strany. Nejmenší hodnotu proto mají květy se šířkou blízko průměru. Naměřená délka ani residuum na pákový efekt vliv nemají. V následujícím grafu proto vyneseme obě vlastnosti z předchozího rámečku proti sobě: krajnost na vodorovnou osu a odlehlost na svislou.
+
+::: {.panel-tabset}
+
+#### Základní graf v R
+
+```{r}
+#| label: pakovy-efekt-base-r
+#| echo: true
+#| fig-width: 8
+#| fig-height: 5
+plot(
+  # Vodorovně krajnost šířky, svisle odchylka od přímky
+  x = data_vliv_kvetu$pakovy_efekt,
+  y = data_vliv_kvetu$reziduum,
+  xlab = "Pákový efekt",
+  ylab = "Residuum (cm)",
+  main = "Pákový efekt vs. residua",
+  pch = 16,
+  col = "#8A8A8A",
+  cex = 1.3,
+  cex.axis = 1.4,
+  cex.lab = 1.4,
+  cex.main = 1.4
+)
+
+abline(
+  # Nulové residuum: naměřená délka je rovna odhadu
+  h = 0,
+  lty = 2,
+  lwd = 2,
+  col = "#5D2890"
+)
+```
+
+#### Graf pomocí {ggplot2}
+
+```{r}
+#| label: pakovy-efekt-ggplot2
+#| echo: true
+#| fig-width: 8
+#| fig-height: 5
+
+ggplot2::ggplot(
+  # Stejná data jako v předchozím grafu v základním R
+  data = data_vliv_kvetu,
+  mapping = ggplot2::aes(x = pakovy_efekt, y = reziduum)
+) +
+  ggplot2::geom_hline(
+    # Nulové residuum: naměřená délka je rovna odhadu
+    yintercept = 0,
+    linetype = 2,
+    color = "#5D2890"
+  ) +
+  ggplot2::geom_point(
+    size = 2,
+    alpha = 0.8,
+    color = "#8A8A8A"
+  ) +
+  ggplot2::labs(
+    x = "Pákový efekt",
+    y = "Residuum (cm)",
+    title = "Pákový efekt vs. residua"
+  ) +
+  ggplot2::theme_bw(base_size = 18)
+```
+
+:::
+
+*Jak tento graf číst:*
+
+- **vpravo** leží květy s nejvíce neobvyklou šířkou lístku
+- **daleko od nulové čáry** leží květy, jejichž délka se nejvíce liší od odhadu
+- body tvoří **svislé sloupce**: mnoho květů má stejnou šířku a stejný pákový efekt mají i květy stejně daleko od průměrné šířky na opačných stranách – velmi úzké i velmi široké lístky
+
+Úplně vpravo leží květy s nejširšími lístky (`r max(data_vliv_kvetu$sirka_listku)` cm). Všechny leží pod nulovou čarou: model jejich délku nadhodnocuje. Květ, který je zároveň vpravo a daleko od nuly, může přímku naklonit nejvíce. Právě tuto kombinaci shrnuje Cookova vzdálenost.
+:::
+
+::: {.box-data collapse="true" title="Doplňující: Cookova vzdálenost – které květy hýbou přímkou?"}
+
+**Cookova vzdálenost** (anglicky *Cook's distance*) spojuje obě vlastnosti z předchozího rámečku do jednoho čísla. Pro každý květ vyjadřuje, jak moc by se změnily odhadnuté délky všech květů, kdybychom právě tento květ vynechali a přímku odhadli znovu. Velkou hodnotu mívá hlavně květ, který má velké residuum a zároveň velký pákový efekt.
+
+```{r}
+#| label: cookova-vzdalenost-vypocet
+#| echo: true
+vec_cookova_vzdalenost <-
+  # cooks.distance() vrátí Cookovu vzdálenost pro každý květ
+  cooks.distance(model = mod_listky)
+
+# Doplníme Cookovu vzdálenost a pořadí květu v datech
+data_vliv_kvetu$cookova_vzdalenost <- vec_cookova_vzdalenost
+data_vliv_kvetu$poradi_kvetu <- seq_len(length.out = nrow(x = data_vliv_kvetu))
+
+# Orientační hodnota 4/n, kde n je počet květů v modelu
+hranice_cook <- 4 / nrow(x = data_vliv_kvetu)
+hranice_cook
+```
+
+::: {.panel-tabset}
+
+#### Základní graf v R
+
+```{r}
+#| label: cookova-vzdalenost-base-r
+#| echo: true
+#| fig-width: 8
+#| fig-height: 5
+plot(
+  # Každá svislá čárka představuje jeden květ
+  x = data_vliv_kvetu$poradi_kvetu,
+  y = data_vliv_kvetu$cookova_vzdalenost,
+  type = "h",
+  lwd = 2,
+  col = "#8A8A8A",
+  xlab = "Pořadí květu v datech",
+  ylab = "Cookova vzdálenost",
+  main = "Cookova vzdálenost květů",
+  cex.axis = 1.4,
+  cex.lab = 1.4,
+  cex.main = 1.4
+)
+
+abline(
+  # Orientační čára, nikoli hranice pro mazání dat
+  h = hranice_cook,
+  lty = 2,
+  lwd = 2,
+  col = "#5D2890"
+)
+```
+
+#### Graf pomocí {ggplot2}
+
+```{r}
+#| label: cookova-vzdalenost-ggplot2
+#| echo: true
+#| fig-width: 8
+#| fig-height: 5
+
+ggplot2::ggplot(
+  # Stejná data jako v předchozím grafu v základním R
+  data = data_vliv_kvetu,
+  mapping = ggplot2::aes(x = poradi_kvetu, y = cookova_vzdalenost)
+) +
+  ggplot2::geom_segment(
+    # Každá svislá čárka vede od nuly k hodnotě jednoho květu
+    mapping = ggplot2::aes(xend = poradi_kvetu, yend = 0),
+    linewidth = 0.8,
+    color = "#8A8A8A"
+  ) +
+  ggplot2::geom_hline(
+    # Orientační čára, nikoli hranice pro mazání dat
+    yintercept = hranice_cook,
+    linetype = 2,
+    color = "#5D2890"
+  ) +
+  ggplot2::labs(
+    x = "Pořadí květu v datech",
+    y = "Cookova vzdálenost",
+    title = "Cookova vzdálenost květů"
+  ) +
+  ggplot2::theme_bw(base_size = 18)
+```
+
+:::
+
+Nad orientační čarou leží `r sum(vec_cookova_vzdalenost > hranice_cook)` z `r length(vec_cookova_vzdalenost)` květů. Hodnota 4/n není test ani pravidlo pro mazání dat; pouze upozorňuje, které květy si zaslouží bližší pohled. Seřadíme je od největší Cookovy vzdálenosti:
+
+```{r}
+#| label: cookova-vzdalenost-tabulka
+#| echo: true
+data_vliv_serazene <-
+  data_vliv_kvetu[
+    # Seřadíme květy od největší Cookovy vzdálenosti
+    order(data_vliv_kvetu$cookova_vzdalenost, decreasing = TRUE),
+  ]
+
+# Vybereme sloupce, které chceme u květů porovnat
+vec_sloupce_tabulky <-
+  c(
+    "sirka_listku",
+    "delka_listku",
+    "reziduum",
+    "pakovy_efekt",
+    "cookova_vzdalenost"
+  )
+
+# Zobrazíme pět nejvlivnějších květů se zaokrouhlenými hodnotami;
+# čísla vlevo jsou pořadí květů v datech
+round(
+  x = head(x = data_vliv_serazene[, vec_sloupce_tabulky], n = 5),
+  digits = 3
+)
+```
+
+Nejvlivnější květ má široký lístek (`r data_vliv_serazene$sirka_listku[1]` cm) a jeho naměřená délka leží `r abs(round(data_vliv_serazene$reziduum[1], 2))` cm pod odhadem přímky. Ke kterým druhům patří květy nad orientační čarou?
+
+```{r}
+#| label: cookova-vzdalenost-druhy
+#| echo: true
+# Spočítáme druhy květů s Cookovou vzdáleností nad orientační čarou
+table(data_kosatce$druh[vec_cookova_vzdalenost > hranice_cook])
+```
+
+Všechny tyto květy patří druhu *virginica*, který má nejširší lístky, a tedy i velký pákový efekt. Model `r sum(vec_rezidua[vec_cookova_vzdalenost > hranice_cook] < 0)` z nich nadhodnocuje a `r sum(vec_rezidua[vec_cookova_vzdalenost > hranice_cook] > 0)` naopak výrazně podhodnocuje. Proč jedna společná přímka pro tři druhy nestačí, ukazuje kapitola *Co model nevidí: druhy kosatců*.
+
+Jak moc nejvlivnější květ přímkou skutečně hýbe, zjistíme přímo: odhadneme stejný model bez něj a porovnáme koeficienty.
+
+```{r}
+#| label: citlivost-bez-vlivneho-kvetu
+#| echo: true
+# Najdeme řádek květu s největší Cookovou vzdáleností
+radek_nejvlivnejsi <- which.max(x = vec_cookova_vzdalenost)
+
+mod_bez_kvetu <-
+  lm(
+    # Stejný model odhadneme bez jediného květu
+    formula = delka_listku ~ sirka_listku,
+    data = data_kosatce[-radek_nejvlivnejsi, ]
+  )
+
+# Porovnáme intercept a sklon obou modelů
+rbind(
+  vsechny_kvety = coef(object = mod_listky),
+  bez_nejvlivnejsiho = coef(object = mod_bez_kvetu)
+)
+```
+
+Sklon se změní z `r round(coef(mod_listky)[["sirka_listku"]], 2)` na `r round(coef(mod_bez_kvetu)[["sirka_listku"]], 2)` cm délky na 1 cm šířky. Ani nejvlivnější květ tedy přímku podstatně neposune a závěr o vztahu šířky a délky se nemění. Ani vysoká Cookova vzdálenost ale sama o sobě není důvod řádek smazat. Je to důvod ověřit měření, zvážit biologický kontext a porovnat závěr s květem a bez něj – tak jako zde.
 :::
 
 ## Co model nevidí: druhy kosatců
