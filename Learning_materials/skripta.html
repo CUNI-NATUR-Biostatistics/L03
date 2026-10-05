@@ -2811,7 +2811,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Upraveno</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">4. října 2026</p>
+      <p class="date-modified">5. října 2026</p>
     </div>
   </div>
     
@@ -4051,8 +4051,7 @@ b = \frac{\Delta \hat{y}}{\Delta x}
 </div>
 <div id="callout-13" class="callout-13-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Tvar histogramu residuí závisí také na tom, kolik sloupců zvolíme. Podrobnější pohled na tvar residuí nabízí <strong>Q–Q graf</strong> (z anglického <em>quantile–quantile</em>). Využívá <a class="glossary" href>kvantily<span class="def">Hodnota, pod níž leží určený podíl seřazených dat; medián je 50% kvantil.</span></a> – obecný název pro percentily a kvartily z první lekce, tedy hodnoty, pod nimiž leží určitý podíl seřazených dat. Residua seřadíme od nejmenšího po největší a každé porovnáme s hodnotou, kterou bychom na stejném místě pořadí čekali u souměrného zvonovitého (normálního) rozdělení.</p>
-<!-- TODO: add slugs qq-graf, pakovy-efekt and cookova-vzdalenost to pojmy.yaml -->
+<p>Tvar histogramu residuí závisí také na tom, kolik sloupců zvolíme. Podrobnější pohled na tvar residuí nabízí <strong><a class="glossary" href>Q–Q graf<span class="def">Graf, který porovnává seřazené hodnoty (typicky residua) s kvantily očekávanými u zvoleného rozdělení, nejčastěji normálního.</span></a></strong> (z anglického <em>quantile–quantile</em>). Využívá <a class="glossary" href>kvantily<span class="def">Hodnota, pod níž leží určený podíl seřazených dat; medián je 50% kvantil.</span></a> – obecný název pro percentily a kvartily z první lekce, tedy hodnoty, pod nimiž leží určitý podíl seřazených dat. Residua seřadíme od nejmenšího po největší a každé porovnáme s hodnotou, kterou bychom na stejném místě pořadí čekali u souměrného zvonovitého (normálního) rozdělení.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href>Základní graf v R</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href>Graf pomocí {ggplot2}</a></li></ul>
 <div class="tab-content">
@@ -4172,7 +4171,7 @@ b = \frac{\Delta \hat{y}}{\Delta x}
 </div>
 <div id="callout-15" class="callout-15-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p><strong>Pákový efekt</strong> (anglicky <em>leverage</em>) měří, jak neobvyklou hodnotu prediktoru má jedno pozorování. Přímku si můžeme představit jako páku: květ, jehož šířka leží daleko od průměrné šířky, ji může naklonit snáz než květ uprostřed rozsahu. V R pákový efekt získáme funkcí <code>hatvalues()</code>:</p>
+<p><strong><a class="glossary" href>Pákový efekt<span class="def">Míra toho, jak neobvyklé hodnoty prediktorů má jedno pozorování ve srovnání s ostatními; nezávisí na naměřené odezvě.</span></a></strong> (anglicky <em>leverage</em>) měří, jak neobvyklou hodnotu prediktoru má jedno pozorování. Přímku si můžeme představit jako páku: květ, jehož šířka leží daleko od průměrné šířky, ji může naklonit snáz než květ uprostřed rozsahu. V R pákový efekt získáme funkcí <code>hatvalues()</code>:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Zobrazit kód v R</summary>
@@ -4296,7 +4295,7 @@ b = \frac{\Delta \hat{y}}{\Delta x}
 </div>
 <div id="callout-16" class="callout-16-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p><strong>Cookova vzdálenost</strong> (anglicky <em>Cook’s distance</em>) spojuje obě vlastnosti z předchozího rámečku do jednoho čísla. Pro každý květ vyjadřuje, jak moc by se změnily odhadnuté délky všech květů, kdybychom právě tento květ vynechali a přímku odhadli znovu. Velkou hodnotu mívá hlavně květ, který má velké residuum a zároveň velký pákový efekt.</p>
+<p><strong><a class="glossary" href>Cookova vzdálenost<span class="def">Míra vlivu jednoho pozorování na model: vyjadřuje, jak moc by se změnily odhadnuté hodnoty, kdybychom toto pozorování vynechali.</span></a></strong> (anglicky <em>Cook’s distance</em>) spojuje obě vlastnosti z předchozího rámečku do jednoho čísla. Pro každý květ vyjadřuje, jak moc by se změnily odhadnuté délky všech květů, kdybychom právě tento květ vynechali a přímku odhadli znovu. Velkou hodnotu mívá hlavně květ, který má velké residuum a zároveň velký pákový efekt.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Zobrazit kód v R</summary>
@@ -4544,52 +4543,60 @@ bez_nejvlivnejsiho    1.069930     2.248904</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
+<td style="text-align: left;">cookova-vzdalenost</td>
+<td style="text-align: left;">Míra vlivu jednoho pozorování na model: vyjadřuje, jak moc by se změnily odhadnuté hodnoty, kdybychom toto pozorování vynechali.</td>
+</tr>
+<tr class="even">
 <td style="text-align: left;">diagnostika-modelu</td>
 <td style="text-align: left;">Soubor grafických a numerických kontrol ověřujících, zda jsou splněny předpoklady modelu: linearita, normalita reziduí, homoskedasticita, absence vlivných bodů.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">efekt</td>
 <td style="text-align: left;">Kvantitativní popis toho, jak se podle modelu mění odezva s prediktorem; zahrnuje směr, velikost a nejistotu odhadu, ale sám o sobě nedokládá příčinu.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">heteroskedasticita</td>
 <td style="text-align: left;">Jev, kdy rozptyl reziduí není konstantní podél hodnot prediktoru - typicky se rozptyl zvyšuje s rostoucí predikovanou hodnotou.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">histogram</td>
 <td style="text-align: left;">Graf zobrazující rozdělení hodnot numerické proměnné: hodnoty jsou seřazeny do tříd, výška sloupce udává četnost v dané třídě.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">intercept</td>
 <td style="text-align: left;">Parametr modelu: hodnota odezvy predikovaná modelem, když jsou všechny prediktory rovno nule; geometricky jde o úsek na ose y (kde regresní přímka protíná osu y).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">interval-spolehlivosti</td>
 <td style="text-align: left;">Rozsah hodnot, v němž se s danou spolehlivostí (typicky 95 %) nachází odhadovaný parametr.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">kvantil</td>
 <td style="text-align: left;">Hodnota, pod níž leží určený podíl seřazených dat; medián je 50% kvantil.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">linearni-model</td>
 <td style="text-align: left;">Statistický model předpokládající, že odezva je lineární funkcí prediktorů plus chybový člen s normálním rozdělením (y = a + b·x + ε).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">nejistota</td>
 <td style="text-align: left;">Rozsah, v němž nevíme přesnou hodnotu parametru kvůli omezenému a variabilnímu vzorku; kvantifikuje se pomocí intervalů spolehlivosti nebo směrodatných chyb.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">nelinearita</td>
 <td style="text-align: left;">Situace, kdy vztah mezi prediktorem a odezvou není dobře popsatelný přímkou - má zakřivení nebo jinou nelineární formu.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">odezva</td>
 <td style="text-align: left;">Proměnná, jejíž variabilitu se snažíme vysvětlit nebo předpovědět; v notaci modelu `y ~ x` je odezva `y`.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">odlehla-pozorovani</td>
 <td style="text-align: left;">Hodnota, která se výrazně odlišuje od ostatních pozorování; může být způsobena chybou měření nebo jít o skutečně extrémní případ.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">pakovy-efekt</td>
+<td style="text-align: left;">Míra toho, jak neobvyklé hodnoty prediktorů má jedno pozorování ve srovnání s ostatními; nezávisí na naměřené odezvě.</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">parametry-modelu</td>
@@ -4604,26 +4611,30 @@ bez_nejvlivnejsiho    1.069930     2.248904</code></pre>
 <td style="text-align: left;">Proměnná, pomocí níž vysvětlujeme variabilitu odezvy; v notaci `y ~ x` je prediktor `x`.</td>
 </tr>
 <tr class="even">
+<td style="text-align: left;">qq-graf</td>
+<td style="text-align: left;">Graf, který porovnává seřazené hodnoty (typicky residua) s kvantily očekávanými u zvoleného rozdělení, nejčastěji normálního.</td>
+</tr>
+<tr class="odd">
 <td style="text-align: left;">residuum</td>
 <td style="text-align: left;">Rozdíl mezi pozorovanou hodnotou odezvy a hodnotou predikovanou modelem: eᵢ = yᵢ − ŷᵢ.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">rozptyl</td>
 <td style="text-align: left;">Průměr čtverců odchylek od průměru; míra variability dat. Odmocnina rozptylu je směrodatná odchylka.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">sklon</td>
 <td style="text-align: left;">Parametr lineárního modelu udávající, o kolik se změní odezva, pokud prediktor vzroste o jednu jednotku (při zachování ostatních prediktorů).</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">standardni-chyba</td>
 <td style="text-align: left;">Míra přesnosti odhadu parametru (typicky průměru) z dat; udává, jak moc by se odhadnutý parametr lišil při opakovaném vzorkování ze stejné populace.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">transformace</td>
 <td style="text-align: left;">Matematická operace použitá na hodnoty proměnné s cílem splnit předpoklady modelu nebo zlepšit linearitu vztahu.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">variabilita</td>
 <td style="text-align: left;">Obecný termín pro rozsah, v němž se hodnoty proměnné liší od sebe navzájem; kvantifikuje se pomocí rozptylu, SD, IQR nebo rozsahu.</td>
 </tr>
