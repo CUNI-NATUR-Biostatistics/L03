@@ -1463,9 +1463,7 @@ Ani residua nemusí vytvořit dokonalou zvonovitou křivku. U malého souboru lz
 
 ::: {.box-data collapse="true" title="Doplňující: Q–Q graf residuí"}
 
-Tvar histogramu residuí závisí také na tom, kolik sloupců zvolíme. Podrobnější pohled na tvar residuí nabízí **Q–Q graf** (z anglického *quantile–quantile*). Využívá `r render_glossary_term("kvantil", display = "kvantily")` – obecný název pro percentily a kvartily z první lekce, tedy hodnoty, pod nimiž leží určitý podíl seřazených dat. Residua seřadíme od nejmenšího po největší a každé porovnáme s hodnotou, kterou bychom na stejném místě pořadí čekali u souměrného zvonovitého (normálního) rozdělení.
-
-<!-- TODO: add slugs qq-graf, pakovy-efekt and cookova-vzdalenost to pojmy.yaml -->
+Tvar histogramu residuí závisí také na tom, kolik sloupců zvolíme. Podrobnější pohled na tvar residuí nabízí **`r render_glossary_term("qq-graf", display = "Q–Q graf")`** (z anglického *quantile–quantile*). Využívá `r render_glossary_term("kvantil", display = "kvantily")` – obecný název pro percentily a kvartily z první lekce, tedy hodnoty, pod nimiž leží určitý podíl seřazených dat. Residua seřadíme od nejmenšího po největší a každé porovnáme s hodnotou, kterou bychom na stejném místě pořadí čekali u souměrného zvonovitého (normálního) rozdělení.
 
 ::: {.panel-tabset}
 
@@ -1557,7 +1555,7 @@ Jeden květ může splňovat jednu, dvě nebo všechny tři vlastnosti. Žádná
 
 ::: {.box-data collapse="true" title="Doplňující: jak „krajní“ je květ – pákový efekt"}
 
-**Pákový efekt** (anglicky *leverage*) měří, jak neobvyklou hodnotu prediktoru má jedno pozorování. Přímku si můžeme představit jako páku: květ, jehož šířka leží daleko od průměrné šířky, ji může naklonit snáz než květ uprostřed rozsahu. V R pákový efekt získáme funkcí `hatvalues()`:
+**`r render_glossary_term("pakovy-efekt", display = "Pákový efekt")`** (anglicky *leverage*) měří, jak neobvyklou hodnotu prediktoru má jedno pozorování. Přímku si můžeme představit jako páku: květ, jehož šířka leží daleko od průměrné šířky, ji může naklonit snáz než květ uprostřed rozsahu. V R pákový efekt získáme funkcí `hatvalues()`:
 
 ```{r}
 #| label: pakovy-efekt-vypocet
@@ -1659,7 +1657,7 @@ ggplot2::ggplot(
 
 ::: {.box-data collapse="true" title="Doplňující: Cookova vzdálenost – které květy hýbou přímkou?"}
 
-**Cookova vzdálenost** (anglicky *Cook's distance*) spojuje obě vlastnosti z předchozího rámečku do jednoho čísla. Pro každý květ vyjadřuje, jak moc by se změnily odhadnuté délky všech květů, kdybychom právě tento květ vynechali a přímku odhadli znovu. Velkou hodnotu mívá hlavně květ, který má velké residuum a zároveň velký pákový efekt.
+**`r render_glossary_term("cookova-vzdalenost", display = "Cookova vzdálenost")`** (anglicky *Cook's distance*) spojuje obě vlastnosti z předchozího rámečku do jednoho čísla. Pro každý květ vyjadřuje, jak moc by se změnily odhadnuté délky všech květů, kdybychom právě tento květ vynechali a přímku odhadli znovu. Velkou hodnotu mívá hlavně květ, který má velké residuum a zároveň velký pákový efekt.
 
 ```{r}
 #| label: cookova-vzdalenost-vypocet
