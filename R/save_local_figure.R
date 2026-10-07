@@ -19,41 +19,28 @@ save_local_figure <- function(
   plot,
   filename,
   width = 1600,
-  height = 800
+  height = 800,
+  path = here::here(path_materials, filename)
 ) {
+  # Axis labels are formatted while saving; Czech decimal commas apply only
+  #   to the saved figure, not to printed R output shown on slides.
+  options_previous <- options(OutDec = ",")
+  on.exit(options(options_previous), add = TRUE)
+
   plot_canvas <-
     plot +
     ggview::canvas(
       width = width,
       height = height,
-      units = "px"
+      units = "px",
+      dpi = 150
     )
 
   res_file <-
     ggview::save_ggplot(
       plot = plot_canvas,
-      file = here::here(path_materials, filename)
+      file = path
     )
 
   return(invisible(res_file))
-}
-
-
-#----------------------------------------------------------#
-# Save animation -----
-#----------------------------------------------------------#
-
-save_local_gif <- function(
-  frame_files,
-  filename,
-  fps = 1
-) {
-  path_output <-
-    here::here(path_materials, filename)
-
-  magick::image_read(frame_files) |>
-    magick::image_animate(fps = fps) |>
-    magick::image_write(path = path_output)
-
-  return(invisible(path_output))
 }
