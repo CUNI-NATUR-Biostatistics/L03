@@ -14,7 +14,7 @@ Use these files to keep implementation practical, reviewable, and historically t
 3. Add one short entry to `Workflow/STAGE_LOG.md` summarizing what changed.
 4. Link the record file in your PR description.
 
-Stage 6 release validation happens after the presentation PR is merged. It checks the exact public allowlist, privacy and assessment boundaries, provenance and reuse terms, repository visibility, licensing status, stable lesson routes, and the expected HUB refresh. If it finds a source problem, fix that on a separate release-fix branch and PR.
+For release preparation, post-merge validation, and publication receipts, follow the [canonical publication workflow](../../_internal/.ai/core/publication.md#release-preparation-and-recordkeeping). Workflow record-copying and stage-log steps apply to authoring and pre-merge preparation. Post-merge release results go in the GitHub Release description and leave the lesson working tree unchanged; actual source fixes retain the normal branch and PR workflow.
 
 ## Recommended sequence
 
