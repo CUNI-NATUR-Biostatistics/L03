@@ -177,7 +177,7 @@ Otevírám výzkumnou otázkou ještě před výsledky učení. Nechám studenty
 Po absolvování této přednášky budete schopni:
 
 ::: {.incremental}
-- převést biologickou otázku na vztah mezi [odezvou a prediktorem]{.text-hgl-graphite}
+- převést otázku „když změříme jednu veličinu, jakou hodnotu druhé můžeme čekat?“ na [lineární model]{.text-hgl-indigo_velvet} s [odezvou a prediktorem]{.text-hgl-graphite}
 - fitovat `lm(odezva ~ prediktor)` a interpretovat [směr i velikost efektu]{.text-hgl-indigo_velvet}
 - vysvětlit [residuum]{.text-hgl-orange} jako rozdíl mezi [naměřenou]{.text-hgl-graphite} a [odhadnutou]{.text-hgl-indigo_velvet} hodnotou
 - číst graf residuí a rozpoznat v něm [zbývající vzor]{.text-hgl-orange}
@@ -187,115 +187,12 @@ Po absolvování této přednášky budete schopni:
 Výsledky učení navážu přímo na úvodní otázku. Zdůrazním, že dnešním cílem je bodový odhad efektu. Následující lekce přidá výběrovou variabilitu a interval spolehlivosti; testování hypotéz a p-hodnota přijdou až později.
 :::
 
-# Dvě měření, dvě role
+# Změříme šířku — jakou délku čekáme?
 
-## Co chceme zjistit ze známé šířky?
-
-::: {.slide-margin-top-15}
-::: {.takeaway-strip .text-center .text-size-large}
-V minulé lekci jsme popsali vztah délky ploutve a hmotnosti tučňáků. U kosatců se ptáme: **o kolik delší korunní lístek očekáváme u květu, jehož lístek je o 1 cm širší?**
-:::
-:::
-
-::: {.notes}
-U korelace lze prohodit osy. Otázka na délku podle známé šířky určuje odezvu a prediktor; prohození by změnilo modelovou otázku. Nový organismus ponechává obě měření v původních cm a umožňuje ukázat intercept blízko pozorovaných šířek.
-:::
-
-## Co přidá [model]{.text-hgl-indigo_velvet}?
-
-<br>
-
-:::: {.columns .fragment}
-
-::: {.column width="48%"}
-::: {.panel-result}
-[Vztah dvou měření]{.panel-title}
-
-- [vztah zobrazit]{.text-hgl-graphite}
-- popsat jeho směr
-- shrnout jeho těsnost korelací
-:::
-:::
-
-::: {.column width="52%"}
-::: {.panel-question}
-[Délka podle známé šířky]{.panel-title}
-
-[O kolik]{.text-hgl-orange} se typicky liší délka dvou květů, jejichž šířky se liší o 1 cm?
-:::
-:::
-
-::::
-
-<br>
-
-::: {.takeaway-strip .fragment}
-Model vyjádří [velikost efektu]{.text-hgl-indigo_velvet} v původních jednotkách. [Přesnost odhadu]{.text-hgl-orange} zůstává otevřená.
-:::
-
-## Jedna přímka shrnuje mnoho květů
+## Příští sezónu stihneme změřit jen šířku
 
 ```{r}
-#| label: zobrazit-kosatce-a-modelove-pravitko
-#| echo: false
-#| out-width: "84%"
-#| fig-alt: "Terénní botanička přikládá rovné pravítko k několika kosatcům s různými rozměry; pravítko představuje jednu přímku shrnující proměnlivá pozorování."
-#| fig-cap: "Ilustrační obraz vytvořen AI."
-include_local_figure("iris_model_ruler.png")
-```
-
-::: {.takeaway-strip .text-center}
-Modelová přímka data nenahrazuje. Stručně popisuje jejich systematický vztah.
-:::
-
-## Která proměnná má kterou roli?
-
-::: {.slide-margin-top-15}
-::: {.card-question}
-::: {.card-title}
-Otázka
-:::
-
-Na jednom korunním lístku známe jedno měření a druhé podle něj odhadujeme. Které měření bude **neznámé, odhadované**?
-:::
-
-<br>
-
-:::: {.columns}
-
-::: {.column width="50%"}
-::: {.card-question}
-**A)** šířka korunního lístku
-:::
-:::
-
-::: {.column width="50%"}
-::: {.card-question}
-[**B)** délka korunního lístku]{.rn-circle-orange}
-:::
-:::
-
-::::
-
-<br>
-
-::: {.takeaway-strip}
-Zvolte A/B a zdůvodněte svou volbu sousedovi.
-:::
-
-::: {.fragment .takeaway-strip}
-Odhadovanou délku nazýváme [odezva]{.text-hgl-graphite}, známou šířku [prediktor]{.text-hgl-graphite}.
-:::
-:::
-
-::: {.notes}
-Nechám 20 sekund na volbu a krátké zdůvodnění sousedovi. Odhadujeme délku; teprve po odpovědi pojmenuji odezvu a prediktor. Zároveň upozorním, že na rozdíl od korelace už role os nejsou zaměnitelné.
-:::
-
-## Dvě měření každého květu
-
-```{r}
-#| label: pripravit-ctyri-kvety
+#| label: pripravit-ctyri-kvety-a-novy-kvet
 #| include: false
 # Four real flowers spread across the widths; their residuals from
 #   candidate line B have mixed signs, so squaring is needed later.
@@ -304,12 +201,20 @@ data_ctyri_kvety <-
   data_kosatce[vec_radky_ctyri_kvety, c("sirka_listku", "delka_listku", "druh")]
 rownames(data_ctyri_kvety) <- NULL
 
+# Teaching scenario: a new flower with only its width measured. At this
+#   width, the full-data line and the mean length of equally wide flowers
+#   nearly coincide, so the later model estimate matches students' guess.
+sirka_novy_kvet <- 2
+
 table_ukazka_kvetu <-
   data.frame(
-    kvet = seq_len(nrow(data_ctyri_kvety)),
-    sirka = format_cz(data_ctyri_kvety$sirka_listku),
-    delka = format_cz(data_ctyri_kvety$delka_listku),
-    druh = data_ctyri_kvety$druh
+    kvet = c(as.character(seq_len(nrow(data_ctyri_kvety))), "nový"),
+    sirka = c(
+      format_cz(data_ctyri_kvety$sirka_listku),
+      format(sirka_novy_kvet, nsmall = 1, decimal.mark = ",")
+    ),
+    delka = c(format_cz(data_ctyri_kvety$delka_listku), "?"),
+    druh = c(data_ctyri_kvety$druh, "–")
   )
 names(table_ukazka_kvetu) <- c("Květ", "Šířka (cm)", "Délka (cm)", "Druh")
 ```
@@ -322,17 +227,24 @@ names(table_ukazka_kvetu) <- c("Květ", "Šířka (cm)", "Délka (cm)", "Druh")
 ```{r}
 #| label: zobrazit-ukazku-mereni
 #| echo: false
-tinytable::tt(table_ukazka_kvetu)
+tinytable::tt(table_ukazka_kvetu) |>
+  tinytable::style_tt(
+    i = nrow(table_ukazka_kvetu),
+    bold = TRUE,
+    color = barvy[["interpretace"]]
+  )
 ```
 :::
 
 ::: {.column width="48%"}
-::: {.takeaway-strip}
-Jeden řádek = jeden květ · dvě numerická měření · druh jako kategorie
+::: {.panel-question}
+[Příští sezóna]{.panel-title}
+
+U nových květů stihneme změřit jen [šířku]{.text-hgl-graphite}. Jakou [délku]{.text-hgl-orange} můžeme čekat?
 :::
 
 ::: {.panel-data}
-[Celá data]{.panel-title}
+[Letošní měření]{.panel-title}
 
 `r format_cz(nrow(data_kosatce))` květů · `r format_cz(sum(is.na(data_kosatce)))` chybějících hodnot
 
@@ -342,8 +254,14 @@ Jeden řádek = jeden květ · dvě numerická měření · druh jako kategorie
 
 ::::
 
+<br>
+
+::: {.takeaway-strip}
+Jeden řádek = jeden květ. Letos známe obě měření, u nového květu jen šířku.
+:::
+
 ::: {.notes}
-Čtyři skutečné květy z různých částí rozsahu šířek. Se stejnými čtyřmi květy budeme později ručně počítat odhady a residua.
+Scénář: botanička letos změřila u každého květu šířku i délku korunního lístku. Příští sezónu bude mít čas jen na rychlé měření šířky. Jakou délku může u nového květu čekat? Navážu na L02: minule jsme vztah dvou měření popsali, dnes ho chceme použít. Odpověď zatím neprozrazuji. První čtyři řádky jsou skutečné květy z různých částí rozsahu šířek; se stejnými čtyřmi květy budeme později ručně počítat odhady a residua.
 :::
 
 ## Jaký vztah vidíte?
@@ -424,39 +342,249 @@ Zvolte A/B/C a zdůvodněte odpověď podle bodů v grafu.
 Studenti nejprve pojmenují viditelný tvar. Správně je B: vztah je rostoucí a přibližně lineární, ale kolem něj zůstává variabilita.
 :::
 
-## Co z tohoto grafu můžeme říct?
+## Jakou délku čekáte u květu širokého `r format_cz(sirka_novy_kvet)` cm?
+
+```{r}
+#| label: vytvorit-pasmo-noveho-kvetu
+#| include: false
+#| message: false
+#| warning: false
+# Widths are recorded to 0.1 cm; rounding avoids floating-point edge misses.
+sirka_pasmo <- 0.1
+
+data_pasmo_novy_kvet <-
+  data_kosatce[
+    round(abs(data_kosatce$sirka_listku - sirka_novy_kvet), 2) <= sirka_pasmo,
+  ]
+
+delka_pasmo_prumer <-
+  mean(data_pasmo_novy_kvet$delka_listku)
+
+plot_novy_kvet_otazka <-
+  plot_data_kosatce +
+  ggplot2::geom_vline(
+    xintercept = sirka_novy_kvet,
+    color = barvy["interpretace"],
+    linetype = "dashed",
+    linewidth = 1.1
+  ) +
+  ggplot2::annotate(
+    geom = "label",
+    x = sirka_novy_kvet - 0.05,
+    y = 7.0,
+    hjust = 1,
+    label = "nový květ: délka?",
+    color = barvy["interpretace"],
+    fill = "white",
+    label.size = 0,
+    size = 6
+  )
+
+save_local_figure(
+  plot = plot_novy_kvet_otazka,
+  filename = "novy_kvet_otazka.png",
+  width = 1300,
+  height = 900
+)
+
+plot_novy_kvet_pasmo <-
+  plot_novy_kvet_otazka +
+  ggplot2::annotate(
+    geom = "rect",
+    xmin = sirka_novy_kvet - sirka_pasmo - 0.04,
+    xmax = sirka_novy_kvet + sirka_pasmo + 0.04,
+    ymin = -Inf,
+    ymax = Inf,
+    fill = barvy["interpretace"],
+    alpha = 0.12
+  ) +
+  ggplot2::geom_point(
+    data = data_pasmo_novy_kvet,
+    color = barvy["interpretace"],
+    size = 3.2
+  ) +
+  ggplot2::annotate(
+    geom = "segment",
+    x = sirka_novy_kvet - sirka_pasmo - 0.12,
+    xend = sirka_novy_kvet + sirka_pasmo + 0.12,
+    y = delka_pasmo_prumer,
+    yend = delka_pasmo_prumer,
+    color = barvy["interpretace"],
+    linewidth = 1.6
+  ) +
+  ggplot2::annotate(
+    geom = "label",
+    x = sirka_novy_kvet - sirka_pasmo - 0.14,
+    y = delka_pasmo_prumer,
+    hjust = 1,
+    label = paste0("průměr ", format_cz(delka_pasmo_prumer), " cm"),
+    color = barvy["interpretace"],
+    fill = "white",
+    label.size = 0,
+    size = 6
+  )
+
+save_local_figure(
+  plot = plot_novy_kvet_pasmo,
+  filename = "novy_kvet_pasmo.png",
+  width = 1300,
+  height = 900
+)
+```
 
 :::: {.columns .align-center}
 
 ::: {.column width="60%"}
+::: {.r-stack}
 ```{r}
-#| label: zobrazit-bodovy-graf-kosatcu-znovu
+#| label: zobrazit-otazku-noveho-kvetu
 #| echo: false
-#| fig-alt: "Šířka a délka každého květu kosatce v cm, rostoucí vztah s rozptýlením."
+#| fig-alt: !expr paste0("Bodový graf šířky a délky korunních lístků se svislou oranžovou čárkovanou čarou u šířky ", format_cz(sirka_novy_kvet), " cm, kde leží nový květ s neznámou délkou.")
 #| out-width: 100%
-include_local_figure("data_kosatce.png")
+include_local_figure("novy_kvet_otazka.png")
 ```
+
+::: {.fragment fragment-index=1}
+```{r}
+#| label: zobrazit-pasmo-noveho-kvetu
+#| echo: false
+#| fig-alt: !expr paste0("Stejný bodový graf; oranžově zvýrazněné květy se šířkou ", format_cz(sirka_novy_kvet - sirka_pasmo), "–", format_cz(sirka_novy_kvet + sirka_pasmo), " cm mají různé délky, vodorovná oranžová úsečka ukazuje jejich průměrnou délku ", format_cz(delka_pasmo_prumer), " cm.")
+#| out-width: 100%
+include_local_figure("novy_kvet_pasmo.png")
+```
+:::
+:::
 :::
 
 ::: {.column width="40%"}
-::: {.panel-result .fragment}
-[Co vidíme]{.panel-title}
+::: {.panel-question}
+[Váš odhad]{.panel-title}
 
-- vztah je rostoucí
-- kolem trendu zůstává variabilita
-- jednotlivé květy neleží na jedné přímce
+Odhadněte délku nového květu a porovnejte odhad se sousedem.
 :::
 
-<br>
+::: {.fragment fragment-index=1}
+::: {.panel-data}
+[Podobně široké květy]{.panel-title}
 
-::: {.panel-question .fragment}
-[Otázka na velikost změny]{.panel-title}
+[`r format_cz(nrow(data_pasmo_novy_kvet))` květů]{.text-hgl-orange} se šířkou `r format_cz(sirka_novy_kvet - sirka_pasmo)`–`r format_cz(sirka_novy_kvet + sirka_pasmo)` cm
 
-O kolik se liší odhadnutá délka dvou květů, jejichž šířky se liší o 1 cm?
+délky `r format_cz(min(data_pasmo_novy_kvet$delka_listku))`–`r format_cz(max(data_pasmo_novy_kvet$delka_listku))` cm · průměr **`r format_cz(delka_pasmo_prumer)` cm**
+:::
 :::
 :::
 
 ::::
+
+::: {.fragment fragment-index=2 .takeaway-strip}
+Podobně široké květy se liší délkou. Čekat můžeme jen [typickou délku]{.text-hgl-orange}, ne přesnou hodnotu.
+:::
+
+::: {.notes}
+Nechám 30 sekund na vlastní odhad a krátké porovnání se sousedem. Teprve pak odhalím podobně široké květy. Zdůrazním dvě věci: vztah je rostoucí, ale ani při stejné šířce květy neleží v jednom bodě. Rozumná odpověď je proto typická (průměrná) délka podobně širokých květů. Tuto hodnotu si zapamatujeme a na konci ji porovnáme s odhadem modelu.
+:::
+
+## Co změříme a co čekáme?
+
+::: {.slide-margin-top-15}
+::: {.card-question}
+::: {.card-title}
+Otázka
+:::
+
+V terénu jedno měření korunního lístku změříme a druhé podle něj chceme odhadnout. Které měření budeme odhadovat?
+:::
+
+<br>
+
+:::: {.columns}
+
+::: {.column width="50%"}
+::: {.card-question}
+**A)** šířka korunního lístku
+:::
+:::
+
+::: {.column width="50%"}
+::: {.card-question}
+[**B)** délka korunního lístku]{.rn-circle-orange}
+:::
+:::
+
+::::
+
+<br>
+
+::: {.text-center}
+Zvolte A/B a zdůvodněte svou volbu sousedovi.
+:::
+
+::: {.fragment .takeaway-strip .text-center}
+[prediktor]{.text-hgl-graphite}: šířka — změříme  →  [odezva]{.text-hgl-graphite}: délka — odhadujeme
+
+Opačná otázka, odhad šířky ze známé délky, by byla jiný model.
+:::
+:::
+
+::: {.notes}
+Nechám 20 sekund na volbu a krátké zdůvodnění sousedovi. Odhadujeme délku; teprve po odpovědi pojmenuji odezvu a prediktor. Prediktor je to, co známe nebo změříme; odezva je to, co z něj chceme odhadnout. Na rozdíl od korelace role nejsou zaměnitelné: odhad šířky ze známé délky by byla jiná otázka.
+:::
+
+## Jedna přímka shrnuje mnoho květů
+
+```{r}
+#| label: zobrazit-kosatce-a-modelove-pravitko
+#| echo: false
+#| out-width: "78%"
+#| fig-alt: "Terénní botanička přikládá rovné pravítko k několika kosatcům s různými rozměry; pravítko představuje jednu přímku shrnující proměnlivá pozorování."
+#| fig-cap: "Ilustrační obraz vytvořen AI."
+include_local_figure("iris_model_ruler.png")
+```
+
+::: {.takeaway-strip .text-center .fragment}
+Přímka, která každé šířce ([prediktor]{.text-hgl-graphite}) přiřadí odhadnutou délku ([odezva]{.text-hgl-graphite}), je nejjednodušší [lineární model]{.text-hgl-indigo_velvet}.
+:::
+
+::: {.notes}
+Pravítko položené přes mnoho květů: jedna přímka nenahrazuje data, jen stručně popisuje jejich systematický vztah. Tady poprvé pojmenuji lineární model. Je to pravidlo, které z hodnoty prediktoru vrátí odhadnutou odezvu, například délku nového květu ze změřené šířky.
+:::
+
+## Co přidá [lineární model]{.text-hgl-indigo_velvet}?
+
+<br>
+
+:::: {.columns .align-stretch}
+
+::: {.column width="48%"}
+::: {.panel-result}
+[Graf a korelace (minulá lekce)]{.panel-title}
+
+- [vztah zobrazit]{.text-hgl-graphite}
+- popsat jeho směr
+- shrnout jeho těsnost
+:::
+:::
+
+::: {.column width="52%"}
+::: {.panel-indigo .fragment}
+[Lineární model]{.panel-title}
+
+- [o kolik]{.text-hgl-orange} se v průměru liší délka dvou květů, jejichž šířky se liší o 1 cm
+- [jakou délku čekat]{.text-hgl-orange} u květu dané šířky, třeba u nového květu
+:::
+:::
+
+::::
+
+<br>
+
+::: {.takeaway-strip .fragment}
+Obě odpovědi dostaneme v [centimetrech]{.text-hgl-indigo_velvet}. Jak [přesné]{.text-hgl-orange} jsou, zůstává otevřené do příští lekce.
+:::
+
+::: {.notes}
+Korelace z L02 nám řekla, že vztah existuje a jak je těsný. Lineární model odpoví na dvě nové otázky v původních jednotkách: velikost efektu a odhad pro novou šířku. K novému květu se vrátíme, až budeme mít přímku odhadnutou ze všech dat.
+:::
 
 # Co rozhoduje mezi přímkami?
 
@@ -790,8 +918,14 @@ Rozdíl odhadnutých délek dvou šířek, které se liší o 1 cm.
 
 ::::
 
+<br>
+
+::: {.takeaway-strip .text-center .fragment}
+Intercept a sklon jsou dvě čísla, která popíší [lineární model]{.text-hgl-indigo_velvet}.
+:::
+
 ::: {.notes}
-Název parametrů přichází až po dvojici vizuálních manipulací. Vzorec zde pouze pojmenuje to, co už studenti viděli.
+Název parametrů přichází až po dvojici vizuálních manipulací. Vzorec zde pouze pojmenuje to, co už studenti viděli. Připomenu, že lineární model z úvodu je právě taková přímka: stačí znát intercept a sklon.
 :::
 
 # Jak daleko je měření od přímky?
@@ -1630,6 +1764,10 @@ lm(
 )
 ```
 
+::: {.text-center}
+`lm` = **l**inear **m**odel = [lineární model]{.text-hgl-indigo_velvet}
+:::
+
 ::: {.text-center .fragment}
 Znak `~` čteme: **odezvu vysvětlujeme pomocí prediktoru**.
 :::
@@ -1820,6 +1958,101 @@ Zvolte A/B/C. Zdůvodněte, jaké dvě veličiny a jaké jednotky sklon spojuje.
 Po volbě nechám studenty přesvědčit souseda. Správně B. A zaměňuje průměrný vztah za přesné pravidlo pro každou dvojici, C zaměňuje sklon za podíl vysvětlené variability.
 :::
 
+## Jakou délku čekáme u nového květu?
+
+```{r}
+#| label: vytvorit-odhad-noveho-kvetu
+#| include: false
+#| message: false
+#| warning: false
+odhad_delka_novy_kvet <-
+  odhad_interceptu_listky + odhad_sklonu_listky * sirka_novy_kvet
+
+stopifnot(
+  isTRUE(all.equal(
+    odhad_delka_novy_kvet,
+    unname(predict(
+      object = mod_listky,
+      newdata = data.frame(sirka_listku = sirka_novy_kvet)
+    ))
+  ))
+)
+
+plot_novy_kvet_odhad <-
+  plot_fit +
+  ggplot2::annotate(
+    geom = "point",
+    x = sirka_novy_kvet,
+    y = odhad_delka_novy_kvet,
+    color = barvy["model"],
+    size = 6
+  ) +
+  ggplot2::annotate(
+    geom = "label",
+    x = sirka_novy_kvet - sirka_pasmo - 0.14,
+    y = odhad_delka_novy_kvet + 0.35,
+    hjust = 1,
+    label = paste0("odhad modelu ", format_cz(odhad_delka_novy_kvet), " cm"),
+    color = barvy["model"],
+    fill = "white",
+    label.size = 0,
+    size = 6
+  )
+
+save_local_figure(
+  plot = plot_novy_kvet_odhad,
+  filename = "novy_kvet_odhad.png",
+  width = 1300,
+  height = 900
+)
+```
+
+:::: {.columns .align-center}
+
+::: {.column width="55%"}
+```{r}
+#| label: zobrazit-odhad-noveho-kvetu
+#| echo: false
+#| fig-alt: !expr paste0("Bodový graf s fialovou přímkou lineárního modelu; fialový bod na přímce u šířky ", format_cz(sirka_novy_kvet), " cm ukazuje odhadnutou délku ", format_cz(odhad_delka_novy_kvet), " cm.")
+#| out-width: 100%
+include_local_figure("novy_kvet_odhad.png")
+```
+:::
+
+::: {.column width="45%"}
+$$
+\begin{aligned}
+\text{odhadnutá délka}
+&=
+\text{intercept} \\
+&\quad +
+\text{sklon} \cdot \text{šířka} \\
+&=
+`r format_cz_math(odhad_interceptu_listky)`
++
+`r format_cz_math(odhad_sklonu_listky)` \cdot `r format_cz_math(sirka_novy_kvet)` \\
+&=
+`r format_cz_math(odhad_delka_novy_kvet)`\ \text{cm}
+\end{aligned}
+$$
+
+::: {.panel-data .fragment}
+[Váš odhad z úvodu]{.panel-title}
+
+Podobně široké květy měly v průměru [`r format_cz(delka_pasmo_prumer)` cm]{.text-hgl-orange}.
+:::
+:::
+
+::::
+
+::: {.takeaway-strip .fragment}
+[Lineární model]{.text-hgl-indigo_velvet} vrací typickou délku pro danou šířku. Jednotlivé nové květy se od ní budou lišit; jak přesný je samotný odhad, ukáže příští lekce.
+:::
+
+::: {.notes}
+Vracím se k novému květu z úvodu. Do rovnice dosadíme změřenou šířku a dostaneme odhadnutou délku. Porovnám ji s průměrem podobně širokých květů, který studenti viděli na začátku: obě hodnoty jsou téměř stejné. Při této šířce se odhad modelu a průměr podobně širokých květů téměř shodují; u jiných šířek to platit nemusí, k tomu se vrátíme u residuí. Skutečný nový květ se od odhadu lišit bude; tyto odchylky už známe jako residua. Přesnost odhadu (interval) přijde v L04.
+:::
+
 ## Co už víme o korunních lístcích?
 
 ::: {.box-question}
@@ -1835,6 +2068,8 @@ Po volbě nechám studenty přesvědčit souseda. Správně B. A zaměňuje prů
 [Co můžeme říct]{.panel-title}
 
 Ano. Dva květy, jejichž šířky se liší o 1 cm, se podle modelu liší v délce v průměru o **`r format_cz(round(odhad_sklonu_listky, 2))` cm**.
+
+U nového květu širokého `r format_cz(sirka_novy_kvet)` cm [lineární model]{.text-hgl-indigo_velvet} odhaduje délku **`r format_cz(odhad_delka_novy_kvet)` cm**.
 :::
 :::
 
@@ -2320,7 +2555,7 @@ Jedna přímka zachytila [celkový růst]{.text-hgl-indigo_velvet}, ale druhy ne
 ::: {.slide-margin-top-15}
 ::: {.blockquote}
 ::: {.incremental}
-- Biologickou otázku převádíme na [odezvu a prediktor]{.text-hgl-graphite}.
+- [Lineární model]{.text-hgl-indigo_velvet}: změříme [prediktor]{.text-hgl-graphite} a přímka vrátí odhadnutou [odezvu]{.text-hgl-graphite}.
 - `lm()` hledá přímku s [nejmenším součtem čtverců residuí]{.text-hgl-orange}; [sklon]{.text-hgl-indigo_velvet} je průměrný rozdíl odezvy mezi pozorováními, jejichž prediktor se liší o jednu jednotku.
 - [Residuum]{.text-hgl-orange} je rozdíl mezi naměřenou a odhadnutou hodnotou; ukazuje, co model u jednotlivých pozorování nevysvětlil.
 - [Vzor v residuích]{.text-hgl-orange} upozorňuje na chybějící strukturu nebo omezení modelu.
