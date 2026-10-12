@@ -124,4 +124,5 @@ Výsledky učení → **Změříme šířku — jakou délku čekáme?** → Př
   - The outcome wording was revised.
 - Optional findings applied: consistent "podobně široké" wording and the panel title. Not applied: "asi" before the two-decimal labels, kept for consistency with other deck values.
 - Skripta check: no contradictions. The skripta does not contain the new-flower estimate; a possible future alignment.
-- Human review of the revised deck: pending.
+- Human review of the revised deck: approved by Ondřej Mottl on 2026-10-12 (“I approve the Presentation”), after reviewing the offline-mode PDF render; no revisions requested.
+- Open before release: synchronized PollsLive render (the `_internal` sync workflow is currently disabled).
