@@ -217,15 +217,34 @@ table_ukazka_kvetu <-
     druh = c(data_ctyri_kvety$druh, "–")
   )
 names(table_ukazka_kvetu) <- c("Květ", "Šířka (cm)", "Délka (cm)", "Druh")
+
+# Same row count as the full table, with a blank last row, so the table
+#   does not shift when the new-flower row is revealed.
+table_ukazka_letos <- table_ukazka_kvetu
+table_ukazka_letos[nrow(table_ukazka_letos), ] <- " "
 ```
+
+::: {.takeaway-strip}
+Letos botanička změřila u každého květu šířku i délku korunního lístku. Ukázka čtyř květů: jeden řádek = jeden květ.
+:::
 
 <br>
 
 :::: {.columns .align-center}
 
 ::: {.column width="52%"}
+::: {.r-stack}
+::: {.fragment .fade-out fragment-index=2}
 ```{r}
-#| label: zobrazit-ukazku-mereni
+#| label: zobrazit-ukazku-mereni-letos
+#| echo: false
+tinytable::tt(table_ukazka_letos)
+```
+:::
+
+::: {.fragment fragment-index=2}
+```{r}
+#| label: zobrazit-ukazku-mereni-s-novym-kvetem
 #| echo: false
 tinytable::tt(table_ukazka_kvetu) |>
   tinytable::style_tt(
@@ -235,33 +254,29 @@ tinytable::tt(table_ukazka_kvetu) |>
   )
 ```
 :::
-
-::: {.column width="48%"}
-::: {.panel-question}
-[Příští sezóna]{.panel-title}
-
-U nových květů stihneme změřit jen [šířku]{.text-hgl-graphite}. Jakou [délku]{.text-hgl-orange} můžeme čekat?
+:::
 :::
 
-::: {.panel-data}
+::: {.column width="48%"}
+::: {.panel-data .fragment fragment-index=1}
 [Letošní měření]{.panel-title}
 
 `r format_cz(nrow(data_kosatce))` květů · `r format_cz(sum(is.na(data_kosatce)))` chybějících hodnot
 
 Šířky `r format_cz(min(data_kosatce$sirka_listku))`–`r format_cz(max(data_kosatce$sirka_listku))` cm · délky `r format_cz(min(data_kosatce$delka_listku))`–`r format_cz(max(data_kosatce$delka_listku))` cm
 :::
+
+::: {.panel-question .fragment fragment-index=2}
+[Příští sezóna]{.panel-title}
+
+U nových květů stihneme změřit jen [šířku]{.text-hgl-graphite}. Jakou [délku]{.text-hgl-orange} můžeme čekat?
+:::
 :::
 
 ::::
 
-<br>
-
-::: {.takeaway-strip}
-Jeden řádek = jeden květ. Letos známe obě měření, u nového květu jen šířku.
-:::
-
 ::: {.notes}
-Scénář: botanička letos změřila u každého květu šířku i délku korunního lístku. Příští sezónu bude mít čas jen na rychlé měření šířky. Jakou délku může u nového květu čekat? Navážu na L02: minule jsme vztah dvou měření popsali, dnes ho chceme použít. Odpověď zatím neprozrazuji. První čtyři řádky jsou skutečné květy z různých částí rozsahu šířek; se stejnými čtyřmi květy budeme později ručně počítat odhady a residua.
+Postup klikání: nejprve čtyři letos změřené květy (jeden řádek = jeden květ), pak souhrn celých dat, nakonec přibude nový květ s otazníkem a otázka. Scénář: botanička letos změřila u každého květu šířku i délku korunního lístku. Příští sezónu bude mít čas jen na rychlé měření šířky. Jakou délku může u nového květu čekat? Navážu na L02: minule jsme vztah dvou měření popsali, dnes ho chceme použít. Odpověď zatím neprozrazuji. První čtyři řádky jsou skutečné květy z různých částí rozsahu šířek; se stejnými čtyřmi květy budeme později ručně počítat odhady a residua.
 :::
 
 ## Jaký vztah vidíte?
@@ -345,6 +360,61 @@ Studenti nejprve pojmenují viditelný tvar. Správně je B: vztah je rostoucí 
 ## Jakou délku čekáte u květu širokého `r format_cz(sirka_novy_kvet)` cm?
 
 ```{r}
+#| label: vytvorit-otazku-noveho-kvetu
+#| include: false
+#| message: false
+#| warning: false
+# Extra headroom above the data keeps the question label off the points.
+plot_novy_kvet_otazka <-
+  plot_data_kosatce +
+  ggplot2::scale_y_continuous(
+    limits = c(0, 8),
+    expand = ggplot2::expansion(mult = c(0, 0.03))
+  ) +
+  ggplot2::geom_vline(
+    xintercept = sirka_novy_kvet,
+    color = barvy["interpretace"],
+    linetype = "dashed",
+    linewidth = 1.1
+  ) +
+  ggplot2::annotate(
+    geom = "label",
+    x = sirka_novy_kvet,
+    y = 7.6,
+    label = "nový květ: délka?",
+    color = barvy["interpretace"],
+    fill = "white",
+    label.size = 0,
+    size = 6
+  )
+
+save_local_figure(
+  plot = plot_novy_kvet_otazka,
+  filename = "novy_kvet_otazka.png",
+  width = 1600,
+  height = 760
+)
+```
+
+```{r}
+#| label: zobrazit-otazku-noveho-kvetu
+#| echo: false
+#| fig-alt: !expr paste0("Bodový graf šířky a délky korunních lístků se svislou oranžovou čárkovanou čarou u šířky ", format_cz(sirka_novy_kvet), " cm, kde leží nový květ s neznámou délkou.")
+#| out-width: 88%
+include_local_figure("novy_kvet_otazka.png")
+```
+
+::: {.takeaway-strip .text-center}
+Odhadněte délku nového květu v cm a porovnejte ji se sousedem.
+:::
+
+::: {.notes}
+Nechám 30 sekund na vlastní odhad a krátké porovnání se sousedem. Zatím nic neodhaluji; odpověď ukáže další snímek.
+:::
+
+## Jakou délku čekáte u květu širokého `r format_cz(sirka_novy_kvet)` cm?
+
+```{r}
 #| label: vytvorit-pasmo-noveho-kvetu
 #| include: false
 #| message: false
@@ -360,128 +430,153 @@ data_pasmo_novy_kvet <-
 delka_pasmo_prumer <-
   mean(data_pasmo_novy_kvet$delka_listku)
 
-plot_novy_kvet_otazka <-
-  plot_data_kosatce +
-  ggplot2::geom_vline(
-    xintercept = sirka_novy_kvet,
-    color = barvy["interpretace"],
-    linetype = "dashed",
-    linewidth = 1.1
-  ) +
-  ggplot2::annotate(
-    geom = "label",
-    x = sirka_novy_kvet - 0.05,
-    y = 7.0,
-    hjust = 1,
-    label = "nový květ: délka?",
-    color = barvy["interpretace"],
-    fill = "white",
-    label.size = 0,
-    size = 6
+# A width inside the gap of the data: no flower is similarly wide.
+sirka_bez_kvetu <- 0.8
+pocet_kvetu_bez_kvetu <-
+  sum(
+    round(abs(data_kosatce$sirka_listku - sirka_bez_kvetu), 2) <= sirka_pasmo
   )
+stopifnot(pocet_kvetu_bez_kvetu == 0)
 
-save_local_figure(
-  plot = plot_novy_kvet_otazka,
-  filename = "novy_kvet_otazka.png",
-  width = 1300,
-  height = 900
-)
+popisek_pasma <-
+  paste0(
+    "Jen květy ",
+    format_cz(sirka_novy_kvet - sirka_pasmo),
+    "–",
+    format_cz(sirka_novy_kvet + sirka_pasmo),
+    " cm"
+  )
+vec_panely_pasma <- c("Všechny květy", popisek_pasma)
+
+# The slice repeats the band flowers with a small horizontal jitter so that
+#   equal lengths stay visible; both panels share one length axis.
+set.seed(900723)
+data_rez_pasma <-
+  rbind(
+    data.frame(
+      panel = vec_panely_pasma[1],
+      sirka = data_kosatce$sirka_listku,
+      delka = data_kosatce$delka_listku,
+      v_pasmu = round(
+        abs(data_kosatce$sirka_listku - sirka_novy_kvet), 2
+      ) <= sirka_pasmo
+    ),
+    data.frame(
+      panel = vec_panely_pasma[2],
+      sirka = data_pasmo_novy_kvet$sirka_listku +
+        stats::runif(nrow(data_pasmo_novy_kvet), -0.02, 0.02),
+      delka = data_pasmo_novy_kvet$delka_listku,
+      v_pasmu = TRUE
+    )
+  )
+data_rez_pasma$panel <- factor(data_rez_pasma$panel, levels = vec_panely_pasma)
 
 plot_novy_kvet_pasmo <-
-  plot_novy_kvet_otazka +
-  ggplot2::annotate(
-    geom = "rect",
-    xmin = sirka_novy_kvet - sirka_pasmo - 0.04,
-    xmax = sirka_novy_kvet + sirka_pasmo + 0.04,
+  ggplot2::ggplot(
+    data = data_rez_pasma,
+    mapping = ggplot2::aes(x = sirka, y = delka)
+  ) +
+  ggplot2::geom_rect(
+    data = data.frame(
+      panel = factor(vec_panely_pasma[1], levels = vec_panely_pasma),
+      xmin = sirka_novy_kvet - sirka_pasmo - 0.04,
+      xmax = sirka_novy_kvet + sirka_pasmo + 0.04
+    ),
+    mapping = ggplot2::aes(xmin = xmin, xmax = xmax),
     ymin = -Inf,
     ymax = Inf,
+    inherit.aes = FALSE,
     fill = barvy["interpretace"],
     alpha = 0.12
   ) +
-  ggplot2::geom_point(
-    data = data_pasmo_novy_kvet,
-    color = barvy["interpretace"],
-    size = 3.2
+  ggplot2::geom_blank(
+    data = data.frame(
+      panel = factor(vec_panely_pasma[1], levels = vec_panely_pasma),
+      sirka = c(0, 2.7),
+      delka = 0
+    )
   ) +
-  ggplot2::annotate(
-    geom = "segment",
-    x = sirka_novy_kvet - sirka_pasmo - 0.12,
-    xend = sirka_novy_kvet + sirka_pasmo + 0.12,
-    y = delka_pasmo_prumer,
-    yend = delka_pasmo_prumer,
+  ggplot2::geom_vline(
+    data = data.frame(
+      panel = factor(vec_panely_pasma[1], levels = vec_panely_pasma),
+      sirka = sirka_bez_kvetu
+    ),
+    mapping = ggplot2::aes(xintercept = sirka),
+    color = biostat_cols[["graphite"]],
+    linetype = "dotted",
+    linewidth = 1
+  ) +
+  ggplot2::geom_point(
+    mapping = ggplot2::aes(color = v_pasmu),
+    alpha = 0.8,
+    size = 2.7
+  ) +
+  ggplot2::geom_segment(
+    data = data.frame(
+      panel = factor(vec_panely_pasma[2], levels = vec_panely_pasma),
+      x = sirka_novy_kvet - sirka_pasmo - 0.05,
+      xend = sirka_novy_kvet + sirka_pasmo + 0.05,
+      y = delka_pasmo_prumer
+    ),
+    mapping = ggplot2::aes(x = x, xend = xend, y = y, yend = y),
+    inherit.aes = FALSE,
     color = barvy["interpretace"],
     linewidth = 1.6
   ) +
-  ggplot2::annotate(
-    geom = "label",
-    x = sirka_novy_kvet - sirka_pasmo - 0.14,
-    y = delka_pasmo_prumer,
-    hjust = 1,
-    label = paste0("průměr ", format_cz(delka_pasmo_prumer), " cm"),
-    color = barvy["interpretace"],
-    fill = "white",
-    label.size = 0,
-    size = 6
-  )
+  ggplot2::scale_color_manual(
+    values = c(`FALSE` = barvy[["data"]], `TRUE` = barvy[["interpretace"]]),
+    guide = "none"
+  ) +
+  ggplot2::scale_x_continuous(
+    breaks = function(lim) {
+      if (diff(lim) < 1) {
+        seq(sirka_novy_kvet - sirka_pasmo, sirka_novy_kvet + sirka_pasmo, by = 0.1)
+      } else {
+        0:2
+      }
+    },
+    expand = ggplot2::expansion(mult = c(0.02, 0.04))
+  ) +
+  ggplot2::scale_y_continuous(
+    limits = c(0, 7.2),
+    expand = ggplot2::expansion(mult = c(0, 0.03))
+  ) +
+  ggplot2::facet_wrap(
+    facets = ggplot2::vars(panel),
+    scales = "free_x"
+  ) +
+  ggplot2::labs(
+    x = "Šířka korunního lístku (cm)",
+    y = "Délka korunního lístku (cm)"
+  ) +
+  theme_biostat(base_size = 20)
 
 save_local_figure(
   plot = plot_novy_kvet_pasmo,
   filename = "novy_kvet_pasmo.png",
-  width = 1300,
-  height = 900
+  width = 1600,
+  height = 700
 )
 ```
 
-:::: {.columns .align-center}
-
-::: {.column width="60%"}
-::: {.r-stack}
-```{r}
-#| label: zobrazit-otazku-noveho-kvetu
-#| echo: false
-#| fig-alt: !expr paste0("Bodový graf šířky a délky korunních lístků se svislou oranžovou čárkovanou čarou u šířky ", format_cz(sirka_novy_kvet), " cm, kde leží nový květ s neznámou délkou.")
-#| out-width: 100%
-include_local_figure("novy_kvet_otazka.png")
-```
-
-::: {.fragment fragment-index=1}
 ```{r}
 #| label: zobrazit-pasmo-noveho-kvetu
 #| echo: false
-#| fig-alt: !expr paste0("Stejný bodový graf; oranžově zvýrazněné květy se šířkou ", format_cz(sirka_novy_kvet - sirka_pasmo), "–", format_cz(sirka_novy_kvet + sirka_pasmo), " cm mají různé délky, vodorovná oranžová úsečka ukazuje jejich průměrnou délku ", format_cz(delka_pasmo_prumer), " cm.")
-#| out-width: 100%
+#| fig-alt: !expr paste0("Dva panely se stejnou osou délky. Vlevo všechna měření, oranžově zvýrazněných ", nrow(data_pasmo_novy_kvet), " květů se šířkou ", format_cz(sirka_novy_kvet - sirka_pasmo), "–", format_cz(sirka_novy_kvet + sirka_pasmo), " cm; tečkovaná čára u šířky ", format_cz(sirka_bez_kvetu), " cm prochází mezerou bez květů. Vpravo jen tyto květy, mírně rozestoupené vodorovně, jejich délky sahají od ", format_cz(min(data_pasmo_novy_kvet$delka_listku)), " do ", format_cz(max(data_pasmo_novy_kvet$delka_listku)), " cm, oranžová úsečka ukazuje průměr ", format_cz(delka_pasmo_prumer), " cm.")
+#| out-width: 88%
 include_local_figure("novy_kvet_pasmo.png")
 ```
-:::
-:::
-:::
 
-::: {.column width="40%"}
-::: {.panel-question}
-[Váš odhad]{.panel-title}
-
-Odhadněte délku nového květu a porovnejte odhad se sousedem.
+::: {.takeaway-strip}
+Čekáme délku kolem [`r format_cz(delka_pasmo_prumer, digits = 1)` cm]{.text-hgl-orange}; jednotlivé podobně široké květy měří `r format_cz(min(data_pasmo_novy_kvet$delka_listku))`–`r format_cz(max(data_pasmo_novy_kvet$delka_listku))` cm.
 :::
 
-::: {.fragment fragment-index=1}
-::: {.panel-data}
-[Podobně široké květy]{.panel-title}
-
-[`r format_cz(nrow(data_pasmo_novy_kvet))` květů]{.text-hgl-orange} se šířkou `r format_cz(sirka_novy_kvet - sirka_pasmo)`–`r format_cz(sirka_novy_kvet + sirka_pasmo)` cm
-
-délky `r format_cz(min(data_pasmo_novy_kvet$delka_listku))`–`r format_cz(max(data_pasmo_novy_kvet$delka_listku))` cm · průměr **`r format_cz(delka_pasmo_prumer)` cm**
-:::
-:::
-:::
-
-::::
-
-::: {.fragment fragment-index=2 .takeaway-strip}
-Podobně široké květy se liší délkou. Čekat můžeme jen [typickou délku]{.text-hgl-orange}, ne přesnou hodnotu.
+::: {.fragment .text-center}
+A u květu širokého `r format_cz(sirka_bez_kvetu)` cm (tečkovaná čára)? Podobně široké květy v datech nejsou, potřebujeme [pravidlo pro každou šířku]{.text-hgl-indigo_velvet}.
 :::
 
 ::: {.notes}
-Nechám 30 sekund na vlastní odhad a krátké porovnání se sousedem. Teprve pak odhalím podobně široké květy. Zdůrazním dvě věci: vztah je rostoucí, ale ani při stejné šířce květy neleží v jednom bodě. Rozumná odpověď je proto typická (průměrná) délka podobně širokých květů. Tuto hodnotu si zapamatujeme a na konci ji porovnáme s odhadem modelu.
+Vlevo stejný graf, oranžově `r nrow(data_pasmo_novy_kvet)` květů se šířkou `r format_cz(sirka_novy_kvet - sirka_pasmo)`–`r format_cz(sirka_novy_kvet + sirka_pasmo)` cm. Vpravo jen tyto květy na stejné ose délky (vodorovně jsou mírně rozestoupené, aby se stejné délky nepřekrývaly): stejně široké květy se liší délkou, proto můžeme čekat jen typickou (průměrnou) délku, ne přesnou hodnotu. Tuto hodnotu si zapamatujeme a na konci ji porovnáme s odhadem modelu. Pak ukážu na prázdné místo vlevo mezi šířkou `r format_cz(max(data_kosatce$sirka_listku[data_kosatce$sirka_listku < sirka_bez_kvetu]))` a `r format_cz(min(data_kosatce$sirka_listku[data_kosatce$sirka_listku > sirka_bez_kvetu]))` cm: pro takový květ nemáme podobné sousedy, a průměrování tedy nestačí. Potřebujeme pravidlo, které dá odhad pro každou šířku — k tomu vedou další snímky.
 :::
 
 ## Co změříme a co čekáme?
@@ -1195,6 +1290,16 @@ $$
 `r format_cz_math(data_jeden_odhad$odhadnuta_delka)`\ \text{cm}
 \end{aligned}
 $$
+
+::: {.fragment}
+$$
+\hat{y}_i = a + b \cdot x_i
+$$
+
+::: {.text-size-smaller .text-center}
+$x_i$ = naměřená šířka · $\hat{y}_i$ = odhadnutá délka · $i$ = pořadí květu
+:::
+:::
 :::
 
 ::: {.column width="52%"}
@@ -1285,6 +1390,20 @@ $$
 `r format_cz_math(data_jeden_odhad$residuum)`\ \text{cm}
 \end{aligned}
 $$
+
+::: {.fragment}
+$$
+e_i = y_i - \hat{y}_i
+$$
+
+::: {.text-size-smaller .text-center}
+$y_i$ = naměřená délka (cm)
+
+$\hat{y}_i$ = odhadnutá délka (cm)
+
+$e_i$ = residuum (cm)
+:::
+:::
 :::
 
 ::: {.column width="52%"}
@@ -1298,10 +1417,6 @@ include_local_figure("reziduum_s_popisky.png")
 :::
 
 ::::
-
-::: {.fragment .takeaway-strip}
-$y_i$ = naměřená délka · $\hat{y}_i$ = odhadnutá délka · $e_i$ = residuum · $i$ = pořadí květu; vše v cm. $e_i = y_i - \hat{y}_i$
-:::
 
 ## Residua očekáváme i u užitečného modelu
 
@@ -1794,6 +1909,54 @@ odezva ~ prediktor
 ## Jaké koeficienty model odhadne?
 
 ```{r}
+#| label: pripravit-tabulku-kandidatu
+#| include: false
+tabulka_kandidatu <-
+  data.frame(
+    primka = kandidati$model,
+    intercept = format_cz(kandidati$a),
+    sklon = format_cz(kandidati$b)
+  )
+names(tabulka_kandidatu) <- c("Přímka", "Intercept (cm)", "Sklon (cm/cm)")
+```
+
+:::: {.columns .align-center}
+
+::: {.column width="60%"}
+```{r}
+#| label: zobrazit-kandidatni-primky-pred-fitem
+#| echo: false
+#| fig-alt: "Stejná měření se třemi kandidátními přímkami A, B a C, odlišenými typem čáry a popiskem."
+#| out-width: 100%
+include_local_figure("kandidatni_primky.png")
+```
+:::
+
+::: {.column width="40%"}
+```{r}
+#| label: zobrazit-tabulku-kandidatu
+#| echo: false
+tinytable::tt(tabulka_kandidatu)
+```
+
+<br>
+
+::: {.panel-question}
+[Odhadněte předem]{.panel-title}
+
+`lm()` použije všech `r format_cz(nrow(data_kosatce))` květů. Bude [sklon]{.text-hgl-indigo_velvet} odhadnutého modelu nejblíž přímce A, B, nebo C?
+:::
+:::
+
+::::
+
+::: {.notes}
+Vracím na plátno kandidátní přímky z dřívějška, aby studenti mohli odhadovat podle toho, co vidí. Na čtyřech květech měla nejmenší SSE přímka `r kandidati$model[which.min(kandidati$SSE4)]`; teď se ptám, co udělá `lm()` se všemi květy. Nechám krátce hlasovat, odpověď ukáže další snímek.
+:::
+
+## Jaké koeficienty model odhadne?
+
+```{r}
 #| label: pripravit-tabulku-koeficientu-listku
 #| include: false
 mod_listky <-
@@ -1823,18 +1986,24 @@ stopifnot(
     unname(coef(object = mod_listky))
   ))
 )
+
+odhad_interceptu_listky <-
+  koeficienty_listky |>
+  dplyr::filter(term == "(Intercept)") |>
+  dplyr::pull(estimate)
+
+odhad_sklonu_listky <-
+  koeficienty_listky |>
+  dplyr::filter(term == "sirka_listku") |>
+  dplyr::pull(estimate)
+
+kandidat_nejblizsi <-
+  kandidati[which.min(abs(kandidati$b - odhad_sklonu_listky)), ]
 ```
-
-::: {.panel-question}
-[Odhadněte předem]{.panel-title}
-
-Bude odhadnutý sklon blíž přímce A (`r format_cz(kandidati$b[1])`), B (`r format_cz(kandidati$b[2])`), nebo C (`r format_cz(kandidati$b[3])`)?
-:::
 
 :::: {.columns .align-center}
 
 ::: {.column width="55%"}
-::: {.fragment}
 ```{r}
 #| label: fitovat-model-v-r
 #| echo: true
@@ -1852,22 +2021,23 @@ mod_listky <-
 coef(object = mod_listky)
 ```
 :::
-:::
 
 ::: {.column width="45%"}
-::: {.fragment}
 ```{r}
 #| label: zobrazit-tabulku-koeficientu-listku
 #| echo: false
 tinytable::tt(tabulka_koeficientu_listky)
 ```
 :::
-:::
 
 ::::
 
+::: {.takeaway-strip .fragment}
+Odhadnutý [sklon `r format_cz(odhad_sklonu_listky)` cm/cm]{.text-hgl-indigo_velvet} je nejblíž přímce `r kandidat_nejblizsi$model` (`r format_cz(kandidat_nejblizsi$b)`), ale není s ní totožný.
+:::
+
 ::: {.notes}
-Nechám studenty odhadnout sklon podle kandidátních přímek. Model ukládáme jako `mod_listky`, abychom se k němu mohli vracet. Odhad leží blízko přímky B, ale není s ní totožný.
+Model ukládáme jako `mod_listky`, abychom se k němu mohli vracet. Odhad leží blízko přímky `r kandidat_nejblizsi$model`, ale není s ní totožný: `lm()` nevybírá ze tří kandidátů, hledá nejmenší SSE mezi všemi přímkami a používá všechny květy.
 :::
 
 ## Přímka odhadnutá z těchto měření
@@ -1875,16 +2045,6 @@ Nechám studenty odhadnout sklon podle kandidátních přímek. Model ukládáme
 ```{r}
 #| label: vytvorit-odhadnutou-primku
 #| include: false
-odhad_interceptu_listky <-
-  koeficienty_listky |>
-  dplyr::filter(term == "(Intercept)") |>
-  dplyr::pull(estimate)
-
-odhad_sklonu_listky <-
-  koeficienty_listky |>
-  dplyr::filter(term == "sirka_listku") |>
-  dplyr::pull(estimate)
-
 plot_fit <-
   plot_data_kosatce +
   ggplot2::geom_abline(
@@ -2117,13 +2277,15 @@ data_rezidua <-
     reziduum = vec_rezidua
   )
 
+sirka_sloupce_rezidui <- 0.25
+
 plot_histogram_rezidui <-
   ggplot2::ggplot(
     data = data_rezidua,
     mapping = ggplot2::aes(x = reziduum)
   ) +
   ggplot2::geom_histogram(
-    binwidth = 0.25,
+    binwidth = sirka_sloupce_rezidui,
     boundary = 0,
     fill = barvy["interpretace"],
     color = "white",
@@ -2161,6 +2323,66 @@ Kde leží většina residuí a jak daleko sahají od nuly?
 
 ::: {.notes}
 Nejprve se podíváme na rozdělení všech residuí. Histogram ukáže jejich typickou velikost a znaménko, ale skryje, u kterých odhadnutých hodnot jednotlivé odchylky vznikly. Proto v dalším kroku residua vrátíme k odhadnutým hodnotám.
+:::
+
+## Stejná residua, ale s křivkou
+
+```{r}
+#| label: vytvorit-histogram-rezidui-s-krivkou
+#| include: false
+# Reference curve: normal shape centred at 0 with the residuals' own spread,
+#   scaled from density to counts (n × bin width) to match the histogram.
+sd_rezidui <- stats::sd(vec_rezidua)
+
+data_normalni_krivka <-
+  data.frame(
+    reziduum = seq(
+      from = min(vec_rezidua) - 0.3,
+      to = max(vec_rezidua) + 0.3,
+      length.out = 300
+    )
+  )
+data_normalni_krivka$pocet <-
+  length(vec_rezidua) * sirka_sloupce_rezidui *
+  stats::dnorm(data_normalni_krivka$reziduum, mean = 0, sd = sd_rezidui)
+
+plot_histogram_rezidui_s_krivkou <-
+  plot_histogram_rezidui +
+  ggplot2::geom_line(
+    data = data_normalni_krivka,
+    mapping = ggplot2::aes(x = reziduum, y = pocet),
+    color = biostat_cols[["graphite"]],
+    linewidth = 1.4
+  )
+
+save_local_figure(
+  plot = plot_histogram_rezidui_s_krivkou,
+  filename = "histogram_rezidui_s_krivkou.png"
+)
+```
+
+```{r}
+#| label: zobrazit-histogram-rezidui-s-krivkou
+#| echo: false
+#| fig-alt: "Stejný histogram residuí s tmavou hladkou zvonovitou křivkou se středem v nule; sloupce křivku přibližně sledují."
+#| out-width: 80%
+include_local_figure("histogram_rezidui_s_krivkou.png")
+```
+
+::: {.text-center}
+Většina residuí leží [blízko nuly]{.text-hgl-orange}. Čím dál od nuly, tím jich je méně, na obě strany podobně.
+:::
+
+::: {.fragment .text-center}
+Tmavá křivka ukazuje takový symetrický zvonovitý tvar. Říká se mu [normální rozdělení]{.text-hgl-graphite}.
+:::
+
+::: {.fragment .takeaway-strip}
+[Lineární model]{.text-hgl-indigo_velvet} předpokládá, že residua mají přibližně [normální rozdělení]{.text-hgl-graphite}. Proč na tom záleží, vysvětlíme v dalších lekcích.
+:::
+
+::: {.notes}
+Stejný histogram, jen přidávám hladkou referenční křivku se středem v nule a se stejným rozptýlením, jaké mají naše residua. Nejprve tvar popíšu slovy, teprve potom ho pojmenuji. Naše residua křivku přibližně sledují; drobné odchylky jsou u skutečných dat běžné. Zde jen pojmenovávám předpoklad. Proč je důležitý (odhad nejistoty a další závěry), vysvětlíme v dalších lekcích, proto se k tomu teď nevracím.
 :::
 
 ## Mění se residua podél odhadnuté délky?
