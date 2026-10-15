@@ -51,7 +51,7 @@
 ## Výsledky učení a návaznost na L02 -----
 #--------------------------------------------------#
 
-# Po společné trase dokážete:
+# Po hlavních úlohách dokážete:
 # - určit odezvu a prediktor podle biologické otázky;
 # - fitovat lm(y ~ x) a vyložit sklon v původních jednotkách;
 # - vysvětlit odhadnutou hodnotu a residuum konkrétního jedince;
@@ -113,21 +113,26 @@ head(x = data_kosatce)
 ### Úloha | L03-U01 -----
 #----------------------------------------#
 
-# Zadání: Zkontrolujte v data_kosatce počet řádků a rozsah hodnot
-# sirka_listku a delka_listku. Pro otázku v nadpisu určete,
-# která proměnná je prediktor a která odezva. Co představuje
-# jeden řádek tabulky a jakou jednotku mají obě měření?
-#
+# Zadání:
+# Zkontrolujte v data_kosatce počet řádků a rozsah hodnot sirka_listku a
+# delka_listku. Pro otázku v nadpisu určete, která proměnná je prediktor a
+# která odezva. Co představuje jeden řádek tabulky a jakou jednotku mají obě
+# měření?
+
 # Vaše řešení:
+
+
+# Nápověda 1:
+# Otázka se ptá, jak se jedna veličina mění s druhou; pořadí ve větě pomůže
+# rozlišit jejich role.
 #
+# Nápověda 2:
+# Počet řádků zjistíte nrow(); pro každý číselný sloupec použijte range().
+# Šířku označte jako x, délku jako y.
 #
-# Nápověda 1: Otázka se ptá, jak se jedna veličina mění
-# s druhou; pořadí ve větě pomůže rozlišit jejich role.
-# Nápověda 2: Počet řádků zjistíte nrow(); pro každý číselný
-# sloupec použijte range(). Šířku označte jako x, délku jako y.
-# Očekávaný výsledek: 150 květů; šířka 0,1–2,5 cm a délka
-# 1,0–6,9 cm. Šířka je prediktor, délka odezva; jeden řádek
-# je jedno pozorované květové měření.
+# Očekávaný výsledek:
+# 150 květů; šířka 0,1–2,5 cm a délka 1,0–6,9 cm. Šířka je prediktor, délka
+# odezva; jeden řádek je jedno pozorované květové měření.
 
 
 #--------------------------------------------------#
@@ -142,22 +147,26 @@ head(x = data_kosatce)
 ### Úloha | L03-U02 -----
 #----------------------------------------#
 
-# Zadání: Z data_kosatce nakreslete pomocí plot() bodový graf.
-# Na vodorovnou osu dejte sirka_listku, na svislou delka_listku;
-# obě osy česky popište včetně cm. Předem odhadněte, zda bude
-# přímka proložená všemi body stoupat, klesat, nebo být vodorovná.
-# Po zobrazení popište směr i rozptýlení bodů.
-#
+# Zadání:
+# Z data_kosatce nakreslete pomocí plot() bodový graf. Na vodorovnou osu
+# dejte sirka_listku, na svislou delka_listku; obě osy česky popište včetně
+# cm. Předem odhadněte, zda bude přímka proložená všemi body stoupat,
+# klesat, nebo být vodorovná. Po zobrazení popište směr i rozptýlení bodů.
+
 # Vaše řešení:
+
+
+# Nápověda 1:
+# V jednom svislém řezu mohou mít květy různou délku. Odlište rostoucí střed
+# oblaku od jeho šířky.
 #
+# Nápověda 2:
+# V plot() použijte x, y, xlab a ylab; pro body můžete přidat pch = 16. Oba
+# sloupce vyberte z data_kosatce.
 #
-# Nápověda 1: V jednom svislém řezu mohou mít květy
-# různou délku. Odlište rostoucí střed oblaku od jeho šířky.
-# Nápověda 2: V plot() použijte x, y, xlab a ylab; pro body
-# můžete přidat pch = 16. Oba sloupce vyberte z data_kosatce.
-# Očekávaný výsledek: Rostoucí oblak 150 bodů s viditelným
-# rozptýlením; přímka by měla stoupat. Body neleží přesně
-# na jedné přímce.
+# Očekávaný výsledek:
+# Rostoucí oblak 150 bodů s viditelným rozptýlením; přímka by měla stoupat.
+# Body neleží přesně na jedné přímce.
 
 
 #--------------------------------------------------#
@@ -181,23 +190,27 @@ vec_odhad_priklad
 ### Úloha | L03-U03 -----
 #----------------------------------------#
 
-# Zadání: Pomocí lm() fitujte model délky korunního lístku
-# podle jeho šířky z data_kosatce. Uložte jej jako mod_listky
-# a zobrazte oba koeficienty pomocí coef(). Co říká znaménko
-# sklonu a o kolik cm se podle modelu v průměru změní
-# odhadnutá délka při šířce větší o 1 cm?
-#
+# Zadání:
+# Pomocí lm() fitujte model délky korunního lístku podle jeho šířky z
+# data_kosatce. Uložte jej jako mod_listky a zobrazte oba koeficienty pomocí
+# coef(). Co říká znaménko sklonu a o kolik cm se podle modelu v průměru
+# změní odhadnutá délka při šířce větší o 1 cm?
+
 # Vaše řešení:
+
+
+# Nápověda 1:
+# Vzorec musí odrážet biologickou otázku: odhadujeme délku pomocí šířky,
+# nikoli naopak.
 #
+# Nápověda 2:
+# V lm() pojmenujte argumenty formula a data; do formula napište
+# delka_listku ~ sirka_listku. Výsledek uložte pomocí <- a předejte jej
+# funkci coef().
 #
-# Nápověda 1: Vzorec musí odrážet biologickou otázku:
-# odhadujeme délku pomocí šířky, nikoli naopak.
-# Nápověda 2: V lm() pojmenujte argumenty formula a data;
-# do formula napište delka_listku ~ sirka_listku. Výsledek
-# uložte pomocí <- a předejte jej funkci coef().
-# Očekávaný výsledek: Intercept přibližně 1,08 cm a sklon
-# přibližně 2,23 cm na 1 cm šířky. Odhadnutá délka roste;
-# tento vztah sám neprokazuje příčinu.
+# Očekávaný výsledek:
+# Intercept přibližně 1,08 cm a sklon přibližně 2,23 cm na 1 cm šířky.
+# Odhadnutá délka roste; tento vztah sám neprokazuje příčinu.
 
 
 #--------------------------------------------------#
@@ -215,23 +228,27 @@ vec_odhad_priklad
 ### Úloha | L03-U04 -----
 #----------------------------------------#
 
-# Zadání: Pro první řádek data_kosatce použijte jeho šířku
-# a koeficienty mod_listky k výpočtu odhadnuté délky.
-# Od naměřené délky odečtěte odhad. Výsledek porovnejte
-# s první hodnotou fitted(mod_listky) a resid(mod_listky).
-# Je první květ nad přímkou, nebo pod ní?
-#
+# Zadání:
+# Pro první řádek data_kosatce použijte jeho šířku a koeficienty mod_listky
+# k výpočtu odhadnuté délky. Od naměřené délky odečtěte odhad. Výsledek
+# porovnejte s první hodnotou fitted(mod_listky) a resid(mod_listky). Je
+# první květ nad přímkou, nebo pod ní?
+
 # Vaše řešení:
+
+
+# Nápověda 1:
+# Záporné residuum znamená, že měření je menší než odhad; kladné znamená
+# opak.
 #
+# Nápověda 2:
+# Z coef(mod_listky) vyberte intercept a sklon, spočítejte
+# intercept + sklon * data_kosatce$sirka_listku[1] a odečtěte od
+# data_kosatce$delka_listku[1].
 #
-# Nápověda 1: Záporné residuum znamená, že měření
-# je menší než odhad; kladné znamená opak.
-# Nápověda 2: Z coef(mod_listky) vyberte intercept a sklon,
-# spočítejte intercept + sklon * data_kosatce$sirka_listku[1]
-# a odečtěte od data_kosatce$delka_listku[1].
-# Očekávaný výsledek: Při šířce 0,2 cm a naměřené délce
-# 1,4 cm je odhad přibližně 1,53 cm a residuum -0,13 cm.
-# Naměřený květ leží pod přímkou.
+# Očekávaný výsledek:
+# Při šířce 0,2 cm a naměřené délce 1,4 cm je odhad přibližně 1,53 cm a
+# residuum -0,13 cm. Naměřený květ leží pod přímkou.
 
 
 #--------------------------------------------------#
@@ -270,28 +287,30 @@ barvy_kosatcu <-
 ### Úloha | L03-U05 -----
 #----------------------------------------#
 
-# Zadání: Z mod_listky vytvořte graf odhadnutých délek
-# proti residuím všech 150 květů. Použijte fitted() na ose x,
-# resid() na ose y, přidejte přerušovanou nulovou čáru
-# a obarvěte body podle data_kosatce$druh pomocí
-# barvy_kosatcu. Přidejte legendu druhů a popište osy česky
-# v cm. Zůstává v residuích
-# nějaká souvislost s druhem? Znamená samotná existence
-# nenulových residuí, že model nemá žádnou hodnotu?
-#
+# Zadání:
+# Z mod_listky vytvořte graf odhadnutých délek proti residuím všech 150
+# květů. Použijte fitted() na ose x, resid() na ose y, přidejte přerušovanou
+# nulovou čáru a obarvěte body podle data_kosatce$druh pomocí barvy_kosatcu.
+# Přidejte legendu druhů a popište osy česky v cm. Zůstává v residuích
+# nějaká souvislost s druhem? Znamená samotná existence nenulových residuí,
+# že model nemá žádnou hodnotu?
+
 # Vaše řešení:
+
+
+# Nápověda 1:
+# Každá dvojice odhad–residuum musí patřit stejnému květu; barva přidává
+# informaci, kterou model nepoužil.
 #
+# Nápověda 2:
+# Přiřaďte plot() x = fitted(mod_listky), y = resid(mod_listky)
+# a col = barvy_kosatcu[ as.character(data_kosatce$druh)]. Nulu vyznačte
+# pomocí abline(h = 0, lty = 2). Barvy popište pomocí legend() s
+# names(barvy_kosatcu) a barvy_kosatcu.
 #
-# Nápověda 1: Každá dvojice odhad–residuum musí patřit
-# stejnému květu; barva přidává informaci, kterou model nepoužil.
-# Nápověda 2: Přiřaďte plot() x = fitted(mod_listky),
-# y = resid(mod_listky) a col = barvy_kosatcu[
-# as.character(data_kosatce$druh)]. Nulu vyznačte pomocí
-# abline(h = 0, lty = 2). Barvy popište pomocí
-# legend() s names(barvy_kosatcu) a barvy_kosatcu.
-# Očekávaný výsledek: Body leží po obou stranách nuly;
-# po rozlišení barev je patrná struktura podle druhu.
-# Jediná přímka nepostihuje všechno, ale nenulová residua
+# Očekávaný výsledek:
+# Body leží po obou stranách nuly; po rozlišení barev je patrná struktura
+# podle druhu. Jediná přímka nepostihuje všechno, ale nenulová residua
 # očekáváme i u užitečného modelu.
 
 #--------------------------------------------------#
@@ -335,25 +354,28 @@ head(x = data_mereni_par)
 ### Úloha | L03-U06 -----
 #----------------------------------------#
 
-# Zadání: V data_mereni_par označte řádky s oběma známými
-# měřeními pomocí complete.cases(). Podle nich vytvořte
-# data_tucnaci z data_tucnaci_raw a ověřte počet řádků.
-# Z data_tucnaci nakreslete bodový graf délky ploutve (mm)
-# na ose x a hmotnosti (g) na ose y. Jaký směr vztahu vidíte
-# a proč jste ponechali stejné řádky pro obě měření?
-#
+# Zadání:
+# V data_mereni_par označte řádky s oběma známými měřeními pomocí
+# complete.cases(). Podle nich vytvořte data_tucnaci z data_tucnaci_raw a
+# ověřte počet řádků. Z data_tucnaci nakreslete bodový graf délky ploutve
+# (mm) na ose x a hmotnosti (g) na ose y. Jaký směr vztahu vidíte a proč
+# jste ponechali stejné řádky pro obě měření?
+
 # Vaše řešení:
+
+
+# Nápověda 1:
+# Každý tučňák tvoří jeden řádek. Při odděleném vyřazování hodnot by se
+# dvojice mohly posunout a popsat dva různé jedince.
 #
+# Nápověda 2:
+# Výsledek complete.cases(data_mereni_par) použijte uvnitř hranatých závorek
+# na data_tucnaci_raw, za čárkou ponechte všechny sloupce. Pro graf použijte
+# plot().
 #
-# Nápověda 1: Každý tučňák tvoří jeden řádek. Při
-# odděleném vyřazování hodnot by se dvojice mohly posunout
-# a popsat dva různé jedince.
-# Nápověda 2: Výsledek complete.cases(data_mereni_par)
-# použijte uvnitř hranatých závorek na data_tucnaci_raw,
-# za čárkou ponechte všechny sloupce. Pro graf použijte plot().
-# Očekávaný výsledek: 342 úplných dvojic z 344 řádků;
-# rostoucí, ale rozptýlený oblak. Párování chrání údaje
-# patřící jednomu jedinci před chybným spojením s jiným.
+# Očekávaný výsledek:
+# 342 úplných dvojic z 344 řádků; rostoucí, ale rozptýlený oblak. Párování
+# chrání údaje patřící jednomu jedinci před chybným spojením s jiným.
 
 
 #--------------------------------------------------#
@@ -368,26 +390,29 @@ head(x = data_mereni_par)
 ### Úloha | L03-U07 -----
 #----------------------------------------#
 
-# Zadání: Na data_tucnaci fitujte model hmotnosti podle délky
-# ploutve. Uložte jej jako mod_ploutve a zobrazte koeficienty.
-# Vyložte sklon v g na 1 mm i očekávanou změnu hmotnosti
-# při délce ploutve větší o 10 mm. Zkontrolujte rozsah
-# pozorovaných délek ploutve a posuďte, zda intercept
-# při 0 mm má biologický význam.
-#
+# Zadání:
+# Na data_tucnaci fitujte model hmotnosti podle délky ploutve. Uložte jej
+# jako mod_ploutve a zobrazte koeficienty. Vyložte sklon v g na 1 mm i
+# očekávanou změnu hmotnosti při délce ploutve větší o 10 mm. Zkontrolujte
+# rozsah pozorovaných délek ploutve a posuďte, zda intercept při 0 mm má
+# biologický význam.
+
 # Vaše řešení:
+
+
+# Nápověda 1:
+# Sklon má jednotku odezvy na jednotku prediktoru. Intercept se vztahuje k
+# nule na ose x; smysl této nuly posuzujte podle rozsahu měření.
 #
+# Nápověda 2:
+# Ve vzorci lm() použijte body_mass_g ~ flipper_length_mm
+# a data = data_tucnaci. Rozsah prediktoru zjistěte pomocí
+# range(data_tucnaci$flipper_length_mm).
 #
-# Nápověda 1: Sklon má jednotku odezvy na jednotku
-# prediktoru. Intercept se vztahuje k nule na ose x;
-# smysl této nuly posuzujte podle rozsahu měření.
-# Nápověda 2: Ve vzorci lm() použijte body_mass_g ~
-# flipper_length_mm a data = data_tucnaci. Rozsah prediktoru
-# zjistěte pomocí range(data_tucnaci$flipper_length_mm).
-# Očekávaný výsledek: Sklon přibližně 49,7 g/mm,
-# tedy přibližně 497 g na 10 mm. Intercept je přibližně
-# -5781 g, ale 0 mm leží mimo pozorovaných 172–231 mm;
-# zápornou hmotnost proto nevykládáme biologicky.
+# Očekávaný výsledek:
+# Sklon přibližně 49,7 g/mm, tedy přibližně 497 g na 10 mm. Intercept je
+# přibližně -5781 g, ale 0 mm leží mimo pozorovaných 172–231 mm; zápornou
+# hmotnost proto nevykládáme biologicky.
 
 
 #--------------------------------------------------#
@@ -399,41 +424,30 @@ head(x = data_mereni_par)
 ### Úloha | L03-U08 -----
 #----------------------------------------#
 
-# Zadání: Z mod_ploutve nakreslete graf residuí proti
-# odhadnutým hmotnostem pro stejných 342 tučňáků; vyznačte
-# nulovou čáru a česky popište obě osy v g. Popište rozptyl
-# kolem nuly. Napište krátký biologický závěr, který spojí
-# kontrolu úplných dvojic, směr a velikost odhadnutého
-# vztahu i omezení jednoduché přímky. Dokazuje vztah,
-# že delší ploutev způsobuje vyšší hmotnost?
-#
+# Zadání:
+# Z mod_ploutve nakreslete graf residuí proti odhadnutým hmotnostem pro
+# stejných 342 tučňáků; vyznačte nulovou čáru a česky popište obě osy v g.
+# Popište rozptyl kolem nuly. Napište krátký biologický závěr, který spojí
+# kontrolu úplných dvojic, směr a velikost odhadnutého vztahu i omezení
+# jednoduché přímky. Dokazuje vztah, že delší ploutev způsobuje vyšší
+# hmotnost?
+
 # Vaše řešení:
+
+
+# Nápověda 1:
+# Diagnostika porovnává odhad modelu s tím, co po odečtení odhadu z měření
+# zůstalo.
 #
+# Nápověda 2:
+# Do plot() dejte fitted(mod_ploutve) na x a resid(mod_ploutve) na y;
+# nulovou čáru přidejte abline(h = 0, lty = 2). V závěru uveďte jednotku
+# sklonu.
 #
-# Nápověda 1: Diagnostika porovnává odhad modelu s tím,
-# co po odečtení odhadu z měření zůstalo.
-# Nápověda 2: Do plot() dejte fitted(mod_ploutve) na x
-# a resid(mod_ploutve) na y; nulovou čáru přidejte
-# abline(h = 0, lty = 2). V závěru uveďte jednotku sklonu.
-# Očekávaný výsledek: Graf má 342 residuí po obou stranách
-# nuly, s viditelnou variabilitou hmotnosti. Model odhaduje
-# kladnou asociaci přibližně 49,7 g/mm, nikoli přesnou
-# hmotnost každého jedince ani příčinný účinek ploutve.
-
-
-#----------------------------------------------------------#
-# Shrnutí a sebekontrola -----
-#----------------------------------------------------------#
-
-# Společná trasa je hotová, pokud vlastními slovy vysvětlíte:
-# 1. Jak biologická otázka určí pořadí proměnných v lm(y ~ x)?
-# 2. Co znamená sklon u kosatců a v jakých je jednotkách?
-# 3. Jak vzniká residuum jednoho květu či tučňáka?
-# 4. Co může ukázat graf residuí, co sklon samotný neukáže?
-# 5. Proč nevykládáme intercept tučňáků při 0 mm?
-# 6. Proč kladný sklon sám nedokazuje příčinný vztah?
-# Pokud si nejste jistí, vraťte se k příslušné úloze
-# a jejím dvěma nápovědám.
+# Očekávaný výsledek:
+# Graf má 342 residuí po obou stranách nuly, s viditelnou variabilitou
+# hmotnosti. Model odhaduje kladnou asociaci přibližně 49,7 g/mm, nikoli
+# přesnou hmotnost každého jedince ani příčinný účinek ploutve.
 
 
 #----------------------------------------------------------#
@@ -465,29 +479,31 @@ head(x = data_kalich)
 ### Úloha navíc | L03-N01 -----
 #----------------------------------------#
 
-# Zadání: V data_kalich zkontrolujte počet řádků a zobrazte
-# bodový graf délky korunního lístku na ose x proti délce
-# kališního lístku na ose y; obě osy česky popište v cm.
-# Fitujte lineární model délky kališního lístku podle délky
-# korunního a uložte jej jako mod_kalich. Vyložte sklon
-# v cm na 1 cm. Nakreslete graf residuí proti odhadům
-# s nulovou čárou. Co přímka vystihuje a co zůstává
-# mezi jednotlivými květy různé?
-#
+# Zadání:
+# V data_kalich zkontrolujte počet řádků a zobrazte bodový graf délky
+# korunního lístku na ose x proti délce kališního lístku na ose y; obě osy
+# česky popište v cm. Fitujte lineární model délky kališního lístku podle
+# délky korunního a uložte jej jako mod_kalich. Vyložte sklon v cm na 1 cm.
+# Nakreslete graf residuí proti odhadům s nulovou čárou. Co přímka vystihuje
+# a co zůstává mezi jednotlivými květy různé?
+
 # Vaše řešení:
+
+
+# Nápověda 1:
+# Pořadí proměnných ve vzorci určuje, kterou délku odhadujete. Bod v
+# diagnostickém grafu stále patří stejnému květu jako v původním grafu.
 #
+# Nápověda 2:
+# Použijte nrow(), plot(), lm() a coef(). Do vzorce dejte
+# delka_kalisniho_listku jako odezvu a delka_korunniho_listku jako
+# prediktor; pro diagnostiku použijte fitted(), resid()
+# a abline(h = 0, lty = 2).
 #
-# Nápověda 1: Pořadí proměnných ve vzorci určuje,
-# kterou délku odhadujete. Bod v diagnostickém grafu
-# stále patří stejnému květu jako v původním grafu.
-# Nápověda 2: Použijte nrow(), plot(), lm() a coef().
-# Do vzorce dejte delka_kalisniho_listku jako odezvu
-# a delka_korunniho_listku jako prediktor; pro diagnostiku
-# použijte fitted(), resid() a abline(h = 0, lty = 2).
-# Očekávaný výsledek: 150 spárovaných květů; rostoucí
-# vztah se sklonem přibližně 0,41 cm na 1 cm délky
-# korunního lístku. Residua leží po obou stranách nuly;
-# jediná přímka neodhadne délku každého květu přesně.
+# Očekávaný výsledek:
+# 150 spárovaných květů; rostoucí vztah se sklonem přibližně 0,41 cm na 1 cm
+# délky korunního lístku. Residua leží po obou stranách nuly; jediná přímka
+# neodhadne délku každého květu přesně.
 
 
 #--------------------------------------------------#
@@ -503,7 +519,8 @@ head(x = data_kalich)
 ### Úloha navíc | L03-N02 -----
 #----------------------------------------#
 
-# Zadání: Z data_tucnaci_raw vyberte společně úplné dvojice
+# Zadání:
+# Z data_tucnaci_raw vyberte společně úplné dvojice
 # bill_length_mm (délka zobáku v mm) a body_mass_g
 # (hmotnost v g) a uložte celé odpovídající řádky jako
 # data_tucnaci_zobak. Zkontrolujte jejich počet, nakreslete
@@ -512,21 +529,23 @@ head(x = data_kalich)
 # graf residuí proti odhadnutým hmotnostem s nulovou čárou
 # a napište opatrný biologický závěr. Co můžete říci
 # o souvislosti, aniž byste tvrdili příčinu?
-#
+
 # Vaše řešení:
+
+
+# Nápověda 1:
+# Jeden řádek je jeden tučňák; výběr dvojic musí zachovat identitu jedince.
+# Sklon vztáhněte k jednotce délky zobáku, ne k ploutvi z hlavní úlohy.
 #
-#
-# Nápověda 1: Jeden řádek je jeden tučňák; výběr dvojic
-# musí zachovat identitu jedince. Sklon vztáhněte
-# k jednotce délky zobáku, ne k ploutvi z hlavní úlohy.
-# Nápověda 2: V complete.cases() použijte oba uvedené
-# sloupce společně. Ve vzorci lm() dejte body_mass_g
-# vlevo a bill_length_mm vpravo; pro druhý graf použijte
+# Nápověda 2:
+# V complete.cases() použijte oba uvedené sloupce společně. Ve vzorci lm()
+# dejte body_mass_g vlevo a bill_length_mm vpravo; pro druhý graf použijte
 # fitted(mod_zobak), resid(mod_zobak) a abline(h = 0).
-# Očekávaný výsledek: 342 úplných dvojic; rostoucí,
-# rozptýlený vztah se sklonem přibližně 87,4 g/mm.
-# Residua ukazují neodhadnutou variabilitu hmotnosti.
-# Model popisuje asociaci, ne účinek změny zobáku.
+#
+# Očekávaný výsledek:
+# 342 úplných dvojic; rostoucí, rozptýlený vztah se sklonem přibližně 87,4
+# g/mm. Residua ukazují neodhadnutou variabilitu hmotnosti. Model popisuje
+# asociaci, ne účinek změny zobáku.
 
 
 #--------------------------------------------------#
@@ -567,24 +586,27 @@ if (
 ### Úloha navíc | L03-N03 -----
 #----------------------------------------#
 
-# Zadání: Pokud je_ggplot2 má hodnotu TRUE, zobrazte
-# z data_kosatce bodový graf šířky a délky korunního lístku
-# v cm pomocí ggplot2. Přidejte přímku pomocí interceptu
-# a sklonu z uloženého mod_listky. Porovnejte graf s U02:
-# která část zápisu určuje data, osy, body a přímku?
-#
+# Zadání:
+# Pokud je_ggplot2 má hodnotu TRUE, zobrazte z data_kosatce bodový graf
+# šířky a délky korunního lístku v cm pomocí ggplot2. Přidejte přímku pomocí
+# interceptu a sklonu z uloženého mod_listky. Porovnejte graf s U02: která
+# část zápisu určuje data, osy, body a přímku?
+
 # Vaše řešení:
+
+
+# Nápověda 1:
+# Bodová vrstva přebírá přiřazení os z hlavního grafu; vrstva přímky
+# potřebuje dvě čísla nezávisle na jednotlivých řádcích.
 #
+# Nápověda 2:
+# Spojte ggplot2::ggplot() s ggplot2::aes(), ggplot2::geom_point(),
+# ggplot2::geom_abline() a ggplot2::labs(). Intercept a slope vrstvy vezměte
+# z coef(mod_listky), ne z dalšího fitu.
 #
-# Nápověda 1: Bodová vrstva přebírá přiřazení os
-# z hlavního grafu; vrstva přímky potřebuje dvě čísla
-# nezávisle na jednotlivých řádcích.
-# Nápověda 2: Spojte ggplot2::ggplot() s ggplot2::aes(),
-# ggplot2::geom_point(), ggplot2::geom_abline() a
-# ggplot2::labs(). Intercept a slope vrstvy vezměte z
-# coef(mod_listky), ne z dalšího fitu.
-# Očekávaný výsledek: Stejných 150 bodů a přímka s interceptem
-# přibližně 1,08 a sklonem 2,23; nepřibyl nový model ani data.
+# Očekávaný výsledek:
+# Stejných 150 bodů a přímka s interceptem přibližně 1,08 a sklonem 2,23;
+# nepřibyl nový model ani data.
 
 
 #--------------------------------------------------#
@@ -596,23 +618,41 @@ if (
 ### Úloha navíc | L03-N04 -----
 #----------------------------------------#
 
-# Zadání: Pokud je_ggplot2 má hodnotu TRUE, vytvořte
-# datovou tabulku z fitted(mod_listky), resid(mod_listky)
-# a data_kosatce$druh. V ggplot2 zobrazte residuum proti
-# odhadnuté délce, barvou odlište tři druhy a přidejte
-# vodorovnou nulovou čáru. Zachovejte české popisky v cm.
+# Zadání:
+# Pokud je_ggplot2 má hodnotu TRUE, vytvořte datovou tabulku z
+# fitted(mod_listky), resid(mod_listky) a data_kosatce$druh. V ggplot2
+# zobrazte residuum proti odhadnuté délce, barvou odlište tři druhy a
+# přidejte vodorovnou nulovou čáru. Zachovejte české popisky v cm.
 # Porovnejte biologický závěr s U05.
-#
+
 # Vaše řešení:
+
+
+# Nápověda 1:
+# Jeden řádek nové tabulky musí spojit odhad, residuum a druh stejného
+# květu.
 #
+# Nápověda 2:
+# Sestavte data.frame() se třemi sloupci; v ggplot2::aes() přiřaďte x, y a
+# colour = druh. Přidejte ggplot2::geom_point(),
+# ggplot2::geom_hline(yintercept = 0),
+# ggplot2::scale_colour_manual(values = barvy_kosatcu) a ggplot2::labs().
 #
-# Nápověda 1: Jeden řádek nové tabulky musí spojit odhad,
-# residuum a druh stejného květu.
-# Nápověda 2: Sestavte data.frame() se třemi sloupci;
-# v ggplot2::aes() přiřaďte x, y a colour = druh. Přidejte
-# ggplot2::geom_point(), ggplot2::geom_hline(yintercept = 0),
-# ggplot2::scale_colour_manual(values = barvy_kosatcu)
-# a ggplot2::labs().
-# Očekávaný výsledek: Stejných 150 residuí a stejná
-# struktura podle druhu jako v U05; mění se způsob zápisu
-# grafu, nikoli model ani biologický závěr.
+# Očekávaný výsledek:
+# Stejných 150 residuí a stejná struktura podle druhu jako v U05; mění se
+# způsob zápisu grafu, nikoli model ani biologický závěr.
+
+
+#----------------------------------------------------------#
+# Ohlédnutí a vlastní kontrola -----
+#----------------------------------------------------------#
+
+# Hlavní úlohy jste zvládli, pokud vlastními slovy vysvětlíte:
+# 1. Jak biologická otázka určí pořadí proměnných v lm(y ~ x)?
+# 2. Co znamená sklon u kosatců a v jakých je jednotkách?
+# 3. Jak vzniká residuum jednoho květu či tučňáka?
+# 4. Co může ukázat graf residuí, co sklon samotný neukáže?
+# 5. Proč nevykládáme intercept tučňáků při 0 mm?
+# 6. Proč kladný sklon sám nedokazuje příčinný vztah?
+# Pokud si nejste jistí, vraťte se k příslušné úloze
+# a jejím dvěma nápovědám.
