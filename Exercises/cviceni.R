@@ -43,7 +43,8 @@
 # Příkazy pište bez #; slovní odpovědi zapisujte na
 # komentářové řádky začínající #, aby šel skript znovu spustit.
 # Při samostudiu řešte hlavní úlohy ve stejném pořadí.
-# Očekávaný výsledek pomáhá zkontrolovat postup; nápovědy čtěte postupně.
+# Nápovědy čtěte postupně; očekávaný výsledek pod nimi pomáhá zkontrolovat
+# postup.
 
 
 #--------------------------------------------------#
@@ -120,13 +121,13 @@ head(x = data_kosatce)
 # Vaše řešení:
 #
 #
-# Očekávaný výsledek: 150 květů; šířka 0,1–2,5 cm a délka
-# 1,0–6,9 cm. Šířka je prediktor, délka odezva; jeden řádek
-# je jedno pozorované květové měření.
 # Nápověda 1: Otázka se ptá, jak se jedna veličina mění
 # s druhou; pořadí ve větě pomůže rozlišit jejich role.
 # Nápověda 2: Počet řádků zjistíte nrow(); pro každý číselný
 # sloupec použijte range(). Šířku označte jako x, délku jako y.
+# Očekávaný výsledek: 150 květů; šířka 0,1–2,5 cm a délka
+# 1,0–6,9 cm. Šířka je prediktor, délka odezva; jeden řádek
+# je jedno pozorované květové měření.
 
 
 #--------------------------------------------------#
@@ -150,13 +151,13 @@ head(x = data_kosatce)
 # Vaše řešení:
 #
 #
-# Očekávaný výsledek: Rostoucí oblak 150 bodů s viditelným
-# rozptýlením; přímka by měla stoupat. Body neleží přesně
-# na jedné přímce.
 # Nápověda 1: V jednom svislém řezu mohou mít květy
 # různou délku. Odlište rostoucí střed oblaku od jeho šířky.
 # Nápověda 2: V plot() použijte x, y, xlab a ylab; pro body
 # můžete přidat pch = 16. Oba sloupce vyberte z data_kosatce.
+# Očekávaný výsledek: Rostoucí oblak 150 bodů s viditelným
+# rozptýlením; přímka by měla stoupat. Body neleží přesně
+# na jedné přímce.
 
 
 #--------------------------------------------------#
@@ -189,14 +190,14 @@ vec_odhad_priklad
 # Vaše řešení:
 #
 #
-# Očekávaný výsledek: Intercept přibližně 1,08 cm a sklon
-# přibližně 2,23 cm na 1 cm šířky. Odhadnutá délka roste;
-# tento vztah sám neprokazuje příčinu.
 # Nápověda 1: Vzorec musí odrážet biologickou otázku:
 # odhadujeme délku pomocí šířky, nikoli naopak.
 # Nápověda 2: V lm() pojmenujte argumenty formula a data;
 # do formula napište delka_listku ~ sirka_listku. Výsledek
 # uložte pomocí <- a předejte jej funkci coef().
+# Očekávaný výsledek: Intercept přibližně 1,08 cm a sklon
+# přibližně 2,23 cm na 1 cm šířky. Odhadnutá délka roste;
+# tento vztah sám neprokazuje příčinu.
 
 
 #--------------------------------------------------#
@@ -223,14 +224,14 @@ vec_odhad_priklad
 # Vaše řešení:
 #
 #
-# Očekávaný výsledek: Při šířce 0,2 cm a naměřené délce
-# 1,4 cm je odhad přibližně 1,53 cm a residuum -0,13 cm.
-# Naměřený květ leží pod přímkou.
 # Nápověda 1: Záporné residuum znamená, že měření
 # je menší než odhad; kladné znamená opak.
 # Nápověda 2: Z coef(mod_listky) vyberte intercept a sklon,
 # spočítejte intercept + sklon * data_kosatce$sirka_listku[1]
 # a odečtěte od data_kosatce$delka_listku[1].
+# Očekávaný výsledek: Při šířce 0,2 cm a naměřené délce
+# 1,4 cm je odhad přibližně 1,53 cm a residuum -0,13 cm.
+# Naměřený květ leží pod přímkou.
 
 
 #--------------------------------------------------#
@@ -281,10 +282,6 @@ barvy_kosatcu <-
 # Vaše řešení:
 #
 #
-# Očekávaný výsledek: Body leží po obou stranách nuly;
-# po rozlišení barev je patrná struktura podle druhu.
-# Jediná přímka nepostihuje všechno, ale nenulová residua
-# očekáváme i u užitečného modelu.
 # Nápověda 1: Každá dvojice odhad–residuum musí patřit
 # stejnému květu; barva přidává informaci, kterou model nepoužil.
 # Nápověda 2: Přiřaďte plot() x = fitted(mod_listky),
@@ -292,6 +289,10 @@ barvy_kosatcu <-
 # as.character(data_kosatce$druh)]. Nulu vyznačte pomocí
 # abline(h = 0, lty = 2). Barvy popište pomocí
 # legend() s names(barvy_kosatcu) a barvy_kosatcu.
+# Očekávaný výsledek: Body leží po obou stranách nuly;
+# po rozlišení barev je patrná struktura podle druhu.
+# Jediná přímka nepostihuje všechno, ale nenulová residua
+# očekáváme i u užitečného modelu.
 
 #--------------------------------------------------#
 ## Souvisí délka ploutve s hmotností tučňáka? -----
@@ -344,15 +345,15 @@ head(x = data_mereni_par)
 # Vaše řešení:
 #
 #
-# Očekávaný výsledek: 342 úplných dvojic z 344 řádků;
-# rostoucí, ale rozptýlený oblak. Párování chrání údaje
-# patřící jednomu jedinci před chybným spojením s jiným.
 # Nápověda 1: Každý tučňák tvoří jeden řádek. Při
 # odděleném vyřazování hodnot by se dvojice mohly posunout
 # a popsat dva různé jedince.
 # Nápověda 2: Výsledek complete.cases(data_mereni_par)
 # použijte uvnitř hranatých závorek na data_tucnaci_raw,
 # za čárkou ponechte všechny sloupce. Pro graf použijte plot().
+# Očekávaný výsledek: 342 úplných dvojic z 344 řádků;
+# rostoucí, ale rozptýlený oblak. Párování chrání údaje
+# patřící jednomu jedinci před chybným spojením s jiným.
 
 
 #--------------------------------------------------#
@@ -377,16 +378,16 @@ head(x = data_mereni_par)
 # Vaše řešení:
 #
 #
-# Očekávaný výsledek: Sklon přibližně 49,7 g/mm,
-# tedy přibližně 497 g na 10 mm. Intercept je přibližně
-# -5781 g, ale 0 mm leží mimo pozorovaných 172–231 mm;
-# zápornou hmotnost proto nevykládáme biologicky.
 # Nápověda 1: Sklon má jednotku odezvy na jednotku
 # prediktoru. Intercept se vztahuje k nule na ose x;
 # smysl této nuly posuzujte podle rozsahu měření.
 # Nápověda 2: Ve vzorci lm() použijte body_mass_g ~
 # flipper_length_mm a data = data_tucnaci. Rozsah prediktoru
 # zjistěte pomocí range(data_tucnaci$flipper_length_mm).
+# Očekávaný výsledek: Sklon přibližně 49,7 g/mm,
+# tedy přibližně 497 g na 10 mm. Intercept je přibližně
+# -5781 g, ale 0 mm leží mimo pozorovaných 172–231 mm;
+# zápornou hmotnost proto nevykládáme biologicky.
 
 
 #--------------------------------------------------#
@@ -409,15 +410,15 @@ head(x = data_mereni_par)
 # Vaše řešení:
 #
 #
-# Očekávaný výsledek: Graf má 342 residuí po obou stranách
-# nuly, s viditelnou variabilitou hmotnosti. Model odhaduje
-# kladnou asociaci přibližně 49,7 g/mm, nikoli přesnou
-# hmotnost každého jedince ani příčinný účinek ploutve.
 # Nápověda 1: Diagnostika porovnává odhad modelu s tím,
 # co po odečtení odhadu z měření zůstalo.
 # Nápověda 2: Do plot() dejte fitted(mod_ploutve) na x
 # a resid(mod_ploutve) na y; nulovou čáru přidejte
 # abline(h = 0, lty = 2). V závěru uveďte jednotku sklonu.
+# Očekávaný výsledek: Graf má 342 residuí po obou stranách
+# nuly, s viditelnou variabilitou hmotnosti. Model odhaduje
+# kladnou asociaci přibližně 49,7 g/mm, nikoli přesnou
+# hmotnost každého jedince ani příčinný účinek ploutve.
 
 
 #----------------------------------------------------------#
@@ -476,10 +477,6 @@ head(x = data_kalich)
 # Vaše řešení:
 #
 #
-# Očekávaný výsledek: 150 spárovaných květů; rostoucí
-# vztah se sklonem přibližně 0,41 cm na 1 cm délky
-# korunního lístku. Residua leží po obou stranách nuly;
-# jediná přímka neodhadne délku každého květu přesně.
 # Nápověda 1: Pořadí proměnných ve vzorci určuje,
 # kterou délku odhadujete. Bod v diagnostickém grafu
 # stále patří stejnému květu jako v původním grafu.
@@ -487,6 +484,10 @@ head(x = data_kalich)
 # Do vzorce dejte delka_kalisniho_listku jako odezvu
 # a delka_korunniho_listku jako prediktor; pro diagnostiku
 # použijte fitted(), resid() a abline(h = 0, lty = 2).
+# Očekávaný výsledek: 150 spárovaných květů; rostoucí
+# vztah se sklonem přibližně 0,41 cm na 1 cm délky
+# korunního lístku. Residua leží po obou stranách nuly;
+# jediná přímka neodhadne délku každého květu přesně.
 
 
 #--------------------------------------------------#
@@ -515,10 +516,6 @@ head(x = data_kalich)
 # Vaše řešení:
 #
 #
-# Očekávaný výsledek: 342 úplných dvojic; rostoucí,
-# rozptýlený vztah se sklonem přibližně 87,4 g/mm.
-# Residua ukazují neodhadnutou variabilitu hmotnosti.
-# Model popisuje asociaci, ne účinek změny zobáku.
 # Nápověda 1: Jeden řádek je jeden tučňák; výběr dvojic
 # musí zachovat identitu jedince. Sklon vztáhněte
 # k jednotce délky zobáku, ne k ploutvi z hlavní úlohy.
@@ -526,6 +523,10 @@ head(x = data_kalich)
 # sloupce společně. Ve vzorci lm() dejte body_mass_g
 # vlevo a bill_length_mm vpravo; pro druhý graf použijte
 # fitted(mod_zobak), resid(mod_zobak) a abline(h = 0).
+# Očekávaný výsledek: 342 úplných dvojic; rostoucí,
+# rozptýlený vztah se sklonem přibližně 87,4 g/mm.
+# Residua ukazují neodhadnutou variabilitu hmotnosti.
+# Model popisuje asociaci, ne účinek změny zobáku.
 
 
 #--------------------------------------------------#
@@ -575,8 +576,6 @@ if (
 # Vaše řešení:
 #
 #
-# Očekávaný výsledek: Stejných 150 bodů a přímka s interceptem
-# přibližně 1,08 a sklonem 2,23; nepřibyl nový model ani data.
 # Nápověda 1: Bodová vrstva přebírá přiřazení os
 # z hlavního grafu; vrstva přímky potřebuje dvě čísla
 # nezávisle na jednotlivých řádcích.
@@ -584,6 +583,8 @@ if (
 # ggplot2::geom_point(), ggplot2::geom_abline() a
 # ggplot2::labs(). Intercept a slope vrstvy vezměte z
 # coef(mod_listky), ne z dalšího fitu.
+# Očekávaný výsledek: Stejných 150 bodů a přímka s interceptem
+# přibližně 1,08 a sklonem 2,23; nepřibyl nový model ani data.
 
 
 #--------------------------------------------------#
@@ -605,9 +606,6 @@ if (
 # Vaše řešení:
 #
 #
-# Očekávaný výsledek: Stejných 150 residuí a stejná
-# struktura podle druhu jako v U05; mění se způsob zápisu
-# grafu, nikoli model ani biologický závěr.
 # Nápověda 1: Jeden řádek nové tabulky musí spojit odhad,
 # residuum a druh stejného květu.
 # Nápověda 2: Sestavte data.frame() se třemi sloupci;
@@ -615,3 +613,6 @@ if (
 # ggplot2::geom_point(), ggplot2::geom_hline(yintercept = 0),
 # ggplot2::scale_colour_manual(values = barvy_kosatcu)
 # a ggplot2::labs().
+# Očekávaný výsledek: Stejných 150 residuí a stejná
+# struktura podle druhu jako v U05; mění se způsob zápisu
+# grafu, nikoli model ani biologický závěr.
